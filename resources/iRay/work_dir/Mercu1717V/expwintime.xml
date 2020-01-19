@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<params>
+	<condition1>
+		<binning0>
+			<zoom0 value="0">
+				<param1 type="int" value="96"/>
+				<param2 type="float" value="4.8"/>
+			</zoom0>
+			<zoom9 value="0">
+				<param1 type="int" value="77"/>
+				<param2 type="float" value="4.8"/>
+			</zoom9>
+			<zoom11 value="0">
+				<param1 type="int" value="46"/>
+				<param2 type="float" value="4.8"/>
+			</zoom11>
+		</binning0>
+		<binning1>
+			<zoom0 value="0">
+				<param1 type="int" value="50"/>
+				<param2 type="float" value="4.8"/>
+			</zoom0>
+			<zoom11 value="0">
+				<param1 type="int" value="40"/>
+				<param2 type="float" value="4.8"/>
+			</zoom11>
+		</binning1>
+		<binning2>
+			<zoom0 value="0">
+				<param1 type="int" value="33"/>
+				<param2 type="float" value="4.8"/>
+			</zoom0>
+		</binning2>
+	</condition1>
+</params>
