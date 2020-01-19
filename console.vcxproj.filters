@@ -1,28 +1,49 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="源文件">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="头文件">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="资源文件">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{2cc7c5f1-3606-406a-b565-70a1ebd036db}</UniqueIdentifier>
     </Filter>
     <Filter Include="gl3w">
       <UniqueIdentifier>{19d70ec9-9d0e-46df-a86e-344d3afe18c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="header">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="RS-232">
+      <UniqueIdentifier>{960d8a8e-b57d-441d-8ef9-f1c475cc4933}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="iRay">
+      <UniqueIdentifier>{58ac96a3-80e0-4b84-882d-08f62cdf603b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="iRay\include">
+      <UniqueIdentifier>{14844706-234d-42ff-a0cd-a3a0540bbaef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="spdlog">
+      <UniqueIdentifier>{08bfdb63-0490-472b-aed7-a9bdb46a21dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\modal">
+      <UniqueIdentifier>{bc947b49-6e35-4ee3-b10c-4f9e608f7773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\ui">
+      <UniqueIdentifier>{d828b05d-39f0-4441-8370-ffd06b02ff43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\data">
+      <UniqueIdentifier>{ff724660-0975-47cb-b59c-5e0bce256a96}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\console.cpp">
-      <Filter>源文件</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="src\ThirdParty\imgui\imgui.cpp">
       <Filter>imgui</Filter>
@@ -44,6 +65,12 @@
     </ClCompile>
     <ClCompile Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\gl3w.c">
       <Filter>gl3w</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ThirdParty\RS-232\rs232.c">
+      <Filter>RS-232</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ThirdParty\iRay\Detector.cpp">
+      <Filter>iRay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +103,117 @@
     </ClInclude>
     <ClInclude Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\glcorearb.h">
       <Filter>gl3w</Filter>
+    </ClInclude>
+    <ClInclude Include="src\hvg.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\RS-232\rs232.h">
+      <Filter>RS-232</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\Detector.h">
+      <Filter>iRay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\DisplayProgressbar.h">
+      <Filter>iRay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\IRayInclude.h">
+      <Filter>iRay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\Util.h">
+      <Filter>iRay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\include\IRayAttrDef.h">
+      <Filter>iRay\include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\include\IRayCmdDef.h">
+      <Filter>iRay\include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\include\IRayEnumDef.h">
+      <Filter>iRay\include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\include\IRayErrDef.h">
+      <Filter>iRay\include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\include\IRayEventDef.h">
+      <Filter>iRay\include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\include\IRayFpdSys.h">
+      <Filter>iRay\include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\include\IRayFpdSysEx.h">
+      <Filter>iRay\include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\include\IRayImage.h">
+      <Filter>iRay\include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\iRay\include\IRayVariant.h">
+      <Filter>iRay\include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\flat_panel.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stb_image.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stb_image_resize.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\async.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\async_logger.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\async_logger-inl.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\common.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\common-inl.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\formatter.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\logger.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\logger-inl.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\spdlog.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\spdlog-inl.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\tweakme.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\spdlog\version.h">
+      <Filter>spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\console.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data.h">
+      <Filter>source\data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\modal.h">
+      <Filter>source\modal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sil.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui.h">
+      <Filter>source\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cl.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\image.h">
+      <Filter>source\ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
