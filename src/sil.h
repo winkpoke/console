@@ -70,15 +70,17 @@ namespace sil {
     template <class T, class... Args>
     std::shared_ptr<image_t<T>> make_shared(Args... args)
     {
-        auto p = make_raw(args...);
-        return std::shared_ptr<image_t<T>>(p, drop<T>);
+        auto image = make_raw(args...);
+        std::shared_ptr<image_t<T>> p(image, drop<T>);
+        return p;
     }
 
     template <class T, class... Args>
-    std::unique_ptr<image_t<T>> make_unique(Args... args)
+    std::unique_ptr<image_t<T>, decltype(&drop<T>)> make_unique(Args... args)
     {
-        auto p = make_raw(args...);
-        return std::unique_ptr<image_t<T>>(p, drop<T>);
+        auto image = make_raw(args...);
+        std::unique_ptr<image_t<T>, decltype(&drop<T>)> p(image, drop<T>);
+        return p;
     }
 
     //template <class T>

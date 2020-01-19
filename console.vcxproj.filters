@@ -215,5 +215,8 @@
     <ClInclude Include="src\ui\image.h">
       <Filter>source\ui</Filter>
     </ClInclude>
+    <ClInclude Include="src\window.h">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

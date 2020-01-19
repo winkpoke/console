@@ -55,10 +55,14 @@ int main(int, char**)
     std::thread connect_to_fpd(modal::connect_to_fpd);
     std::thread connect_to_hvg(modal::connect_to_hvg);
 
-    GLFWwindow* window = ui::init();
-    if (window) {
-        ui::render(window);
-        ui::drop(window);
+    {
+        auto win = window::make_shared(300, 300, 1024, 768);
+
+        if (win) {
+            ui::init();
+            ui::render(win.get());
+            win.reset();
+        }
     }
 
     connect_to_fpd.join();

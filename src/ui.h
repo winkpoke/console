@@ -1,6 +1,8 @@
 #ifndef CONSOLE_INCLUDE_UI_H 
 #define CONSOLE_INCLUDE_UI_H
 
+#include <memory>
+
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_impl_glfw.h"
@@ -26,11 +28,15 @@
 
 #include "ui/image.h"
 
+namespace window {
+    struct window_t;
+}
+
 namespace ui
 {
-    GLFWwindow* init();
-    void render(GLFWwindow* window);
-    void drop(GLFWwindow* window);
+    bool init();
+    void render(window::window_t* window);
+    void drop();
 }
 
 #endif // CONSOLE_INCLUDE_UI_H
@@ -40,12 +46,16 @@ namespace ui
 #define CONSOLE_DATA_IMPLEMENTATION
 #define CONSOLE_MODAL_IMPLEMENTATION
 #include "modal.h"
+
+#define WINDOW_IMPLEMENTATION
+#include "window.h"
+
 namespace ui
 {
     static int w, h;
     static unsigned char* img = stbi_load("resources\\images\\img.jpg", &w, &h, NULL, 4);
 
-    image::mono_image_window<unsigned char> g_image_widget[4];
+    image::image_view<unsigned char> g_image_widget[4];
 
     // Demonstrate creating a simple log window with basic filtering.
     static void render_maintenance_window(bool* p_open)
@@ -115,62 +125,8 @@ namespace ui
         }
     }
 
-    static void glfw_error_callback(int error, const char* description)
+    bool init()
     {
-        fprintf(stderr, "Glfw Error %d: %s\n", error, description);
-    }
-
-    GLFWwindow* init()
-    {
-        // Setup window
-        glfwSetErrorCallback(glfw_error_callback);
-        if (!glfwInit())
-            return NULL;
-
-        // Decide GL+GLSL versions
-#if __APPLE__
-    // GL 3.2 + GLSL 150
-        const char* glsl_version = "#version 150";
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
-#else
-    // GL 3.0 + GLSL 130
-        const char* glsl_version = "#version 130";
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-        //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-#endif
-
-    // Create window with graphics context
-        GLFWwindow* window = glfwCreateWindow(1280, 720, "Techtron CBCT Console", NULL, NULL);
-        //GLFWwindow* window = glfwCreateWindow(1920, 1080, "Dear ImGui GLFW+OpenGL3 example", glfwGetPrimaryMonitor(), NULL);
-        if (window == NULL)
-            return NULL;
-        glfwMakeContextCurrent(window);
-        glfwSwapInterval(1); // Enable vsync
-
-        // Initialize OpenGL loader
-#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-        bool err = gl3wInit() != 0;
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-        bool err = glewInit() != GLEW_OK;
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-        bool err = gladLoadGL() == 0;
-#else
-        bool err = false; // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires some form of initialization.
-#endif
-        if (err)
-        {
-            fprintf(stderr, "Failed to initialize OpenGL loader!\n");
-            return NULL;
-        }
-
-        // Setup Dear ImGui context
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO(); (void)io;
         //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
         //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -178,10 +134,6 @@ namespace ui
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
         //ImGui::StyleColorsClassic();
-
-        // Setup Platform/Renderer bindings
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
-        ImGui_ImplOpenGL3_Init(glsl_version);
 
         // Load Fonts
         // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
@@ -204,7 +156,7 @@ namespace ui
         image::init(&g_image_widget[2], 700, 512, image);
         image::init(&g_image_widget[3], 700, 512, image);
 
-        return window;
+        return true;
     }
 
     static void render_status_window()
@@ -281,45 +233,29 @@ namespace ui
         ImGui::NewLine();
         ImGui::NewLine();
         ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-        //ImGui::Checkbox("Another Window", &show_another_window);
-
-        //ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-        //ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-        //if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-        //    counter++;
-        //ImGui::SameLine();
-        //ImGui::Text("counter = %d", counter);
 
         //ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         ImGui::End();
+        if (show_demo_window) {
+            ImGui::ShowDemoWindow(&show_demo_window);
+        }
     }
 
     static void render_image_window()
     {
-        //static bool p_open;
-        //ImGui::Begin("##Image", &p_open, ImGuiWindowFlags_NoTitleBar);
-        //// ImGui::Text("Image");
-        //// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_data);
-        //data::scan::scan_t::pixel_t* image = data::scan::n_image(data::g_app_stat.scan, max(0, data::g_app_stat.scan->index));
-        ////data::scan::scan_t::pixel_t* image = data::g_app_stat.scan->images;
-        //if (image != NULL) {
-        //    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 3072, 3072, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, image);
-        //}
-        //else {
-        //    // error handling
-        //}
-        //GLenum err = glGetError();
-        //if (err != GL_NO_ERROR) {
+        static bool p_open;
+        ImGui::Begin("##Image", &p_open, ImGuiWindowFlags_NoTitleBar);
 
-
-        //    // error handling
-        //}
-        //ImGui::Image((void*)(intptr_t)texture, ImVec2(1024, 1024));
-        //ImGui::End();
+        image::render(&g_image_widget[0]);
+        ImGui::SameLine();
+        image::render(&g_image_widget[1]);
+        image::render(&g_image_widget[2]);
+        ImGui::SameLine();
+        image::render(&g_image_widget[3]);
+        ImGui::End();
     }
 
-    void render(GLFWwindow* window)
+    void render(window::window_t* win)
     {
 
         GLuint texture;
@@ -335,7 +271,7 @@ namespace ui
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
         // Main loop
-        while (!glfwWindowShouldClose(window))
+        while (!glfwWindowShouldClose(win->wnd))
         {
             // Poll and handle events (inputs, window resize, etc.)
             // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -354,62 +290,28 @@ namespace ui
                 render_maintenance_window(&show_another_window);
             }
 
-            //render_image_window();
-            {
-                static bool p_open;
-                ImGui::Begin("##Image", &p_open, ImGuiWindowFlags_NoTitleBar);
-                //// ImGui::Text("Image");
-                //// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_data);
-                //data::scan::scan_t::pixel_t* image = data::scan::n_image(data::g_app_stat.scan, max(0, data::g_app_stat.scan->index));
-                ////data::scan::scan_t::pixel_t* image = data::g_app_stat.scan->images;
-                //if (image != NULL) {
-                //    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 3072, 3072, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, image);
-                //}
-                //else {
-                //    // error handling
-                //}
-                //GLenum err = glGetError();
-                //if (err != GL_NO_ERROR) {
-
-
-                //    // error handling
-                //}
-                //ImGui::Image((void*)(intptr_t)texture, ImVec2(1024, 1024));
-
-                image::render(&g_image_widget[0]);
-                ImGui::SameLine();
-                image::render(&g_image_widget[1]);
-                image::render(&g_image_widget[2]);
-                ImGui::SameLine();
-                image::render(&g_image_widget[3]);
-                ImGui::End();
-            }
+            render_image_window();
+            static bool toggle_fullscreen = true;
+            ImGuiIO& io = ImGui::GetIO(); (void)io;
+            for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) 
+                if (ImGui::IsKeyPressed(i) && i == 0x12B) { 
+                    window::set_fullscreen(win, toggle_fullscreen);
+                    toggle_fullscreen = !toggle_fullscreen;
+                }
 
             // Rendering
             ImGui::Render();
             int display_w, display_h;
-            glfwGetFramebufferSize(window, &display_w, &display_h);
+            glfwGetFramebufferSize(win->wnd, &display_w, &display_h);
             glViewport(0, 0, display_w, display_h);
             glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
             glClear(GL_COLOR_BUFFER_BIT);
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-            glfwSwapBuffers(window);
+            glfwSwapBuffers(win->wnd);
         }
     }
-
-    void drop(GLFWwindow* window)
-    {
-        if (window) {
-            // Cleanup
-            ImGui_ImplOpenGL3_Shutdown();
-            ImGui_ImplGlfw_Shutdown();
-            ImGui::DestroyContext();
-
-            glfwDestroyWindow(window);
-            glfwTerminate();
-        }
-    }
-
+    void drop()
+    {}
 }
 #endif   // CONSOLE_UI_IMPLEMENTATION
