@@ -13,6 +13,9 @@ namespace sil {
         size_t height;
         size_t width;
         pixel_t* data;
+
+        static bool init(image_t<pixel_t>* image, size_t width, size_t height, unsigned short channel, pixel_t* data = nullptr);
+        static void drop(image_t<pixel_t>* image);
     };
 
     template <class T>
@@ -97,5 +100,36 @@ namespace sil {
     //    auto image = make_raw(width, height, channel, data);
     //    return unique_ptr<image_t<T>>(image, drop<T>);
     //}
+
+    template <class T>
+    bool image_t<T>::init(image_t<T>* image, size_t width, size_t height, unsigned short channel, T* data)
+    {
+        if (image == NULL) {
+            return false;
+        }
+
+        image->height = height;
+        image->width = width;
+        image->channel = channel;
+        if (data == nullptr) {
+            image->data = (T*)malloc(sizeof(T) * width * height * channel);
+        }
+        else {
+            image->data = data;
+        }
+
+        return true;
+    }
+
+    template <class T>
+    void image_t<T>::drop(image_t<T>* image)
+    {
+        if (image) {
+            if (image->data) {
+                free(image->data);
+            }
+            free(image);
+        }
+    }
 }
 

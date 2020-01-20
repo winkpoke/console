@@ -43,34 +43,6 @@ namespace window {
         static void drop(window_t* win);
     };
 
-    //template <class... Args>
-    //window_t* make_raw(Args... args)
-    //{
-    //    window_t* win = (window_t*)cl::alloc<window_t>();
-    //    if (!win) {
-    //        return nullptr;
-    //    }
-    //    if (!window_t::init(win, args...)) {
-    //        window_t::drop(win);
-    //        return nullptr;
-    //    }
-    //    return win;
-    //}
-
-    template <class... Args>
-    std::unique_ptr<window_t, decltype(&window_t::drop)> make_unique(Args... args)
-    {
-        auto win = cl::build_raw(args...);
-        return std::unique_ptr<window_t, decltype(&window_t::drop)>(win, window_t::drop);
-    }
-
-    template <class... Args>
-    std::shared_ptr<window_t> make_shared(Args... args)
-    {
-        auto win = cl::build_raw<window_t>(args...);
-        return std::shared_ptr<window_t>(win, window_t::drop);
-    }
-
     template <class T>
     bool is_fullscreen(T* win)
     {
