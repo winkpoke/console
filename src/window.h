@@ -186,7 +186,10 @@ namespace window {
 
     void render(window_t* win)
     {
-        if (!win && !win->wnd) {
+        if (!win) {
+            return;
+        }
+        if (!win->wnd) {
             return;
         }
 

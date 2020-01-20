@@ -75,7 +75,7 @@ namespace modal {
 
         SPDLOG_TRACE("Image recieved: Width - {:d} Height - {:d} BPP - {:d}\n", width, height, byte_per_pixel);
         SPDLOG_TRACE("Start copying image {:d} ...", index + 1);
-        memcpy((void*)(scan.images + shift), data, size);
+        memcpy(scan.images + shift, data, size);
         SPDLOG_TRACE("Complete copying image {:d} ...", index + 1);
 
         index++;
@@ -118,7 +118,7 @@ namespace modal {
                 SPDLOG_DEBUG("condition changed: {:.8X}", condition);
             }
             if (n <= 0 || strncmp(msg, ">IFV 1", n) != 0) {
-                SPDLOG_TRACE("err: {:d} - {}: {}", n, msg, hvg::error_str(hvg::last_error()));
+                SPDLOG_TRACE("err: {:d} - {}: {}", n, msg, hvg::last_error_str<hvg::error_t>());
                 SPDLOG_TRACE("len = {:d}; pos = {:d}, buf = {}", context->len, context->pos, context->buf);
                 continue;
             }
@@ -152,7 +152,7 @@ namespace modal {
                 printf("condition changed: %.8X", condition);
             }
             if (n <= 0 || strncmp(msg, rtv, n) != 0) {
-                SPDLOG_DEBUG("error [{:d}] {} :: n {} :: {}", hvg::last_error(), hvg::error_str(hvg::last_error()), n, msg);
+                SPDLOG_DEBUG("error [{:d}] {} :: n {} :: {}", hvg::last_error<hvg::error_t>(), hvg::last_error_str<hvg::error_t>(), n, msg);
                 SPDLOG_DEBUG("len = {:d}; pos = {:d}, buf = {}", context->len, context->pos, context->buf);
                 if (retry < 0) {
                     break;
@@ -172,7 +172,7 @@ namespace modal {
         char msg[1024] = { 0 };
         while (retry-- >= 0) {
             int condition = 0;
-            int n = hvg::send(context, "<GST", msg, &condition, 2000);
+            int n = hvg::send(context, "<GST", msg, &condition, 1000);
             if (n > 0) {
                 int cond0 = 0;
                 int cond1 = 0;
@@ -198,23 +198,22 @@ namespace modal {
         // Init RS232
         context = hvg::open(port, baud, "8N2");
         if (context == NULL) {
-            error(hvg::error_str(hvg::last_error()));
+            error(hvg::last_error_str<hvg::error_t>());
             status = HVG_ERROR;
         }
         else {
             if (!hand_shake(2)) {
                 status = HVG_ERROR;
-                hvg::close(context);
                 return;
             }
 
             if (!set_hvg_exposure_parameters(100.0f, 0.5f, 'L', 300, 6, 2)) {
                 status = HVG_ERROR;
-                hvg::close(context);
                 return;
             }
             status = HVG_READY;
             debug(">GST {:.8X}", get_hvg_status());
+            return;
         }
     }
 
@@ -266,7 +265,7 @@ namespace modal {
     {
         hvg::context_t*& context = data::g_app_stat.hvg_context;
         if (hvg::close(context) == hvg::FAILURE) {
-            fprintf(stderr, "%s\n", hvg::error_str(hvg::last_error()));
+            fprintf(stderr, "%s\n", hvg::last_error_str<hvg::error_t>());
         }
     }
 
