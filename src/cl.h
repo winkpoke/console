@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-
+#include <array>
 
 namespace cl {
     // type define 
@@ -75,3 +75,7 @@ namespace cl {
     //    return E::desc[e];
     //}
 }
+
+namespace cl { namespace math {
+    
+} } // namespace cl::math

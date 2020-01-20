@@ -57,16 +57,16 @@ int main(int, char**)
     std::thread connect_to_fpd(modal::connect_to_fpd);
     std::thread connect_to_hvg(modal::connect_to_hvg);
 
-    {
-        // auto win = window::make_shared(300, 300, 1024, 768);
+    auto win = cl::build_raw<window::window_t>(300, 300, 1024, 768);
 
-        auto win = cl::build_unique<window::window_t>(300, 300, 1024, 768);
-
-        if (win) {
-            ui::init();
-            ui::render(win.get());
-            win.reset();
-        }
+    if (win) {
+        ui::init(win);
+        win->renders.push_back(&ui::render_status_window);
+        win->renders.push_back(&ui::render_maintenance_window);
+        win->renders.push_back(&ui::render_image_window);
+        win->renders.push_back(&ui::render_patient_info_window);
+        ui::render(win);
+        window::window_t::drop(win);
     }
 
     connect_to_fpd.join();

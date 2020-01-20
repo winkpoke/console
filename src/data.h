@@ -82,6 +82,9 @@ namespace data {
         // Reconstruction 
         resolution_t resolution;
         float slice_dist;
+
+        // window
+
     };
 
     static app_stat_t g_app_stat;
@@ -131,7 +134,7 @@ namespace data {
             if (n >= scan_t::N_IMAGES || n < 0) {
                 return NULL;
             }
-            return scan->images + (long long)scan->width * scan->height * sizeof(scan_t::pixel_t) * n;
+            return scan->images + (size_t)scan->width * scan->height * sizeof(scan_t::pixel_t) * n;
         }
     }
     bool init()

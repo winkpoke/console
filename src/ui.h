@@ -59,9 +59,136 @@ namespace ui
 
     image::image_view<unsigned char> g_image_widget[4];
 
-    // Demonstrate creating a simple log window with basic filtering.
-    static void render_maintenance_window(bool* p_open)
+    //-----------------------------------------------------------------------------
+// [SECTION] Example App: Debug Log / ShowExampleAppLog()
+//-----------------------------------------------------------------------------
+
+// Usage:
+//  static ExampleAppLog my_log;
+//  my_log.AddLog("Hello %d world\n", 123);
+//  my_log.Draw("title");
+    struct ExampleAppLog
     {
+        ImGuiTextBuffer     Buf;
+        ImGuiTextFilter     Filter;
+        ImVector<int>       LineOffsets;        // Index to lines offset. We maintain this with AddLog() calls, allowing us to have a random access on lines
+        bool                AutoScroll;     // Keep scrolling if already at the bottom
+
+        ExampleAppLog()
+        {
+            AutoScroll = true;
+            Clear();
+        }
+
+        void    Clear()
+        {
+            Buf.clear();
+            LineOffsets.clear();
+            LineOffsets.push_back(0);
+        }
+
+        void    AddLog(const char* fmt, ...) IM_FMTARGS(2)
+        {
+            int old_size = Buf.size();
+            va_list args;
+            va_start(args, fmt);
+            Buf.appendfv(fmt, args);
+            va_end(args);
+            for (int new_size = Buf.size(); old_size < new_size; old_size++)
+                if (Buf[old_size] == '\n')
+                    LineOffsets.push_back(old_size + 1);
+        }
+
+        void    Draw(const char* title, bool* p_open = NULL)
+        {
+            if (!ImGui::Begin(title, p_open))
+            {
+                ImGui::End();
+                return;
+            }
+
+            // Options menu
+            if (ImGui::BeginPopup("Options"))
+            {
+                ImGui::Checkbox("Auto-scroll", &AutoScroll);
+                ImGui::EndPopup();
+            }
+
+            // Main window
+            if (ImGui::Button("Options"))
+                ImGui::OpenPopup("Options");
+            ImGui::SameLine();
+            bool clear = ImGui::Button("Clear");
+            ImGui::SameLine();
+            bool copy = ImGui::Button("Copy");
+            ImGui::SameLine();
+            Filter.Draw("Filter", -100.0f);
+
+            ImGui::Separator();
+            ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+            if (clear)
+                Clear();
+            if (copy)
+                ImGui::LogToClipboard();
+
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+            const char* buf = Buf.begin();
+            const char* buf_end = Buf.end();
+            if (Filter.IsActive())
+            {
+                // In this example we don't use the clipper when Filter is enabled.
+                // This is because we don't have a random access on the result on our filter.
+                // A real application processing logs with ten of thousands of entries may want to store the result of search/filter.
+                // especially if the filtering function is not trivial (e.g. reg-exp).
+                for (int line_no = 0; line_no < LineOffsets.Size; line_no++)
+                {
+                    const char* line_start = buf + LineOffsets[line_no];
+                    const char* line_end = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
+                    if (Filter.PassFilter(line_start, line_end))
+                        ImGui::TextUnformatted(line_start, line_end);
+                }
+            }
+            else
+            {
+                // The simplest and easy way to display the entire buffer:
+                //   ImGui::TextUnformatted(buf_begin, buf_end);
+                // And it'll just work. TextUnformatted() has specialization for large blob of text and will fast-forward to skip non-visible lines.
+                // Here we instead demonstrate using the clipper to only process lines that are within the visible area.
+                // If you have tens of thousands of items and their processing cost is non-negligible, coarse clipping them on your side is recommended.
+                // Using ImGuiListClipper requires A) random access into your data, and B) items all being the  same height,
+                // both of which we can handle since we an array pointing to the beginning of each line of text.
+                // When using the filter (in the block of code above) we don't have random access into the data to display anymore, which is why we don't use the clipper.
+                // Storing or skimming through the search result would make it possible (and would be recommended if you want to search through tens of thousands of entries)
+                ImGuiListClipper clipper;
+                clipper.Begin(LineOffsets.Size);
+                while (clipper.Step())
+                {
+                    for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++)
+                    {
+                        const char* line_start = buf + LineOffsets[line_no];
+                        const char* line_end = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
+                        ImGui::TextUnformatted(line_start, line_end);
+                    }
+                }
+                clipper.End();
+            }
+            ImGui::PopStyleVar();
+
+            if (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+                ImGui::SetScrollHereY(1.0f);
+
+            ImGui::EndChild();
+            ImGui::End();
+        }
+    };
+
+    // Demonstrate creating a simple log window with basic filtering.
+    bool render_maintenance_window(window::window_t* win)
+    {
+        static bool open = true;
+        static bool* p_open = &open;
+
         static ExampleAppLog log;
 
         static int port = 2;
@@ -127,33 +254,7 @@ namespace ui
         }
     }
 
-    bool init()
-    {
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-        // Setup Dear ImGui style
-        ImGui::StyleColorsDark();
-        //ImGui::StyleColorsClassic();
-
-        io.Fonts->AddFontDefault();
-        //io.Fonts->AddFontFromFileTTF("src/ThirdParty/imgui/misc/fonts/Roboto-Medium.ttf", 14.0f);
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-        //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-        //IM_ASSERT(font != NULL);
-
-        // auto image = sil::make_shared<unsigned char>(w, h, 4, img);
-        auto image = cl::build_shared<sil::image_t<unsigned char>>(w, h, 4, img);
-        image::image_view<unsigned char>::init(&g_image_widget[0], 700, 512, image);
-        image::image_view<unsigned char>::init(&g_image_widget[1], 700, 512, image);
-        image::image_view<unsigned char>::init(&g_image_widget[2], 700, 512, image);
-        image::image_view<unsigned char>::init(&g_image_widget[3], 700, 512, image);
-
-        return true;
-    }
-
-    static void render_status_window()
+    bool render_status_window(window::window_t* win)
     {
         static bool show_demo_window = false;
 
@@ -233,9 +334,10 @@ namespace ui
         if (show_demo_window) {
             ImGui::ShowDemoWindow(&show_demo_window);
         }
+        return true;
     }
 
-    static void render_image_window()
+    bool render_image_window(window::window_t* win)
     {
         static bool p_open;
         ImGui::Begin("##Image", &p_open, ImGuiWindowFlags_NoTitleBar);
@@ -247,64 +349,57 @@ namespace ui
         ImGui::SameLine();
         image::render(&g_image_widget[3]);
         ImGui::End();
+        return true;
     }
+
+    bool render_patient_info_window(window::window_t* win)
+    {
+        static bool p_open;
+        ImGui::Begin("##patient_info", &p_open, ImGuiWindowFlags_NoTitleBar);
+        ImGui::Text("Name:  Zhang San");
+        ImGui::Text("ID:    209845");
+        ImGui::Text("Age:   65");
+
+        ImGui::End();
+        return true;
+    }
+
+    bool init(window::window_t* win)
+    {
+        if (!win) {
+            return false;
+        }
+
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+        // Setup Dear ImGui style
+        ImGui::StyleColorsDark();
+        //ImGui::StyleColorsClassic();
+
+        io.Fonts->AddFontDefault();
+        //io.Fonts->AddFontFromFileTTF("src/ThirdParty/imgui/misc/fonts/Roboto-Medium.ttf", 14.0f);
+        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+        //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+        //IM_ASSERT(font != NULL);
+
+        // auto image = sil::make_shared<unsigned char>(w, h, 4, img);
+        auto image = cl::build_shared<sil::image_t<unsigned char>>(w, h, 4, img);
+        image::image_view<unsigned char>::init(&g_image_widget[0], 512, 512, image);
+        image::image_view<unsigned char>::init(&g_image_widget[1], 512, 512, image);
+        image::image_view<unsigned char>::init(&g_image_widget[2], 512, 512, image);
+        image::image_view<unsigned char>::init(&g_image_widget[3], 512, 512, image);
+
+        return true;
+    }
+
 
     void render(window::window_t* win)
     {
-
-        GLuint texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-        /*glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img);*/
-
-        // Our state
-        static bool show_another_window = true;
-        ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-        // Main loop
-        while (!glfwWindowShouldClose(win->wnd))
-        {
-            // Poll and handle events (inputs, window resize, etc.)
-            // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-            // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-            // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-            // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-            glfwPollEvents();
-
-            // Start the Dear ImGui frame
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
-
-            render_status_window();
-            if (show_another_window) {
-                render_maintenance_window(&show_another_window);
-            }
-
-            render_image_window();
-            static bool toggle_fullscreen = true;
-            ImGuiIO& io = ImGui::GetIO(); (void)io;
-            for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) 
-                if (ImGui::IsKeyPressed(i) && i == 0x12B) { 
-                    window::set_fullscreen(win, toggle_fullscreen);
-                    toggle_fullscreen = !toggle_fullscreen;
-                }
-
-            // Rendering
-            ImGui::Render();
-            int display_w, display_h;
-            glfwGetFramebufferSize(win->wnd, &display_w, &display_h);
-            glViewport(0, 0, display_w, display_h);
-            glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-            glClear(GL_COLOR_BUFFER_BIT);
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-            glfwSwapBuffers(win->wnd);
-        }
+        window::render(win);
     }
+
     void drop()
     {}
 }

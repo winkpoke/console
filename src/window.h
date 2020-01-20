@@ -2,6 +2,8 @@
 #define _INCLUDE_WINDOW_H
 
 #include <memory>
+#include <array>
+#include <list>
 
 #include "cl.h"
 
@@ -26,20 +28,20 @@
 // Include glfw3.h after our OpenGL definitions
 #include <GLFW/glfw3.h>
 
-struct window_t {
-    GLFWwindow* wnd;
-    GLFWmonitor* monitor;
-    int x, y, w, h;
-};
-
-
 namespace window {
+    using namespace cl;
+    using namespace std;
+
     struct window_t {
+        typedef bool (*render_fun_t)(window_t*);
+
         GLFWwindow* wnd;
         GLFWmonitor* monitor;
         int x, y, w, h;
+        array<float, 4> background_color;
+        list<render_fun_t> renders;
 
-        static bool init(window_t* win, int x, int y, int w, int h);
+        static bool init(window_t* win, int x, int y, int w, int h, array<float, 4> background_color = { 0.45f, 0.55f, 0.60f, 1.00f });
         static void drop(window_t* win);
     };
 
@@ -87,7 +89,7 @@ namespace window {
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
     }
 
-    bool window_t::init(window_t* win, int x, int y, int w, int h)
+    bool window_t::init(window_t* win, int x, int y, int w, int h, array<float, 4> background_color)
     {
         // window_t* win = this;
 
@@ -99,6 +101,10 @@ namespace window {
         win->y = y;
         win->w = w;
         win->h = h;
+
+        win->background_color = background_color;
+
+        new (&win->renders)(list<window_t::render_fun_t>);
 
         // Setup window
         glfwSetErrorCallback(glfw_error_callback);
@@ -175,6 +181,56 @@ namespace window {
                 glfwTerminate();
             }
             free(win);
+        }
+    }
+
+    void render(window_t* win)
+    {
+        if (!win && !win->wnd) {
+            return;
+        }
+
+        // Main loop
+        while (!glfwWindowShouldClose(win->wnd))
+        {
+            // Poll and handle events (inputs, window resize, etc.)
+            // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+            // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+            // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
+            // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+            glfwPollEvents();
+
+            // Start the Dear ImGui frame
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+            // Custom renders
+            for (auto r = win->renders.crbegin(); r != win->renders.crend(); ++r) {
+                if ((*r)(win) == false) {
+                    break;
+                }
+            }
+
+            static bool toggle_fullscreen = true;
+            ImGuiIO& io = ImGui::GetIO(); (void)io;
+            for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) {
+                if (ImGui::IsKeyPressed(i) && i == 0x12B) {
+                    window::set_fullscreen(win, toggle_fullscreen);
+                    toggle_fullscreen = !toggle_fullscreen;
+                }
+            }
+
+            // Rendering
+            ImGui::Render();
+            int display_w, display_h;
+            glfwGetFramebufferSize(win->wnd, &display_w, &display_h);
+            glViewport(0, 0, display_w, display_h);
+            glClearColor(win->background_color[0], win->background_color[1], win->background_color[2], win->background_color[3]);
+            glClear(GL_COLOR_BUFFER_BIT);
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+            glfwSwapBuffers(win->wnd);
         }
     }
 }
