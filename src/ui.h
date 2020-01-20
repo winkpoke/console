@@ -145,10 +145,10 @@ namespace ui
 
         // auto image = sil::make_shared<unsigned char>(w, h, 4, img);
         auto image = cl::build_shared<sil::image_t<unsigned char>>(w, h, 4, img);
-        image::init(&g_image_widget[0], 700, 512, image);
-        image::init(&g_image_widget[1], 700, 512, image);
-        image::init(&g_image_widget[2], 700, 512, image);
-        image::init(&g_image_widget[3], 700, 512, image);
+        image::image_view<unsigned char>::init(&g_image_widget[0], 700, 512, image);
+        image::image_view<unsigned char>::init(&g_image_widget[1], 700, 512, image);
+        image::image_view<unsigned char>::init(&g_image_widget[2], 700, 512, image);
+        image::image_view<unsigned char>::init(&g_image_widget[3], 700, 512, image);
 
         return true;
     }
