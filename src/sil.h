@@ -30,7 +30,6 @@ namespace sil {
         static void drop(image_t<pixel_t>* image);
     };
 
-
     template <class T>
     bool image_t<T>::init(image_t<T>* image, size_t width, size_t height, u16 channel, T* data)
     {

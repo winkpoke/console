@@ -69,7 +69,7 @@ namespace ui { namespace image {
         if (err != GL_NO_ERROR) {
             // error handling
         }
-        ImGui::Image((void*)(intptr_t)widget->texture, ImVec2(widget->width, widget->height), ImVec2(0, 0), ImVec2(0.5, 0.5));
+        ImGui::Image((void*)(intptr_t)widget->texture, ImVec2(widget->width, widget->height)/*, ImVec2(0, 0), ImVec2(0.5, 0.5)*/);
     }
 
 }}  // namespace ui::image

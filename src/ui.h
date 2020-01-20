@@ -57,7 +57,12 @@ namespace ui
     static int w, h;
     static unsigned char* img = stbi_load("resources\\images\\img.jpg", &w, &h, NULL, 4);
 
+    static int w1, h1;
+    static unsigned char* img1 = stbi_load("resources\\images\\patient.png", &w1, &h1, NULL, 4);
+
     image::image_view<unsigned char> g_image_widget[4];
+
+    image::image_view<cl::u8> g_image_patient;
 
     //-----------------------------------------------------------------------------
 // [SECTION] Example App: Debug Log / ShowExampleAppLog()
@@ -356,9 +361,18 @@ namespace ui
     {
         static bool p_open;
         ImGui::Begin("##patient_info", &p_open, ImGuiWindowFlags_NoTitleBar);
-        ImGui::Text("Name:  Zhang San");
-        ImGui::Text("ID:    209845");
-        ImGui::Text("Age:   65");
+        ImGui::Columns(3, 0, false);
+        ImGui::SetColumnWidth(0, 80);
+        image::render(&g_image_patient); 
+        ImGui::NextColumn();
+        ImGui::Text("Name:     Zhang San");
+        ImGui::Text("ID:       209845");
+        ImGui::Text("Age:      65");
+        ImGui::NextColumn();
+        ImGui::Text("Gender:   M");
+        ImGui::Text("Category: H&N");
+        ImGui::Text("Site:     Hospital 1");
+        ImGui::Columns(1);
 
         ImGui::End();
         return true;
@@ -390,6 +404,9 @@ namespace ui
         image::image_view<unsigned char>::init(&g_image_widget[1], 512, 512, image);
         image::image_view<unsigned char>::init(&g_image_widget[2], 512, 512, image);
         image::image_view<unsigned char>::init(&g_image_widget[3], 512, 512, image);
+
+        auto patient = cl::build_shared<sil::image_t<cl::u8>>(w1, h1, 4, img1);
+        image::image_view<cl::u8>::init(&g_image_patient, 50, 73, patient);
 
         return true;
     }
