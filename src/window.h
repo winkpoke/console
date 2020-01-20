@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "cl.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -25,45 +26,49 @@
 // Include glfw3.h after our OpenGL definitions
 #include <GLFW/glfw3.h>
 
+struct window_t {
+    GLFWwindow* wnd;
+    GLFWmonitor* monitor;
+    int x, y, w, h;
+};
+
 
 namespace window {
     struct window_t {
         GLFWwindow* wnd;
         GLFWmonitor* monitor;
         int x, y, w, h;
+
+        static bool init(window_t* win, int x, int y, int w, int h);
+        static void drop(window_t* win);
     };
 
-    window_t* alloc();
-    bool init(window_t* win, int x, int y, int w, int h);
-
-    void drop(window_t* win);
-
-    template <class... Args>
-    window_t* make_raw(Args... args)
-    {
-        window_t* win = (window_t*)alloc();
-        if (!win) {
-            return nullptr;
-        }
-        if (!init(win, args...)) {
-            drop(win);
-            return nullptr;
-        }
-        return win;
-    }
+    //template <class... Args>
+    //window_t* make_raw(Args... args)
+    //{
+    //    window_t* win = (window_t*)cl::alloc<window_t>();
+    //    if (!win) {
+    //        return nullptr;
+    //    }
+    //    if (!window_t::init(win, args...)) {
+    //        window_t::drop(win);
+    //        return nullptr;
+    //    }
+    //    return win;
+    //}
 
     template <class... Args>
-    std::unique_ptr<window_t, decltype(&drop)> make_unique(Args... args)
+    std::unique_ptr<window_t, decltype(&window_t::drop)> make_unique(Args... args)
     {
-        auto win = make_raw(args...);
-        return std::unique_ptr<window_t, decltype(&drop)>(win, drop);
+        auto win = cl::build_raw(args...);
+        return std::unique_ptr<window_t, decltype(&window_t::drop)>(win, window_t::drop);
     }
 
     template <class... Args>
     std::shared_ptr<window_t> make_shared(Args... args)
     {
-        auto win = make_raw(args...);
-        return std::shared_ptr<window_t>(win, drop);
+        auto win = cl::build_raw<window_t>(args...);
+        return std::shared_ptr<window_t>(win, window_t::drop);
     }
 
     template <class T>
@@ -110,13 +115,10 @@ namespace window {
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
     }
 
-    window_t* alloc()
+    bool window_t::init(window_t* win, int x, int y, int w, int h)
     {
-        return (window_t*)malloc(sizeof(window_t));
-    }
+        // window_t* win = this;
 
-    bool init(window_t* win, int x, int y, int w, int h)
-    {
         if (!win) {
             return false;
         }
@@ -189,7 +191,7 @@ namespace window {
         return true;
     }
 
-    void drop(window_t* win)
+    void window_t::drop(window_t* win)
     {
         if (win) {
             if (win->wnd) {

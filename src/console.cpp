@@ -42,6 +42,8 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
+#include "cl.h"
+
 #include "console.h"
 
 
@@ -56,7 +58,9 @@ int main(int, char**)
     std::thread connect_to_hvg(modal::connect_to_hvg);
 
     {
-        auto win = window::make_shared(300, 300, 1024, 768);
+        // auto win = window::make_shared(300, 300, 1024, 768);
+
+        auto win = cl::build_unique<window::window_t>(300, 300, 1024, 768);
 
         if (win) {
             ui::init();
