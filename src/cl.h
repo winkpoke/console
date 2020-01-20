@@ -57,21 +57,21 @@ namespace cl {
     // 1.  enum e_error
     // 2.  const char* [] desc
     // 3.  static int last_error
-    template <class E>
-    void set_error(E::error_t e)
-    {
-        E::last_error = e;
-    }
+    //template <class E>
+    //void set_error(E::error_t e)
+    //{
+    //    E::last_error = e;
+    //}
 
-    template <class E>
-    E::error_t last_error()
-    {
-        return E::last_error;
-    }
+    //template <class E>
+    //E::error_t last_error()
+    //{
+    //    return E::last_error;
+    //}
 
-    template <class E>
-    const char* error_str(E::error_t e)
-    {
-        return E::desc[e];
-    }
+    //template <class E>
+    //const char* error_str(E::error_t e)
+    //{
+    //    return E::desc[e];
+    //}
 }

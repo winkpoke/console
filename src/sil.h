@@ -10,6 +10,14 @@ namespace sil {
     using namespace std;
     using namespace cl;
 
+    //struct error_t {
+    //    enum id {ERROR_NONE};
+
+    //    static const char* const desc[] = {
+    //        "hello",
+    //    };
+    //};
+
     template <class pixel_t>
     struct image_t {
         typedef pixel_t pixel_t;
@@ -30,7 +38,7 @@ namespace sil {
             return false;
         }
 
-        if (channel != 1 || channel != 3 || channel != 4) {
+        if (channel != 1 && channel != 3 && channel != 4) {
             return false;
         }
 
@@ -60,7 +68,12 @@ namespace sil {
         }
     }
 
-    //template 
-    //inline 
+    template <class T>
+    decltype(T::pixel_t) min_value()
+    {
+        return 10;
+    }
+
+    
 }
 
