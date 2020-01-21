@@ -13,8 +13,8 @@
 #include "spdlog/sinks/stdout_sinks.h"
 
 #include <stdio.h>
-
 #include <thread>
+#include <iostream>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -52,7 +52,7 @@ int main(int, char**)
     spdlog::set_level(spdlog::level::trace); // Set global log level to debug
     SPDLOG_INFO("CBCT Console starting ...");
 
-    // CBCT init
+    //// CBCT init
     data::init();
     std::thread connect_to_fpd(modal::connect_to_fpd);
     std::thread connect_to_hvg(modal::connect_to_hvg);
@@ -65,6 +65,7 @@ int main(int, char**)
         win->renders.push_back(&ui::render_maintenance_window);
         win->renders.push_back(&ui::render_image_window);
         win->renders.push_back(&ui::render_patient_info_window);
+        win->renders.push_back(&ui::process_camera_data);
         ui::render(win);
         window::window_t::drop(win);
     }

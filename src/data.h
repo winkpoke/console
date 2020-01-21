@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include <librealsense2/rs.hpp>
+
 enum error_t {
     OK,
     ERR_STATUS
@@ -85,6 +87,8 @@ namespace data {
 
         // window
 
+        // Camera
+        rs2::pipeline camera;
     };
 
     static app_stat_t g_app_stat;
@@ -152,6 +156,9 @@ namespace data {
 
         g_app_stat.scan = scan::alloc();
         scan::init(g_app_stat.scan, 3072, 3072);
+
+        // Configure and start the pipeline
+        g_app_stat.camera.start();
 
         return true;
     }
