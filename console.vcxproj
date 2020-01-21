@@ -59,15 +59,23 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="teuniz.rs-232.props" />
+    <Import Project="gabime.spdlog.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="teuniz.rs-232.props" />
+    <Import Project="gabime.spdlog.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="teuniz.rs-232.props" />
+    <Import Project="gabime.spdlog.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="teuniz.rs-232.props" />
+    <Import Project="gabime.spdlog.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -118,7 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src\ThirdParty\spdlog\include;src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\RS-232;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
@@ -163,7 +171,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\RS-232;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
