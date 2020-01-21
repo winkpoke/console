@@ -1,0 +1,2 @@
+[submodule "src/ThirdParty/RS-232"]
+	url = https://gitlab.com/Teuniz/RS-232
