@@ -118,7 +118,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\RS-232;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\ThirdParty\spdlog\include;src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\RS-232;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
