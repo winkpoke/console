@@ -197,6 +197,7 @@
     <ClCompile Include="src\ThirdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\ThirdParty\iRay\Detector.cpp" />
     <ClCompile Include="src\ThirdParty\RS-232\rs232.c" />
+    <ClCompile Include="src\websocket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cl.h" />
@@ -217,6 +218,7 @@
     <ClInclude Include="src\include\spdlog\tweakme.h" />
     <ClInclude Include="src\include\spdlog\version.h" />
     <ClInclude Include="src\modal.h" />
+    <ClInclude Include="src\ops.h" />
     <ClInclude Include="src\sil.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\stb_image_resize.h" />
@@ -247,6 +249,7 @@
     <ClInclude Include="src\ui.h" />
     <ClInclude Include="src\ui\image.h" />
     <ClInclude Include="src\window.h" />
+    <ClInclude Include="src\websocket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

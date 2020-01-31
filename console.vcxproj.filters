@@ -72,6 +72,9 @@
     <ClCompile Include="src\ThirdParty\iRay\Detector.cpp">
       <Filter>iRay</Filter>
     </ClCompile>
+    <ClCompile Include="src\websocket.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ThirdParty\imgui\imconfig.h">
@@ -216,6 +219,12 @@
       <Filter>source\ui</Filter>
     </ClInclude>
     <ClInclude Include="src\window.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ops.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\websocket.h">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

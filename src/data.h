@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <librealsense2/rs.hpp>
+#include "websocket.h"
 
 enum error_t {
     OK,
@@ -84,6 +85,9 @@ namespace data {
         // Reconstruction 
         resolution_t resolution;
         float slice_dist;
+
+        // Upstream server
+        websocket::websocket_t socket;
 
         // window
 

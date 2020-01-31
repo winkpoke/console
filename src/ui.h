@@ -396,6 +396,7 @@ namespace ui
 
         // Print the distance
         std::cout << "The camera is facing an object " << dist_to_center << " meters away \r";
+        // printf("The camera is facing an object %0.4f meters away \r", dist_to_center);
 
         return true;
     }

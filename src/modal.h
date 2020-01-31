@@ -39,6 +39,9 @@ namespace modal {
     bool is_ready_setup_patient();
     bool is_exposure_ready();
 
+    // connect to upstream server via websocket
+    void connect_to_upstream_server();
+
     // functions
     void init();
     void drop();
@@ -279,6 +282,11 @@ namespace modal {
     {
         drop_hvg();
         drop_fpd();
+    }
+
+    void connect_to_upstream_server()
+    {
+
     }
 }
 #endif   //CONSOLE_MODAL_IMPLEMENTATION

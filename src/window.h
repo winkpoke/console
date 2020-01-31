@@ -34,7 +34,7 @@ namespace window {
 
     struct window_t {
         typedef bool (*render_fun_t)(window_t*);
-
+        
         GLFWwindow* wnd;
         GLFWmonitor* monitor;
         int x, y, w, h;
@@ -77,6 +77,8 @@ namespace window {
 
         //_updateViewport = true;
     }
+
+
 }
 
 #endif // _INCLUDE_WINDOW_H

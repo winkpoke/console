@@ -56,6 +56,7 @@ int main(int, char**)
     data::init();
     std::thread connect_to_fpd(modal::connect_to_fpd);
     std::thread connect_to_hvg(modal::connect_to_hvg);
+    modal::connect_to_upstream_server();
 
     auto win = cl::build_raw<window::window_t>(300, 300, 1024, 768);
 
