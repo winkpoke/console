@@ -26,6 +26,34 @@ namespace cl {
         return (T*)malloc(s);
     }
 
+    //template <class T, class... Args>
+    //T* build_raw(Args... args)
+    //{
+    //    auto p = (T*)alloc<T>();
+    //    if (!p) {
+    //        return nullptr;
+    //    }
+    //    if (!T::init(p, args...)) {
+    //        T::drop(p);
+    //        return nullptr;
+    //    }
+    //    return p;
+    //}
+
+    //template <class T, class... Args>
+    //std::shared_ptr<T> build_shared(Args... args)
+    //{
+    //    auto p = build_raw<T>(args...);
+    //    return std::shared_ptr<T>(p, T::drop);
+    //}
+
+    //template <class T, class... Args>
+    //std::unique_ptr<T, decltype(&T::drop)> build_unique(Args... args)
+    //{
+    //    auto p = build_raw<T>(args...);
+    //    return std::unique_ptr<T, decltype(&T::drop)>(p, T::drop);
+    //}
+
     template <class T, class... Args>
     T* build_raw(Args... args)
     {
@@ -33,26 +61,54 @@ namespace cl {
         if (!p) {
             return nullptr;
         }
-        if (!T::init(p, args...)) {
-            T::drop(p);
+        if (!init(p, args...)) {
+            drop(p);
             return nullptr;
         }
         return p;
     }
 
     template <class T, class... Args>
-    std::shared_ptr<T> build_shared(Args... args)
+    T* build_raw(bool(*init)(T*, Args...), void(*drop)(T*), Args... args)
     {
-        auto p = build_raw<T>(args...);
-        return std::shared_ptr<T>(p, T::drop);
+        auto p = (T*)alloc<T>();
+        if (!p) {
+            return nullptr;
+        }
+        if (!init(p, args...)) {
+            drop(p);
+            return nullptr;
+        }
+        return p;
     }
 
     template <class T, class... Args>
-    std::unique_ptr<T, decltype(&T::drop)> build_unique(Args... args)
+    std::unique_ptr<T, void(*)(T*)> build_unique(void(*drop)(T*), Args... args)
     {
         auto p = build_raw<T>(args...);
-        return std::unique_ptr<T, decltype(&T::drop)>(p, T::drop);
+        return std::unique_ptr<T, decltype(drop)>(p, drop);
     }
+
+    template <class T, class... Args>
+    std::shared_ptr<T> build_shared(void(*drop)(T*), Args... args)
+    {
+        auto p = build_raw<T>(args...);
+        return std::shared_ptr<T>(p, drop);
+    }
+
+    //template <class T, class... Args>
+    //std::unique_ptr<T, void(*)(T*)> build_unique(Args... args)
+    //{
+    //    auto p = build_raw<T>(args...);
+    //    return std::unique_ptr<T, void(*)(T*)>(p, drop);
+    //}
+
+    //template <class T, class... Args>
+    //std::shared_ptr<T> build_shared(Args... args)
+    //{
+    //    auto p = build_raw<T>(args...);
+    //    return std::shared_ptr<T>(p, drop);
+    //}
 }
 
 namespace cl { namespace math {

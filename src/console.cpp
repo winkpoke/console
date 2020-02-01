@@ -55,7 +55,7 @@ int main(int, char**)
     //// CBCT init
     data::init();
     std::thread connect_to_fpd(modal::connect_to_fpd);
-    std::thread connect_to_hvg(modal::connect_to_hvg);
+    //std::thread connect_to_hvg(modal::connect_to_hvg);
     modal::connect_to_upstream_server();
 
     auto win = cl::build_raw<window::window_t>(300, 300, 1024, 768);
@@ -68,11 +68,11 @@ int main(int, char**)
         win->renders.push_back(&ui::render_patient_info_window);
         win->renders.push_back(&ui::process_camera_data);
         ui::render(win);
-        window::window_t::drop(win);
+        window::drop(win);
     }
 
     connect_to_fpd.join();
-    connect_to_hvg.join();
+    //connect_to_hvg.join();
 
     modal::drop();
     data::drop();

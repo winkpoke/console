@@ -3,14 +3,17 @@
 
 #include <string.h>
 
+namespace ix {
+    class WebSocket;
+}
+
 namespace websocket {
     struct websocket_t {
         char url[1024];
-        ix::WebSocket socket;
-
-        static bool init(websocket_t* s, const char* url);
-        static void drop(websocket_t* s);
+        ix::WebSocket* socket;
     };
+    bool init(websocket_t* s, const char* url);
+    void drop(websocket_t* s);
 }
 
 #endif // _INCLUDE_WEBSOCKET_H

@@ -25,13 +25,15 @@ namespace sil {
         size_t height;
         size_t width;
         pixel_t* data;
-
-        static bool init(image_t<pixel_t>* image, size_t width, size_t height, u16 channel, pixel_t* data = nullptr);
-        static void drop(image_t<pixel_t>* image);
     };
 
+    template <class pixel_t>
+    bool init(image_t<pixel_t>* image, size_t width, size_t height, u16 channel, pixel_t* data = nullptr);
+    template <class pixel_t>
+    void drop(image_t<pixel_t>* image);
+
     template <class T>
-    bool image_t<T>::init(image_t<T>* image, size_t width, size_t height, u16 channel, T* data)
+    bool init(image_t<T>* image, size_t width, size_t height, u16 channel, T* data)
     {
         if (image == NULL) {
             return false;
@@ -57,7 +59,7 @@ namespace sil {
     }
 
     template <class T>
-    void image_t<T>::drop(image_t<T>* image)
+    void drop(image_t<T>* image)
     {
         if (image) {
             if (image->data) {

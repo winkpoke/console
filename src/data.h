@@ -41,27 +41,25 @@ enum resolution_t {
     _768X768
 };
 
-namespace hvg { class context_t; }
+namespace hvg { struct context_t; }
 
 namespace data {
-    namespace scan {
-        struct scan_t {
-            typedef unsigned short pixel_t;
-            static const int N_IMAGES = 360;
+    struct scan_t {
+        typedef unsigned short pixel_t;
+        static const int N_IMAGES = 360;
 
-            int id;
-            int width;
-            int height;
-            pixel_t* images;
-            float angles[N_IMAGES];           // in degree
-            int index;
-        };
-
-        void init(scan_t* scan, int width, int height);
-        scan_t* alloc();
-        void drop(scan_t* scan);
-        scan_t::pixel_t* n_image(scan_t* scan, int n);
+        int id;
+        int width;
+        int height;
+        pixel_t* images;
+        float angles[N_IMAGES];           // in degree
+        int index;
     };
+
+    bool init(scan_t* scan, int width, int height);
+    //scan_t* alloc();
+    void drop(scan_t* scan);
+    scan_t::pixel_t* n_image(scan_t* scan, int n);
 
     const char* fpd_status_list[] = { "unconnected", "connecting", "ready", "error" };
     const char* hvg_status_list[] = { "unconnected", "connecting", "ready", "exposure", "error" };
@@ -71,7 +69,7 @@ namespace data {
     struct app_stat_t {
         // FPD 
         fpd_status_t fpd;
-        scan::scan_t* scan = NULL;
+        scan_t* scan = NULL;
 
         // HVG 
         hvg_status_t hvg;
@@ -87,7 +85,7 @@ namespace data {
         float slice_dist;
 
         // Upstream server
-        websocket::websocket_t socket;
+        websocket::websocket_t* socket;
 
         // window
 
@@ -105,71 +103,75 @@ namespace data {
 
 #ifdef CONSOLE_DATA_IMPLEMENTATION
 namespace data {
-    namespace scan {
-        void init(scan_t* scan, int width, int height)
-        {
-            scan->index = -1;
-            scan->width = width;
-            scan->height = height;
-            int xx = sizeof(int);
-            scan->images = (scan_t::pixel_t*)calloc(scan->N_IMAGES, scan->width * scan->height * sizeof(scan_t::pixel_t));
-            if (scan->images == NULL) {
-                // error handling
-            }
+    bool init(scan_t* scan, int width, int height)
+    {
+        scan->index = -1;
+        scan->width = width;
+        scan->height = height;
+        int xx = sizeof(int);
+        scan->images = (scan_t::pixel_t*)calloc(scan->N_IMAGES, scan->width * scan->height * sizeof(scan_t::pixel_t));
+        if (scan->images == NULL) {
+            // error handling
+            return false;
         }
+        return true;
+    }
 
-        scan_t* alloc()
-        {
-            scan_t* scan = (scan_t*)malloc(sizeof(scan_t));
-            if (scan == NULL) {
-                // error handling
-            }
-            return scan;
-        }
-
-        void drop(scan_t* scan)
-        {
-            if (scan->images != NULL) {
-                free(scan->images);
-            }
-            else {
-                // error handling
-            }
-        }
-
-        scan_t::pixel_t* n_image(scan_t* scan, int n)
-        {
-            if (n >= scan_t::N_IMAGES || n < 0) {
-                return NULL;
-            }
-            return scan->images + (size_t)scan->width * scan->height * sizeof(scan_t::pixel_t) * n;
+    void drop(scan_t* scan)
+    {
+        if (scan->images != NULL) {
+            free(scan->images);
         }
     }
-    bool init()
-    {
-        g_app_stat.fpd = FPD_UNCONNECTED;
-        g_app_stat.hvg = HVG_UNCONNECTED;
-        g_app_stat.kv = 70.0f;
-        g_app_stat.mAs = 5.0f;
-        g_app_stat.cbct_mode = CUSTOM;
-        g_app_stat.serial_port = 3;
-        g_app_stat.serail_baud = 19200;
-        g_app_stat.hvg_context = NULL;
-        g_app_stat.resolution = _512X512;
-        g_app_stat.slice_dist = 2.5f;
 
-        g_app_stat.scan = scan::alloc();
-        scan::init(g_app_stat.scan, 3072, 3072);
+    scan_t::pixel_t* n_image(scan_t* scan, int n)
+    {
+        if (n >= scan_t::N_IMAGES || n < 0) {
+            return NULL;
+        }
+        return scan->images + (size_t)scan->width * scan->height * sizeof(scan_t::pixel_t) * n;
+    }
+
+    bool init(app_stat_t* app) {
+        app->fpd = FPD_UNCONNECTED;
+        app->hvg = HVG_UNCONNECTED;
+        app->kv = 70.0f;
+        app->mAs = 5.0f;
+        app->cbct_mode = CUSTOM;
+        app->serial_port = 3;
+        app->serail_baud = 19200;
+        app->hvg_context = NULL;
+        app->resolution = _512X512;
+        app->slice_dist = 2.5f;
+
+        //app->scan = scan::alloc();
+        app->scan = cl::build_raw<data::scan_t>(3072, 3072);
+        //auto ss = cl::build_unique<data::scan::scan_t>(data::scan::drop, 3072, 3072);
+        //auto sss = cl::build_shared<data::scan::scan_t>(data::scan::drop, 3072, 3072);
+
+        // websocket
+        //std::unique_ptr<websocket::websocket_t, void(*)(websocket::websocket_t*)> socket = cl::build_unique<websocket::websocket_t>(websocket::drop, "ws://localhost:3000/ws");
+        app->socket = cl::build_raw<websocket::websocket_t>("ws://localhost:3000/ws");
 
         // Configure and start the pipeline
-        g_app_stat.camera.start();
+        app->camera.start();
 
         return true;
     }
 
+    void drop(app_stat_t* app) {
+        drop(app->scan);
+        websocket::drop(app->socket);
+    }
+
+    bool init()
+    {
+        return init(&g_app_stat);
+    }
+
     void drop()
     {
-        scan::drop(g_app_stat.scan);
+        drop(&g_app_stat);
     }
 }
 

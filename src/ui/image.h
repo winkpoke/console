@@ -24,25 +24,29 @@ namespace ui { namespace image {
         size_t width;
         size_t height;
 
-        static bool init(image_view<T>* widget, size_t width, size_t height, std::shared_ptr<sil::image_t<T>> image)
-        {
-            if (!widget) {
-                return false;
-            }
-            glGenTextures(1, &widget->texture);
-            glBindTexture(GL_TEXTURE_2D, widget->texture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-            widget->width = width;
-            widget->height = height;
-            widget->image = image;
 
-            return true;
-        }
-
-        static void drop(image_view<T>* widget){}
     };
+
+    template <class T>
+    static bool init(image_view<T>* widget, size_t width, size_t height, std::shared_ptr<sil::image_t<T>> image)
+    {
+        if (!widget) {
+            return false;
+        }
+        glGenTextures(1, &widget->texture);
+        glBindTexture(GL_TEXTURE_2D, widget->texture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+        widget->width = width;
+        widget->height = height;
+        widget->image = image;
+
+        return true;
+    }
+
+    template <class T>
+    static void drop(image_view<T>* widget) {}
 
     template <class T>
     void render(image_view<T>* widget)

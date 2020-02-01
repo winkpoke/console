@@ -422,14 +422,14 @@ namespace ui
         //IM_ASSERT(font != NULL);
 
         // auto image = sil::make_shared<unsigned char>(w, h, 4, img);
-        auto image = cl::build_shared<sil::image_t<unsigned char>>(w, h, 4, img);
-        image::image_view<unsigned char>::init(&g_image_widget[0], 512, 512, image);
-        image::image_view<unsigned char>::init(&g_image_widget[1], 512, 512, image);
-        image::image_view<unsigned char>::init(&g_image_widget[2], 512, 512, image);
-        image::image_view<unsigned char>::init(&g_image_widget[3], 512, 512, image);
+        auto image = cl::build_shared<sil::image_t<unsigned char>>(sil::drop, w, h, 4, img);
+        image::init(&g_image_widget[0], 512, 512, image);
+        image::init(&g_image_widget[1], 512, 512, image);
+        image::init(&g_image_widget[2], 512, 512, image);
+        image::init(&g_image_widget[3], 512, 512, image);
 
-        auto patient = cl::build_shared<sil::image_t<cl::u8>>(w1, h1, 4, img1);
-        image::image_view<cl::u8>::init(&g_image_patient, 50, 73, patient);
+        auto patient = cl::build_shared<sil::image_t<cl::u8>>(sil::drop, w1, h1, 4, img1);
+        image::init(&g_image_patient, 50, 73, patient);
 
         return true;
     }

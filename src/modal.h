@@ -63,7 +63,7 @@ namespace modal {
             return;
         }
 
-        data::scan::scan_t& scan = *data::g_app_stat.scan;
+        data::scan_t& scan = *data::g_app_stat.scan;
         int& index = scan.index;
         const int w = scan.width;
         const int h = scan.height;
@@ -73,7 +73,7 @@ namespace modal {
             return;
         }
 
-        const size_t size = sizeof(data::scan::scan_t::pixel_t) * width * height;
+        const size_t size = sizeof(data::scan_t::pixel_t) * width * height;
         const ptrdiff_t shift = size * ((size_t)index + 1);
 
         SPDLOG_TRACE("Image recieved: Width - {:d} Height - {:d} BPP - {:d}\n", width, height, byte_per_pixel);

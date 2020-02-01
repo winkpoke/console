@@ -40,10 +40,9 @@ namespace window {
         int x, y, w, h;
         array<float, 4> background_color;
         list<render_fun_t> renders;
-
-        static bool init(window_t* win, int x, int y, int w, int h, array<float, 4> background_color = { 0.45f, 0.55f, 0.60f, 1.00f });
-        static void drop(window_t* win);
     };
+    bool init(window_t* win, int x, int y, int w, int h, array<float, 4> background_color = { 0.45f, 0.55f, 0.60f, 1.00f });
+    void drop(window_t* win);
 
     template <class T>
     bool is_fullscreen(T* win)
@@ -91,7 +90,7 @@ namespace window {
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
     }
 
-    bool window_t::init(window_t* win, int x, int y, int w, int h, array<float, 4> background_color)
+    bool init(window_t* win, int x, int y, int w, int h, array<float, 4> background_color)
     {
         // window_t* win = this;
 
@@ -171,7 +170,7 @@ namespace window {
         return true;
     }
 
-    void window_t::drop(window_t* win)
+    void drop(window_t* win)
     {
         if (win) {
             if (win->wnd) {
