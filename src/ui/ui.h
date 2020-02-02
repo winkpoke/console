@@ -47,7 +47,7 @@ namespace ui
 
 #define CONSOLE_DATA_IMPLEMENTATION
 #define CONSOLE_MODAL_IMPLEMENTATION
-#include "modal.h"
+#include "modal/modal.h"
 
 #define WINDOW_IMPLEMENTATION
 #include "window.h"

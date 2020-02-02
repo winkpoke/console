@@ -1,7 +1,7 @@
 #include <memory>
 #include <GLFW/glfw3.h>
 
-#include "sil.h"
+#include "modal/sil.h"
 
 
 namespace ui { namespace image {

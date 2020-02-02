@@ -72,7 +72,7 @@
     <ClCompile Include="src\ThirdParty\iRay\Detector.cpp">
       <Filter>iRay</Filter>
     </ClCompile>
-    <ClCompile Include="src\websocket.cpp">
+    <ClCompile Include="src\modal\websocket.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -106,9 +106,6 @@
     </ClInclude>
     <ClInclude Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\glcorearb.h">
       <Filter>gl3w</Filter>
-    </ClInclude>
-    <ClInclude Include="src\hvg.h">
-      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="src\ThirdParty\RS-232\rs232.h">
       <Filter>RS-232</Filter>
@@ -152,15 +149,6 @@
     <ClInclude Include="src\ThirdParty\iRay\include\IRayVariant.h">
       <Filter>iRay\include</Filter>
     </ClInclude>
-    <ClInclude Include="src\flat_panel.h">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="src\stb_image.h">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="src\stb_image_resize.h">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\include\spdlog\async.h">
       <Filter>spdlog</Filter>
     </ClInclude>
@@ -200,31 +188,43 @@
     <ClInclude Include="src\console.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="src\data.h">
-      <Filter>source\data</Filter>
-    </ClInclude>
-    <ClInclude Include="src\modal.h">
-      <Filter>source\modal</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sil.h">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui.h">
-      <Filter>source\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\cl.h">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui\image.h">
       <Filter>source\ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\window.h">
+    <ClInclude Include="src\ui\ui.h">
+      <Filter>source\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\data.h">
+      <Filter>source\data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\modal\modal.h">
+      <Filter>source\modal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\cl.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\ops.h">
+    <ClInclude Include="src\modal\hvg.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\websocket.h">
+    <ClInclude Include="src\ui\window.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\modal\flat_panel.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\stb_image.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\stb_image_resize.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\modal\sil.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\modal\websocket.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\modal\ops.h">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

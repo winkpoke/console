@@ -197,14 +197,14 @@
     <ClCompile Include="src\ThirdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\ThirdParty\iRay\Detector.cpp" />
     <ClCompile Include="src\ThirdParty\RS-232\rs232.c" />
-    <ClCompile Include="src\websocket.cpp" />
+    <ClCompile Include="src\modal\websocket.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\cl.h" />
+    <ClInclude Include="src\include\cl.h" />
     <ClInclude Include="src\console.h" />
-    <ClInclude Include="src\data.h" />
-    <ClInclude Include="src\flat_panel.h" />
-    <ClInclude Include="src\hvg.h" />
+    <ClInclude Include="src\data\data.h" />
+    <ClInclude Include="src\modal\flat_panel.h" />
+    <ClInclude Include="src\modal\hvg.h" />
     <ClInclude Include="src\include\spdlog\async.h" />
     <ClInclude Include="src\include\spdlog\async_logger-inl.h" />
     <ClInclude Include="src\include\spdlog\async_logger.h" />
@@ -217,11 +217,11 @@
     <ClInclude Include="src\include\spdlog\spdlog.h" />
     <ClInclude Include="src\include\spdlog\tweakme.h" />
     <ClInclude Include="src\include\spdlog\version.h" />
-    <ClInclude Include="src\modal.h" />
-    <ClInclude Include="src\ops.h" />
-    <ClInclude Include="src\sil.h" />
-    <ClInclude Include="src\stb_image.h" />
-    <ClInclude Include="src\stb_image_resize.h" />
+    <ClInclude Include="src\modal\modal.h" />
+    <ClInclude Include="src\modal\ops.h" />
+    <ClInclude Include="src\modal\sil.h" />
+    <ClInclude Include="src\include\stb_image.h" />
+    <ClInclude Include="src\include\stb_image_resize.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\gl3w.h" />
@@ -246,10 +246,10 @@
     <ClInclude Include="src\ThirdParty\iRay\IRayInclude.h" />
     <ClInclude Include="src\ThirdParty\iRay\Util.h" />
     <ClInclude Include="src\ThirdParty\RS-232\rs232.h" />
-    <ClInclude Include="src\ui.h" />
+    <ClInclude Include="src\ui\ui.h" />
     <ClInclude Include="src\ui\image.h" />
-    <ClInclude Include="src\window.h" />
-    <ClInclude Include="src\websocket.h" />
+    <ClInclude Include="src\ui\window.h" />
+    <ClInclude Include="src\modal\websocket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

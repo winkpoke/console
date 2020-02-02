@@ -8,7 +8,7 @@
 #include "hvg.h"
 #include "flat_panel.h"
 
-#include "data.h"
+#include "data/data.h"
 
 namespace modal {
     using namespace spdlog;
