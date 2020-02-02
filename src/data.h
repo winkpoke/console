@@ -146,12 +146,9 @@ namespace data {
 
         //app->scan = scan::alloc();
         app->scan = cl::build_raw<data::scan_t>(3072, 3072);
-        //auto ss = cl::build_unique<data::scan::scan_t>(data::scan::drop, 3072, 3072);
-        //auto sss = cl::build_shared<data::scan::scan_t>(data::scan::drop, 3072, 3072);
 
         // websocket
-        //std::unique_ptr<websocket::websocket_t, void(*)(websocket::websocket_t*)> socket = cl::build_unique<websocket::websocket_t>(websocket::drop, "ws://localhost:3000/ws");
-        app->socket = cl::build_raw<websocket::websocket_t>("ws://localhost:3000/ws");
+        app->socket = cl::build_raw<websocket::websocket_t>("ws://172.17.95.188:3000/ws");
 
         // Configure and start the pipeline
         app->camera.start();
@@ -172,6 +169,10 @@ namespace data {
     void drop()
     {
         drop(&g_app_stat);
+    }
+
+    app_stat_t& get_app_stat() {
+        return g_app_stat;
     }
 }
 

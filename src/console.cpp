@@ -72,7 +72,7 @@ int main(int, char**)
     }
 
     connect_to_fpd.join();
-    //connect_to_hvg.join();
+    ////connect_to_hvg.join();
 
     modal::drop();
     data::drop();

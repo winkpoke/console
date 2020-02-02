@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <ixwebsocket/IXNetSystem.h>
 #include <ixwebsocket/IXWebSocket.h>
 
@@ -13,6 +15,16 @@ namespace websocket {
         s->socket->setUrl(url);
 
         ix::initNetSystem();
+
+        s->socket->setOnMessageCallback([](const ix::WebSocketMessagePtr& msg)
+            {
+                if (msg->type == ix::WebSocketMessageType::Message)
+                {
+                    std::cout << msg->str << std::endl;
+                }
+            }
+        );
+
         return true;
     }
 
@@ -27,11 +39,43 @@ namespace websocket {
         }
     }
 
-    bool connect() {
+    bool connect(websocket_t* s, cl::u64 timeout)
+    {
+        const cl::u64 sleep_ms = 200;
+        const cl::u64 n_loop = timeout / sleep_ms;
+
+        s->socket->start();
+        ix::ReadyState state = s->socket->getReadyState();
+        for (cl::u32 i = 0; i < n_loop; ++i) {
+            if (state == ix::ReadyState::Connecting || state == ix::ReadyState::Closed) {
+                //std::cout << "Connecting to " << s->url << " retry ... " << i << std::endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
+                state = s->socket->getReadyState();
+            }
+            else {
+                //s->socket->send("<HELLO");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool send(websocket_t* s, const char* text) {
+        s->socket->send(text);
         return true;
     }
 
-    bool send() {
-        return true;
+    void on_recv_text(websocket_t* s, std::function<void(const char* msg)> callback)
+    {
+        s->socket->setOnMessageCallback([=](const ix::WebSocketMessagePtr& msg) {
+            if (msg->type == ix::WebSocketMessageType::Message)
+            {
+                if (msg->binary == false) {
+                    callback(msg->str.c_str());
+                }
+            }
+        });
     }
+
+    /*void set_*/
 }

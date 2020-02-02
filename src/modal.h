@@ -43,7 +43,7 @@ namespace modal {
     void connect_to_upstream_server();
 
     // functions
-    void init();
+    bool init();
     void drop();
 }
 #endif   // CONSOLE_INCLUDE_MODAL_H
@@ -268,7 +268,7 @@ namespace modal {
     {
         hvg::context_t*& context = data::g_app_stat.hvg_context;
         if (hvg::close(context) == hvg::FAILURE) {
-            fprintf(stderr, "%s\n", hvg::last_error_str<hvg::error_t>());
+            SPDLOG_ERROR("{}", hvg::last_error_str<hvg::error_t>());
         }
     }
 
@@ -276,6 +276,11 @@ namespace modal {
     {
         fpd::fp_stop_acquire();
         fpd::Deinit();
+    }
+
+    bool init() 
+    {
+        return true;
     }
 
     void drop()
@@ -286,7 +291,20 @@ namespace modal {
 
     void connect_to_upstream_server()
     {
-
+        websocket::websocket_t* s = data::g_app_stat.socket;
+        SPDLOG_INFO("Connecting to server: ", s->url);
+        if (websocket::connect(s)) {
+            SPDLOG_INFO("Successully connected to server.");
+        }
+        else {
+            SPDLOG_ERROR("Fail to connect to server.");
+        }
+        SPDLOG_INFO("Handshake with server...");
+        websocket::on_recv_text(s, [](const char* msg) {
+            SPDLOG_INFO("Message recieved: {}", msg);
+            }
+        );
+        websocket::send(s, "<HELLO");
     }
 }
 #endif   //CONSOLE_MODAL_IMPLEMENTATION
