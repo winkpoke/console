@@ -1,310 +1,179 @@
-#ifndef CONSOLE_INCLUDE_MODAL_H
-#define CONSOLE_INCLUDE_MODAL_H
+#ifndef CONSOLE_INCLUDE_DATA_H
+#define CONSOLE_INCLUDE_DATA_H
 
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_sinks.h"
+#include <memory>
 
+#include <librealsense2/rs.hpp>
+#include "websocket.h"
 
-#include "hvg.h"
-#include "flat_panel.h"
+enum error_t {
+    OK,
+    ERR_STATUS
+};
 
-#include "data/data.h"
+enum fpd_status_t {
+    FPD_UNCONNECTED,
+    FPD_CONNECTING,
+    FPD_READY,
+    FPD_ERROR
+};
+
+enum hvg_status_t {
+    HVG_UNCONNECTED,
+    HVG_CONNECTING,
+    HVG_READY,
+    HVG_EXPOSURE,
+    HVG_ERROR
+};
+
+enum cbct_mode_t {
+    HEAD,
+    LUNG,
+    ABDOMINAL,
+    CUSTOM
+};
+
+enum resolution_t {
+    _128X128,
+    _256X256,
+    _384X384,
+    _512X512,
+    _768X768
+};
+
+namespace hvg { struct context_t; }
 
 namespace modal {
-    using namespace spdlog;
+    struct scan_t {
+        typedef unsigned short pixel_t;
+        static const int N_IMAGES = 360;
 
-    // FPD
-    void callback_image_recieved(int width, int height, int byte_per_pixel, void* data);
-    void connect_to_fpd();
-    void drop_fpd();
-    
-    // HVG
+        int id;
+        int width;
+        int height;
+        pixel_t* images;
+        float angles[N_IMAGES];           // in degree
+        int index;
+    };
 
-    bool hand_shake(int retry = 2);
+    bool init(scan_t* scan, int width, int height);
+    //scan_t* alloc();
+    void drop(scan_t* scan);
+    scan_t::pixel_t* n_image(scan_t* scan, int n);
 
-    bool set_hvg_exposure_parameters(float kv, float mAs, char focus, float fate, float fps, int retry = 2);
+    const char* fpd_status_list[] = { "unconnected", "connecting", "ready", "error" };
+    const char* hvg_status_list[] = { "unconnected", "connecting", "ready", "exposure", "error" };
+    const char* cbct_mode_list[] = { "Head", "Lung", "Abdominal", "Custom" };
+    const char* resolution_list[] = { "128x128", "256x256", "384x384", "512x512", "768x768" };
 
-    int get_hvg_status(int retry = 2);
+    struct app_stat_t {
+        // FPD 
+        fpd_status_t fpd;
+        scan_t* scan = NULL;
 
-    void connect_to_hvg();
-    void drop_hvg();
+        // HVG 
+        hvg_status_t hvg;
+        float kv;
+        float mAs;
+        cbct_mode_t cbct_mode;
+        int serial_port;
+        int serail_baud;
+        hvg::context_t* hvg_context;
 
-    void setup_patient();
+        // Reconstruction 
+        resolution_t resolution;
+        float slice_dist;
 
-    int exposure_callback(const char* msg, int len);
+        // Upstream server
+        websocket::websocket_t* socket;
 
-    void exposure();
+        // window
 
-    // status check
-    bool is_ready_setup_patient();
-    bool is_exposure_ready();
+        // Camera
+        rs2::pipeline camera;
+    };
 
-    // connect to upstream server via websocket
-    void connect_to_upstream_server();
+    static app_stat_t g_app_stat;
 
-    // functions
     bool init();
     void drop();
 }
-#endif   // CONSOLE_INCLUDE_MODAL_H
 
-#ifdef CONSOLE_MODAL_IMPLEMENTATION
+#endif    // CONSOLE_INCLUDE_DATA_H
+
+#ifdef CONSOLE_DATA_IMPLEMENTATION
 namespace modal {
-    // FPD
-    void callback_image_recieved(int width, int height, int byte_per_pixel, void* data)
+    bool init(scan_t* scan, int width, int height)
     {
-        if (data::g_app_stat.hvg != HVG_EXPOSURE) {
-            // do nothing if HVG is not in exposure state
-            return;
+        scan->index = -1;
+        scan->width = width;
+        scan->height = height;
+        int xx = sizeof(int);
+        scan->images = (scan_t::pixel_t*)calloc(scan->N_IMAGES, scan->width * scan->height * sizeof(scan_t::pixel_t));
+        if (scan->images == NULL) {
+            // error handling
+            return false;
         }
-
-        if (data::g_app_stat.scan == NULL) {
-            SPDLOG_ERROR("CBCT scan is not created during exposure.");
-            return;
-        }
-
-        data::scan_t& scan = *data::g_app_stat.scan;
-        int& index = scan.index;
-        const int w = scan.width;
-        const int h = scan.height;
-
-        if (w != width || h != height) {
-            SPDLOG_ERROR("Binning must be {} x {}. Other binnings are not supported.", w, h);
-            return;
-        }
-
-        const size_t size = sizeof(data::scan_t::pixel_t) * width * height;
-        const ptrdiff_t shift = size * ((size_t)index + 1);
-
-        SPDLOG_TRACE("Image recieved: Width - {:d} Height - {:d} BPP - {:d}\n", width, height, byte_per_pixel);
-        SPDLOG_TRACE("Start copying image {:d} ...", index + 1);
-        memcpy(scan.images + shift, data, size);
-        SPDLOG_TRACE("Complete copying image {:d} ...", index + 1);
-
-        index++;
-        scan.angles[index] = index;
-
-        //scan.images = (data::scan::scan_t::pixel_t*)data;
-    }
-
-    void connect_to_fpd()
-    {
-        fpd_status_t& status = data::g_app_stat.fpd;
-
-        status = FPD_CONNECTING;
-        if (!fpd::fp_init()) {
-            info("Failed to initialize FPD!");
-            status = FPD_ERROR;
-        }
-        else {
-            fpd::fp_set_callback_image_recieved(callback_image_recieved);
-            fpd::fp_start_acquire();
-            status = FPD_READY;
-        }
-    }
-
-    // HVG
-
-    bool hand_shake(int retry)
-    {
-        SPDLOG_INFO("Hand shake with HVG.");
-
-        hvg::context_t*& context = data::g_app_stat.hvg_context;
-
-        char msg[1024] = { 0 };
-        int count = 0;
-        while (retry-- >= 0) {
-            SPDLOG_TRACE("try - {:d}", count++);
-            int condition = 0;
-            int n = hvg::send(context, "<IFV", msg, &condition, 1000);
-            if (condition != 0) {
-                SPDLOG_DEBUG("condition changed: {:.8X}", condition);
-            }
-            if (n <= 0 || strncmp(msg, ">IFV 1", n) != 0) {
-                SPDLOG_TRACE("err: {:d} - {}: {}", n, msg, hvg::last_error_str<hvg::error_t>());
-                SPDLOG_TRACE("len = {:d}; pos = {:d}, buf = {}", context->len, context->pos, context->buf);
-                continue;
-            }
-            SPDLOG_TRACE("ok: {:d} - {}", n, msg);
-            return true;
-        }
-        return false;
-    }
-
-    bool set_hvg_exposure_parameters(float kv, float mAs, char focus, float fate, float fps, int retry)
-    {
-        SPDLOG_INFO("Set HVG exposure parameters");
-        hvg::context_t*& context = data::g_app_stat.hvg_context;
-
-        char msg[1024] = { 0 };
-        int count = 0;
-        float mA = mAs / (fate / fps / 1000);
-        //char focus = 'L';
-        while (retry-- >= 0) {
-            SPDLOG_DEBUG("try - {:d}", count++);
-            char param[1024] = { 0 };
-            sprintf(param, "0 %.1f %0.2f %.3f 0000 %c %.1f", kv, mAs, mA, focus, fps);
-            char cmd[1024];
-            char rtv[1024];
-            sprintf(cmd, "<ES3 %s", param);
-            sprintf(rtv, ">VS3 %s", param);
-            //printf("\n%s\n", rtv);
-            int condition = 0;
-            int n = hvg::send(context, cmd, msg, &condition, 5000);
-            if (condition != 0) {
-                printf("condition changed: %.8X", condition);
-            }
-            if (n <= 0 || strncmp(msg, rtv, n) != 0) {
-                SPDLOG_DEBUG("error [{:d}] {} :: n {} :: {}", hvg::last_error<hvg::error_t>(), hvg::last_error_str<hvg::error_t>(), n, msg);
-                SPDLOG_DEBUG("len = {:d}; pos = {:d}, buf = {}", context->len, context->pos, context->buf);
-                if (retry < 0) {
-                    break;
-                }
-                continue;
-            }
-            debug("ok: {:d} - {}", n, msg);
-            return true;
-        }
-        return false;
-    }
-
-    int get_hvg_status(int retry)
-    {
-        hvg::context_t*& context = data::g_app_stat.hvg_context;
-
-        char msg[1024] = { 0 };
-        while (retry-- >= 0) {
-            int condition = 0;
-            int n = hvg::send(context, "<GST", msg, &condition, 1000);
-            if (n > 0) {
-                int cond0 = 0;
-                int cond1 = 0;
-                int rtv = sscanf(msg, ">GST %x %x", &cond0, &cond1);
-                if (rtv != 2) {
-                    return -1;
-                }
-                return (cond0 << 16) | cond1;
-            }
-        }
-        return -1;
-    }
-
-    void connect_to_hvg()
-    {
-        const int port = data::g_app_stat.serial_port;
-        const int baud = data::g_app_stat.serail_baud;
-        hvg_status_t& status = data::g_app_stat.hvg;
-        hvg::context_t*& context = data::g_app_stat.hvg_context;
-
-
-        status = HVG_CONNECTING;
-        // Init RS232
-        context = hvg::open(port, baud, "8N2");
-        if (context == NULL) {
-            error(hvg::last_error_str<hvg::error_t>());
-            status = HVG_ERROR;
-        }
-        else {
-            if (!hand_shake(2)) {
-                status = HVG_ERROR;
-                return;
-            }
-
-            if (!set_hvg_exposure_parameters(100.0f, 0.5f, 'L', 300, 6, 2)) {
-                status = HVG_ERROR;
-                return;
-            }
-            status = HVG_READY;
-            debug(">GST {:.8X}", get_hvg_status());
-            return;
-        }
-    }
-
-    void setup_patient()
-    {
-
-    }
-
-    //callback_return_t
-
-    int exposure_callback(const char* msg, int len)
-    {
-        SPDLOG_DEBUG("in HVG callback");
-        if (strncmp(msg, ">EPA", 4) == 0) {
-            SPDLOG_DEBUG(msg);
-            return hvg::callback_return_t::CONTINUE;
-        }
-        else if (strncmp(msg, ">SBY", 4) == 0) {
-            SPDLOG_DEBUG("standby ...");
-            return hvg::callback_return_t::BREAK;
-        }
-        else {
-            SPDLOG_DEBUG(msg);
-            return hvg::callback_return_t::CONTINUE;
-        }
-    }
-
-    void exposure()
-    {
-        hvg::context_t*& context = data::g_app_stat.hvg_context;
-        char msg[1024];
-        int condition = 0;
-        int n = hvg::send(context, "<SXP 0 0 0", NULL, &condition, 5000);
-        data::g_app_stat.hvg = HVG_EXPOSURE;
-        n = hvg::send(context, "<SXP 1 0 1", exposure_callback);
-    }
-
-    bool is_ready_setup_patient()
-    {
-        return data::g_app_stat.hvg == HVG_READY && data::g_app_stat.fpd == FPD_READY;
-    }
-
-    bool is_exposure_ready()
-    {
-        return data::g_app_stat.hvg == HVG_READY && data::g_app_stat.fpd == FPD_READY;
-    }
-
-    void drop_hvg()
-    {
-        hvg::context_t*& context = data::g_app_stat.hvg_context;
-        if (hvg::close(context) == hvg::FAILURE) {
-            SPDLOG_ERROR("{}", hvg::last_error_str<hvg::error_t>());
-        }
-    }
-
-    void drop_fpd()
-    {
-        fpd::fp_stop_acquire();
-        fpd::Deinit();
-    }
-
-    bool init() 
-    {
         return true;
+    }
+
+    void drop(scan_t* scan)
+    {
+        if (scan->images != NULL) {
+            free(scan->images);
+        }
+    }
+
+    scan_t::pixel_t* n_image(scan_t* scan, int n)
+    {
+        if (n >= scan_t::N_IMAGES || n < 0) {
+            return NULL;
+        }
+        return scan->images + (size_t)scan->width * scan->height * sizeof(scan_t::pixel_t) * n;
+    }
+
+    bool init(app_stat_t* app) {
+        app->fpd = FPD_UNCONNECTED;
+        app->hvg = HVG_UNCONNECTED;
+        app->kv = 70.0f;
+        app->mAs = 5.0f;
+        app->cbct_mode = CUSTOM;
+        app->serial_port = 3;
+        app->serail_baud = 19200;
+        app->hvg_context = NULL;
+        app->resolution = _512X512;
+        app->slice_dist = 2.5f;
+
+        //app->scan = scan::alloc();
+        app->scan = cl::build_raw<modal::scan_t>(3072, 3072);
+
+        // websocket
+        app->socket = cl::build_raw<websocket::websocket_t>("ws://172.17.95.188:3000/ws");
+
+        // Configure and start the pipeline
+        app->camera.start();
+
+        return true;
+    }
+
+    void drop(app_stat_t* app) {
+        drop(app->scan);
+        websocket::drop(app->socket);
+    }
+
+    bool init()
+    {
+        return init(&g_app_stat);
     }
 
     void drop()
     {
-        drop_hvg();
-        drop_fpd();
+        drop(&g_app_stat);
     }
 
-    void connect_to_upstream_server()
-    {
-        websocket::websocket_t* s = data::g_app_stat.socket;
-        SPDLOG_INFO("Connecting to server: ", s->url);
-        if (websocket::connect(s)) {
-            SPDLOG_INFO("Successully connected to server.");
-        }
-        else {
-            SPDLOG_ERROR("Fail to connect to server.");
-        }
-        SPDLOG_INFO("Handshake with server...");
-        websocket::on_recv_text(s, [](const char* msg) {
-            SPDLOG_INFO("Message recieved: {}", msg);
-            }
-        );
-        websocket::send(s, "<HELLO");
+    app_stat_t& get_app_stat() {
+        return g_app_stat;
     }
 }
-#endif   //CONSOLE_MODAL_IMPLEMENTATION
+
+#endif   // CONSOLE_DATA_IMPLEMENTATION

@@ -47,7 +47,7 @@ namespace ui
 
 #define CONSOLE_DATA_IMPLEMENTATION
 #define CONSOLE_MODAL_IMPLEMENTATION
-#include "modal/modal.h"
+#include "control/control.h"
 
 #define WINDOW_IMPLEMENTATION
 #include "window.h"
@@ -269,35 +269,35 @@ namespace ui
 
         ImGui::Text("FPD status  ... ");
         ImGui::SameLine();
-        ImGui::Text(data::fpd_status_list[data::g_app_stat.fpd]);
+        ImGui::Text(modal::fpd_status_list[modal::g_app_stat.fpd]);
 
         ImGui::AlignTextToFramePadding();
         ImGui::Text("HVG status  ... ");
         ImGui::SameLine();
-        ImGui::Text(data::hvg_status_list[data::g_app_stat.hvg]);
+        ImGui::Text(modal::hvg_status_list[modal::g_app_stat.hvg]);
 
         ImGui::SameLine();
         if (ImGui::Button("Connect")) {
-            data::g_app_stat.fpd = (fpd_status_t)((data::g_app_stat.fpd + 1) % 4);
+            modal::g_app_stat.fpd = (fpd_status_t)((modal::g_app_stat.fpd + 1) % 4);
         }
 
         ImGui::Separator();
         ImGui::Text("CBCT Parameters:");
         ImGui::AlignTextToFramePadding();
-        ImGui::SliderFloat("##kV", &data::g_app_stat.kv, 50.0f, 100.0f, "%.1f");
+        ImGui::SliderFloat("##kV", &modal::g_app_stat.kv, 50.0f, 100.0f, "%.1f");
         ImGui::SameLine(0, 5);
         if (ImGui::Button("-")) {
-            data::g_app_stat.kv -= 0.1;
+            modal::g_app_stat.kv -= 0.1;
         }
         ImGui::SameLine(0, 5);
         if (ImGui::Button("+")) {
-            data::g_app_stat.kv += 0.1;
+            modal::g_app_stat.kv += 0.1;
         }
         ImGui::SameLine(); HelpMarker("50.0 ~ 100.0 kV");
-        ImGui::SliderFloat("mAs", &data::g_app_stat.mAs, 0.0f, 10.0f, "%.1f");
+        ImGui::SliderFloat("mAs", &modal::g_app_stat.mAs, 0.0f, 10.0f, "%.1f");
 
-        ImGui::Combo("CBCT Mode", (int*)&data::g_app_stat.cbct_mode,
-            data::cbct_mode_list, IM_ARRAYSIZE(data::cbct_mode_list));
+        ImGui::Combo("CBCT Mode", (int*)&modal::g_app_stat.cbct_mode,
+            modal::cbct_mode_list, IM_ARRAYSIZE(modal::cbct_mode_list));
 
         const char* traj_items[] = { "Full", "Half" };
         static int traj_item_current = 1; // If the selection isn't within 0..count, Combo won't display a preview
@@ -306,10 +306,10 @@ namespace ui
         ImGui::Separator();
         ImGui::Text("Reconstruction:");
 
-        ImGui::Combo("Reconstruction Volume", (int*)&data::g_app_stat.resolution,
-            data::resolution_list, IM_ARRAYSIZE(data::resolution_list));
+        ImGui::Combo("Reconstruction Volume", (int*)&modal::g_app_stat.resolution,
+            modal::resolution_list, IM_ARRAYSIZE(modal::resolution_list));
 
-        ImGui::SliderFloat("Slice Distance", &data::g_app_stat.slice_dist, 1.0f, 5.0f);
+        ImGui::SliderFloat("Slice Distance", &modal::g_app_stat.slice_dist, 1.0f, 5.0f);
         ImGui::Separator();
         ImGui::NewLine();
         ImGui::NewLine();
@@ -319,11 +319,11 @@ namespace ui
         ImGui::Button("Setup Patient", ImVec2(100, 50));
         ImGui::SameLine(180);
         static ImGuiButtonFlags exposure_button_flag = ImGuiButtonFlags_Disabled;
-        if (modal::is_exposure_ready()) {
+        if (control::is_exposure_ready()) {
             exposure_button_flag &= ~ImGuiButtonFlags_Disabled;
         }
         if (ImGui::ButtonEx("Exposure", ImVec2(100, 50), exposure_button_flag)) {
-            modal::exposure();
+            control::exposure();
         }
 
         ImGui::NewLine();
@@ -380,7 +380,7 @@ namespace ui
 
     bool process_camera_data(window::window_t* win)
     {
-        rs2::pipeline& p = data::g_app_stat.camera;
+        rs2::pipeline& p = modal::g_app_stat.camera;
         // Block program until frames arrive
         rs2::frameset frames = p.wait_for_frames();
 

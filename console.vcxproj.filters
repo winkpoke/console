@@ -72,7 +72,7 @@
     <ClCompile Include="src\ThirdParty\iRay\Detector.cpp">
       <Filter>iRay</Filter>
     </ClCompile>
-    <ClCompile Include="src\modal\websocket.cpp">
+    <ClCompile Include="src\control\websocket.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -194,22 +194,10 @@
     <ClInclude Include="src\ui\ui.h">
       <Filter>source\ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\data\data.h">
-      <Filter>source\data</Filter>
-    </ClInclude>
-    <ClInclude Include="src\modal\modal.h">
-      <Filter>source\modal</Filter>
-    </ClInclude>
     <ClInclude Include="src\include\cl.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\modal\hvg.h">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui\window.h">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="src\modal\flat_panel.h">
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="src\include\stb_image.h">
@@ -218,14 +206,26 @@
     <ClInclude Include="src\include\stb_image_resize.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\modal\sil.h">
+    <ClInclude Include="src\control\flat_panel.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\modal\websocket.h">
+    <ClInclude Include="src\control\hvg.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\modal\ops.h">
+    <ClInclude Include="src\control\ops.h">
       <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\control\sil.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\control\websocket.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\control\control.h">
+      <Filter>source\modal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\modal\modal.h">
+      <Filter>source\data</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

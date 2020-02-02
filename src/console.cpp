@@ -53,10 +53,10 @@ int main(int, char**)
     SPDLOG_INFO("CBCT Console starting ...");
 
     //// CBCT init
-    data::init();
-    std::thread connect_to_fpd(modal::connect_to_fpd);
+    modal::init();
+    std::thread connect_to_fpd(control::connect_to_fpd);
     //std::thread connect_to_hvg(modal::connect_to_hvg);
-    modal::connect_to_upstream_server();
+    control::connect_to_upstream_server();
 
     auto win = cl::build_raw<window::window_t>(300, 300, 1024, 768);
 
@@ -74,8 +74,8 @@ int main(int, char**)
     connect_to_fpd.join();
     ////connect_to_hvg.join();
 
+    control::drop();
     modal::drop();
-    data::drop();
 
     return 0;
 }
