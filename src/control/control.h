@@ -293,12 +293,11 @@ namespace control {
     {
         websocket::websocket_t* s = modal::g_app_stat.socket;
         SPDLOG_INFO("Connecting to server: ", s->url);
-        if (websocket::connect(s)) {
-            SPDLOG_INFO("Successully connected to server.");
+        if (!websocket::connect(s)) {
+            SPDLOG_ERROR("Fail to connect to the server.");
+            return;
         }
-        else {
-            SPDLOG_ERROR("Fail to connect to server.");
-        }
+        SPDLOG_INFO("Successully connected to the server.");
         SPDLOG_INFO("Handshake with server...");
         websocket::on_recv_text(s, [](const char* msg) {
             SPDLOG_INFO("Message recieved: {}", msg);

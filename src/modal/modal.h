@@ -95,6 +95,9 @@ namespace modal {
 
     static app_stat_t g_app_stat;
 
+    bool save();
+    bool load();
+
     bool init();
     void drop();
 }

@@ -246,6 +246,8 @@
     <ClInclude Include="src\ThirdParty\iRay\IRayInclude.h" />
     <ClInclude Include="src\ThirdParty\iRay\Util.h" />
     <ClInclude Include="src\ThirdParty\RS-232\rs232.h" />
+    <ClInclude Include="src\ui\app.h" />
+    <ClInclude Include="src\ui\log.h" />
     <ClInclude Include="src\ui\ui.h" />
     <ClInclude Include="src\ui\image.h" />
     <ClInclude Include="src\ui\window.h" />

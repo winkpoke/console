@@ -227,5 +227,11 @@
     <ClInclude Include="src\modal\modal.h">
       <Filter>source\data</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\log.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\app.h">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

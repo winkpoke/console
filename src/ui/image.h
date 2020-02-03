@@ -4,7 +4,7 @@
 #include "control/sil.h"
 
 
-namespace ui { namespace image {
+namespace ui { 
     //template <class T>
     //struct mono_image_window {
     //    std::shared_ptr<sil::image_t<T>> image;
@@ -76,4 +76,4 @@ namespace ui { namespace image {
         ImGui::Image((void*)(intptr_t)widget->texture, ImVec2(widget->width, widget->height)/*, ImVec2(0, 0), ImVec2(0.5, 0.5)*/);
     }
 
-}}  // namespace ui::image
+}  // namespace ui

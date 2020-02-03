@@ -4,6 +4,7 @@
 #include <memory>
 #include <array>
 #include <list>
+#include <functional>
 
 #include "cl.h"
 
@@ -28,30 +29,32 @@
 // Include glfw3.h after our OpenGL definitions
 #include <GLFW/glfw3.h>
 
-namespace window {
+namespace ui {
     using namespace cl;
     using namespace std;
 
     struct window_t {
-        typedef bool (*render_fun_t)(window_t*);
+        //typedef bool (*render_fun_t)(window_t*);
+
+        using render_fun = std::function<bool(window_t*)>;
+        using key_event_fun = std::function<bool(window_t*, int k)>;
         
         GLFWwindow* wnd;
         GLFWmonitor* monitor;
         int x, y, w, h;
         array<float, 4> background_color;
-        list<render_fun_t> renders;
+        list<render_fun> renders;
+        list<key_event_fun> key_events;
     };
     bool init(window_t* win, int x, int y, int w, int h, array<float, 4> background_color = { 0.45f, 0.55f, 0.60f, 1.00f });
     void drop(window_t* win);
 
-    template <class T>
-    bool is_fullscreen(T* win)
+    bool is_fullscreen(window_t* win)
     {
         return glfwGetWindowMonitor(win->wnd) != nullptr;
     }
 
-    template <class T>
-    void set_fullscreen(T* win, bool fullscreen)
+    void set_fullscreen(window_t* win, bool fullscreen)
     {
         if (is_fullscreen(win) == fullscreen)
             return;
@@ -77,14 +80,17 @@ namespace window {
         //_updateViewport = true;
     }
 
-
+    void process_event(window_t* win);
+    void on_key_event(window_t* win, int key);
+    void new_frame(window_t* win);
+    void draw(window_t* win);
 }
 
 #endif // _INCLUDE_WINDOW_H
 
 #ifdef WINDOW_IMPLEMENTATION
 
-namespace window {
+namespace ui {
     static void glfw_error_callback(int error, const char* description)
     {
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -92,8 +98,6 @@ namespace window {
 
     bool init(window_t* win, int x, int y, int w, int h, array<float, 4> background_color)
     {
-        // window_t* win = this;
-
         if (!win) {
             return false;
         }
@@ -105,7 +109,8 @@ namespace window {
 
         win->background_color = background_color;
 
-        new (&win->renders)(list<window_t::render_fun_t>);
+        new(&win->renders)(list<window_t::render_fun>);
+        new(&win->key_events)(list<window_t::key_event_fun>);
 
         // Setup window
         glfwSetErrorCallback(glfw_error_callback);
@@ -129,7 +134,7 @@ namespace window {
         //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
 
-            // Create window with graphics context
+        // Create window with graphics context
         win->wnd = glfwCreateWindow(w, h, "Techtron CBCT Console", NULL, NULL);
         //GLFWwindow* window = glfwCreateWindow(1920, 1080, "Dear ImGui GLFW+OpenGL3 example", glfwGetPrimaryMonitor(), NULL);
         if (win->wnd == NULL)
@@ -187,27 +192,14 @@ namespace window {
 
     void render(window_t* win)
     {
-        if (!win) {
-            return;
-        }
-        if (!win->wnd) {
+        if (!win || !win->wnd) {
             return;
         }
 
         // Main loop
         while (!glfwWindowShouldClose(win->wnd))
         {
-            // Poll and handle events (inputs, window resize, etc.)
-            // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-            // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-            // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-            // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-            glfwPollEvents();
-
-            // Start the Dear ImGui frame
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
+            new_frame(win);
 
             // Custom renders
             for (auto r = win->renders.crbegin(); r != win->renders.crend(); ++r) {
@@ -216,27 +208,52 @@ namespace window {
                 }
             }
 
-            static bool toggle_fullscreen = true;
-            ImGuiIO& io = ImGui::GetIO(); (void)io;
-            for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) {
-                if (ImGui::IsKeyPressed(i) && i == 0x12B) {
-                    window::set_fullscreen(win, toggle_fullscreen);
-                    toggle_fullscreen = !toggle_fullscreen;
-                }
-            }
-
-            // Rendering
-            ImGui::Render();
-            int display_w, display_h;
-            glfwGetFramebufferSize(win->wnd, &display_w, &display_h);
-            glViewport(0, 0, display_w, display_h);
-            glClearColor(win->background_color[0], win->background_color[1], win->background_color[2], win->background_color[3]);
-            glClear(GL_COLOR_BUFFER_BIT);
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-            glfwSwapBuffers(win->wnd);
+            process_event(win);
+            draw(win);
         }
     }
+
+    void process_event(window_t* win)
+    {
+        glfwPollEvents();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) {
+            on_key_event(win, i);
+        }
+    }
+
+    void on_key_event(window_t* win, int key)
+    {
+        for (auto r = win->key_events.crbegin(); r != win->key_events.crend(); ++r) {
+            if ((*r)(win, key) == false) {
+                break;
+            }
+        }
+    }
+
+    void new_frame(window_t* win)
+    {
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+    }
+
+    void draw(window_t* win)
+    {
+        // Rendering
+        ImGui::Render();
+        int display_w, display_h;
+        glfwGetFramebufferSize(win->wnd, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(win->background_color[0], win->background_color[1], win->background_color[2], win->background_color[3]);
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        glfwSwapBuffers(win->wnd);
+    }
+
+    //void 
 }
 
 #endif // WINDOW_IMPLEMENTATION

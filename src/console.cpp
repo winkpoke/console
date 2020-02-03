@@ -56,23 +56,28 @@ int main(int, char**)
     modal::init();
     std::thread connect_to_fpd(control::connect_to_fpd);
     //std::thread connect_to_hvg(modal::connect_to_hvg);
-    control::connect_to_upstream_server();
+    std::thread connect_to_upstream_server(control::connect_to_upstream_server);
 
-    auto win = cl::build_raw<window::window_t>(300, 300, 1024, 768);
+    //auto win = cl::build_raw<ui::window_t>(300, 300, 1024, 768);
 
-    if (win) {
-        ui::init(win);
-        win->renders.push_back(&ui::render_status_window);
-        win->renders.push_back(&ui::render_maintenance_window);
-        win->renders.push_back(&ui::render_image_window);
-        win->renders.push_back(&ui::render_patient_info_window);
-        win->renders.push_back(&ui::process_camera_data);
-        ui::render(win);
-        window::drop(win);
-    }
+    //if (win) {
+    //    ui::init(win);
+    //    //win->renders.push_back(&ui::render_status_window);
+    //    //win->renders.push_back(&ui::render_maintenance_window);
+    //    //win->renders.push_back(&ui::render_image_window);
+    //    //win->renders.push_back(&ui::render_patient_info_window);
+    //    //win->renders.push_back(&ui::process_camera_data);
+    //    ui::render(win);
+    //    drop(win);
+    //}
+
+    auto app = cl::build_unique<ui::app_t>(ui::drop);
+
+    run(app.get());
 
     connect_to_fpd.join();
     ////connect_to_hvg.join();
+    connect_to_upstream_server.join();
 
     control::drop();
     modal::drop();
