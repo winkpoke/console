@@ -84,6 +84,7 @@ namespace ui {
     void on_key_event(window_t* win, int key);
     void new_frame(window_t* win);
     void draw(window_t* win);
+    bool is_close(window_t* win);
 }
 
 #endif // _INCLUDE_WINDOW_H
@@ -190,27 +191,27 @@ namespace ui {
         }
     }
 
-    void render(window_t* win)
+    bool is_close(window_t* win)
     {
         if (!win || !win->wnd) {
+            return true;
+        }
+        return glfwWindowShouldClose(win->wnd);
+    }
+
+    void render(window_t* win)
+    {
+        if (!win) {
             return;
         }
 
-        // Main loop
-        while (!glfwWindowShouldClose(win->wnd))
-        {
-            new_frame(win);
-
-            // Custom renders
-            for (auto r = win->renders.crbegin(); r != win->renders.crend(); ++r) {
-                if ((*r)(win) == false) {
-                    break;
-                }
+        // Custom renders
+        for (auto r = win->renders.crbegin(); r != win->renders.crend(); ++r) {
+            if ((*r)(win) == false) {
+                break;
             }
-
-            process_event(win);
-            draw(win);
         }
+
     }
 
     void process_event(window_t* win)

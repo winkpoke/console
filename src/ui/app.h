@@ -136,7 +136,16 @@ namespace ui {
 
     void run(app_t* app)
     {
-        render(app->win);
+        // Main loop
+        while (!is_close(app->win))
+        {
+            new_frame(app->win);
+
+            render(app->win);
+
+            process_event(app->win);
+            draw(app->win);
+        }
     }
 
     void update(app_t* app)
