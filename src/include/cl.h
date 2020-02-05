@@ -1,9 +1,14 @@
-#pragma once
+#ifndef _COMMON_LIBRARY_H_
+#define _COMMON_LIBRARY_H_
 
 #include <memory>
 #include <array>
 #include <string>
 #include <map>
+#include <list>
+#include <functional>
+#include <thread>
+#include <future>
 
 namespace cl {
     // type define 
@@ -96,21 +101,61 @@ namespace cl {
         return std::shared_ptr<T>(p, drop);
     }
 
-    //template <class T, class... Args>
-    //std::unique_ptr<T, void(*)(T*)> build_unique(Args... args)
-    //{
-    //    auto p = build_raw<T>(args...);
-    //    return std::unique_ptr<T, void(*)(T*)>(p, drop);
-    //}
+    template <class T, class... Args>
+    std::unique_ptr<T, std::function<void(T*)>> build_unique(std::function<void(T*)> drop, Args... args)
+    {
+        auto p = build_raw<T>(args...);
+        return std::unique_ptr<T, decltype(drop)>(p, drop);
+    }
 
-    //template <class T, class... Args>
-    //std::shared_ptr<T> build_shared(Args... args)
-    //{
-    //    auto p = build_raw<T>(args...);
-    //    return std::shared_ptr<T>(p, drop);
-    //}
+    template <class T, class... Args>
+    std::shared_ptr<T> build_shared(std::function<void(T*)> drop, Args... args)
+    {
+        auto p = build_raw<T>(args...);
+        return std::shared_ptr<T>(p, drop);
+    }
+
+    template <class T>
+    std::unique_ptr<T, void(*)(T*)> build_unique(void(*drop)(T*), T* p)
+    {
+        assert(p);
+        return std::unique_ptr<T, decltype(drop)>(p, drop);
+    }
+
+    template <class T>
+    std::shared_ptr<T> build_shared(void(*drop)(T*), T* p)
+    {
+        assert(p);
+        return std::shared_ptr<T>(p, drop);
+    }
+    
+    template <class T>
+    std::unique_ptr<T, std::function<void(T*)>> build_unique(std::function<void(T*)> drop, T* p)
+    {
+        assert(p);
+        return std::unique_ptr<T, decltype(drop)>(p, drop);
+    }
+
+    template <class T>
+    std::shared_ptr<T> build_shared(std::function<void(T*)> drop, T* p)
+    {
+        assert(p);
+        return std::shared_ptr<T>(p, drop);
+    }
+
+    template <class... Args>
+    bool retry(int n, std::function<bool (Args...)> f, Args... args)
+    {
+        while (n-- > 0) {
+            if (f(args)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 namespace cl { namespace math {
     
 } } // namespace cl::math
+#endif // !_COMMON_LIBRARY_H_
