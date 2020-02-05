@@ -233,6 +233,9 @@
     <ClInclude Include="src\include\def.h">
       <Filter>header</Filter>
     </ClInclude>
+    <ClInclude Include="src\modal\scan.h">
+      <Filter>header</Filter>
+    </ClInclude>
     <ClInclude Include="src\ui\renders\render_status.hxx">
       <Filter>header</Filter>
     </ClInclude>

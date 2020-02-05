@@ -7,28 +7,12 @@
 
 #include "def.h"
 #include "control/websocket.h"
+#include "scan.hxx"
 
 
 namespace hvg { struct context_t; }
 
 namespace modal {
-    struct scan_t {
-        typedef unsigned short pixel_t;
-        static const int N_IMAGES = 360;
-
-        int id;
-        int width;
-        int height;
-        pixel_t* images;
-        float angles[N_IMAGES];           // in degree
-        int index;
-    };
-
-    bool init(scan_t* scan, int width, int height);
-    //scan_t* alloc();
-    void drop(scan_t* scan);
-    scan_t::pixel_t* n_image(scan_t* scan, int n);
-
     const char* fpd_status_list[] = { "unconnected", "connecting", "ready", "error" };
     const char* hvg_status_list[] = { "unconnected", "connecting", "ready", "exposure", "error" };
     const char* cbct_mode_list[] = { "Head", "Lung", "Abdominal", "Custom" };
@@ -77,35 +61,6 @@ namespace modal {
 #define CONSOLE_MODAL_IMPLEMENTED
 
 namespace modal {
-    bool init(scan_t* scan, int width, int height)
-    {
-        scan->index = -1;
-        scan->width = width;
-        scan->height = height;
-        int xx = sizeof(int);
-        scan->images = (scan_t::pixel_t*)calloc(scan->N_IMAGES, scan->width * scan->height * sizeof(scan_t::pixel_t));
-        if (scan->images == NULL) {
-            // error handling
-            return false;
-        }
-        return true;
-    }
-
-    void drop(scan_t* scan)
-    {
-        if (scan->images != NULL) {
-            free(scan->images);
-        }
-    }
-
-    scan_t::pixel_t* n_image(scan_t* scan, int n)
-    {
-        if (n >= scan_t::N_IMAGES || n < 0) {
-            return NULL;
-        }
-        return scan->images + (size_t)scan->width * scan->height * sizeof(scan_t::pixel_t) * n;
-    }
-
     bool init(app_stat_t* app) {
         app->fpd = FPD_UNCONNECTED;
         app->hvg = HVG_UNCONNECTED;

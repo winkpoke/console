@@ -15,3 +15,5 @@
 #define CONSOLE_CONTROL_IMPLEMENTATION
 #include "control/control.h"
 
+#define MODAL_SCAN_IMPLEMENTATION
+#include "modal/scan.hxx"
