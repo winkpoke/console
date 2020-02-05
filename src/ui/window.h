@@ -49,11 +49,24 @@ namespace ui {
     bool init(window_t* win, int x, int y, int w, int h, array<float, 4> background_color = { 0.45f, 0.55f, 0.60f, 1.00f });
     void drop(window_t* win);
 
-    bool is_fullscreen(window_t* win)
-    {
-        return glfwGetWindowMonitor(win->wnd) != nullptr;
-    }
+    void render(window_t* win);
+    bool is_fullscreen(window_t* win);
 
+    void set_fullscreen(window_t* win, bool fullscreen);
+
+    void process_event(window_t* win);
+    void on_key_event(window_t* win, int key);
+    void new_frame(window_t* win);
+    void draw(window_t* win);
+    bool is_close(window_t* win);
+}
+
+#endif // _INCLUDE_WINDOW_H
+
+#ifdef WINDOW_IMPLEMENTATION
+#ifndef WINDOW_IMPLEMENTED
+#define WINDOW_IMPLEMENTED
+namespace ui {
     void set_fullscreen(window_t* win, bool fullscreen)
     {
         if (is_fullscreen(win) == fullscreen)
@@ -80,18 +93,11 @@ namespace ui {
         //_updateViewport = true;
     }
 
-    void process_event(window_t* win);
-    void on_key_event(window_t* win, int key);
-    void new_frame(window_t* win);
-    void draw(window_t* win);
-    bool is_close(window_t* win);
-}
+    bool is_fullscreen(window_t* win)
+    {
+        return glfwGetWindowMonitor(win->wnd) != nullptr;
+    }
 
-#endif // _INCLUDE_WINDOW_H
-
-#ifdef WINDOW_IMPLEMENTATION
-
-namespace ui {
     static void glfw_error_callback(int error, const char* description)
     {
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -256,5 +262,5 @@ namespace ui {
 
     //void 
 }
-
+#endif // !WINDOW_IMPLEMENTED
 #endif // WINDOW_IMPLEMENTATION

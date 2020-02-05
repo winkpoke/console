@@ -1,5 +1,5 @@
-#ifndef CONSOLE_INCLUDE_MODAL_H
-#define CONSOLE_INCLUDE_MODAL_H
+#ifndef CONSOLE_INCLUDE_CONTROL_H
+#define CONSOLE_INCLUDE_CONTROL_H
 
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_sinks.h"
@@ -46,9 +46,9 @@ namespace control {
     bool init();
     void drop();
 }
-#endif   // CONSOLE_INCLUDE_MODAL_H
+#endif   // CONSOLE_INCLUDE_CONTROL_H
 
-#ifdef CONSOLE_MODAL_IMPLEMENTATION
+#ifdef CONSOLE_CONTROL_IMPLEMENTATION
 namespace control {
     // FPD
     void callback_image_recieved(int width, int height, int byte_per_pixel, void* data)
@@ -306,4 +306,4 @@ namespace control {
         websocket::send(s, "<HELLO");
     }
 }
-#endif   //CONSOLE_MODAL_IMPLEMENTATION
+#endif   //CONSOLE_CONTROL_IMPLEMENTATION

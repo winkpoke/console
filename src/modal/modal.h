@@ -1,45 +1,13 @@
-#ifndef CONSOLE_INCLUDE_DATA_H
-#define CONSOLE_INCLUDE_DATA_H
+#ifndef CONSOLE_INCLUDE_MODAL_H
+#define CONSOLE_INCLUDE_MODAL_H
 
 #include <memory>
 
 #include <librealsense2/rs.hpp>
-#include "websocket.h"
 
-enum error_t {
-    OK,
-    ERR_STATUS
-};
+#include "def.h"
+#include "control/websocket.h"
 
-enum fpd_status_t {
-    FPD_UNCONNECTED,
-    FPD_CONNECTING,
-    FPD_READY,
-    FPD_ERROR
-};
-
-enum hvg_status_t {
-    HVG_UNCONNECTED,
-    HVG_CONNECTING,
-    HVG_READY,
-    HVG_EXPOSURE,
-    HVG_ERROR
-};
-
-enum cbct_mode_t {
-    HEAD,
-    LUNG,
-    ABDOMINAL,
-    CUSTOM
-};
-
-enum resolution_t {
-    _128X128,
-    _256X256,
-    _384X384,
-    _512X512,
-    _768X768
-};
 
 namespace hvg { struct context_t; }
 
@@ -102,9 +70,9 @@ namespace modal {
     void drop();
 }
 
-#endif    // CONSOLE_INCLUDE_DATA_H
+#endif    // CONSOLE_INCLUDE_MODAL_H
 
-#ifdef CONSOLE_DATA_IMPLEMENTATION
+#ifdef CONSOLE_MODAL_IMPLEMENTATION
 namespace modal {
     bool init(scan_t* scan, int width, int height)
     {
@@ -179,4 +147,4 @@ namespace modal {
     }
 }
 
-#endif   // CONSOLE_DATA_IMPLEMENTATION
+#endif   // CONSOLE_MODAL_IMPLEMENTATION

@@ -1,10 +1,12 @@
+#ifndef _UI_IMAGE_H_
+#define _UI_IMAGE_H_
 #include <memory>
 #include <GLFW/glfw3.h>
 
 #include "control/sil.h"
 
 
-namespace ui { 
+namespace ui {
     //template <class T>
     //struct mono_image_window {
     //    std::shared_ptr<sil::image_t<T>> image;
@@ -28,6 +30,19 @@ namespace ui {
     };
 
     template <class T>
+    bool init(image_view<T>* widget, size_t width, size_t height, std::shared_ptr<sil::image_t<T>> image);
+
+    template <class T>
+    void drop(image_view<T>* widget);
+
+    template <class T>
+    void render(image_view<T>* widget);
+
+}  // namespace ui  
+
+// Implementation
+namespace ui {
+    template <class T>
     static bool init(image_view<T>* widget, size_t width, size_t height, std::shared_ptr<sil::image_t<T>> image)
     {
         if (!widget) {
@@ -46,7 +61,10 @@ namespace ui {
     }
 
     template <class T>
-    static void drop(image_view<T>* widget) {}
+    static void drop(image_view<T>* widget)
+    {
+    
+    }
 
     template <class T>
     void render(image_view<T>* widget)
@@ -57,7 +75,8 @@ namespace ui {
                 if (strcmp(typeid(T).name(), "unsigned short") == 0) {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, widget->image->width, widget->image->height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, widget->image->data);
                 }
-            } else if (widget->image->channel == 4) {
+            }
+            else if (widget->image->channel == 4) {
                 if (strcmp(typeid(T).name(), "unsigned char") == 0) {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widget->image->width, widget->image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, widget->image->data);
                 }
@@ -75,5 +94,6 @@ namespace ui {
         }
         ImGui::Image((void*)(intptr_t)widget->texture, ImVec2(widget->width, widget->height)/*, ImVec2(0, 0), ImVec2(0.5, 0.5)*/);
     }
+}
 
-}  // namespace ui
+#endif // !_UI_IMAGE_H_

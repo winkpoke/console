@@ -75,7 +75,7 @@
     <ClCompile Include="src\control\websocket.cpp">
       <Filter>source</Filter>
     </ClCompile>
-  </ItemGroup>
+      </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ThirdParty\imgui\imconfig.h">
       <Filter>imgui</Filter>
@@ -231,6 +231,21 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\app.h">
+      <Filter>header</Filter>
+    </ClInclude> 
+  <ClInclude Include="src\include\def.h">
+      <Filter>header</Filter>
+    </ClInclude>   
+    <ClInclude Include="src\ui\renders\render_status.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\renders\render_patient_info.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\renders\render_maintenance.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\renders\render_image.hxx">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

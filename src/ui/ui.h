@@ -47,12 +47,11 @@ namespace ui
 #endif // CONSOLE_INCLUDE_UI_H
 
 #ifdef CONSOLE_UI_IMPLEMENTATION
-
-#define CONSOLE_DATA_IMPLEMENTATION
-#define CONSOLE_MODAL_IMPLEMENTATION
+//
+//#define CONSOLE_DATA_IMPLEMENTATION
+//#define CONSOLE_MODAL_IMPLEMENTATION
 #include "control/control.h"
 
-#define WINDOW_IMPLEMENTATION
 #include "window.h"
 
 #include "ui/app.h"

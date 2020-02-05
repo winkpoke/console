@@ -20,8 +20,12 @@ namespace ui {
     void add_log(log_t* log, const char* fmt, ...) IM_FMTARGS(2);
     void draw(log_t* log, const char* title, bool* p_open = NULL);
 }
+#endif // !_UI_LOG_H_
 
 #ifdef UI_LOG_IMPLEMENTATION
+#ifndef UI_LOG_IMPLEMENTED
+#define UI_LOG_IMPLEMENTED
+
 namespace ui {
     void clear(log_t* log)
     {
@@ -142,5 +146,5 @@ namespace ui {
     }
 }
 
+#endif // !UI_LOG_IMPLEMENTED
 #endif // UI_LOG_IMPLEMENTATION
-#endif // _UI_LOG_H_

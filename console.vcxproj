@@ -202,6 +202,7 @@
   <ItemGroup>
     <ClInclude Include="src\include\cl.h" />
     <ClInclude Include="src\console.h" />
+    <ClInclude Include="src\include\def.h" />
     <ClInclude Include="src\modal\modal.h" />
     <ClInclude Include="src\control\flat_panel.h" />
     <ClInclude Include="src\control\hvg.h" />
@@ -247,7 +248,11 @@
     <ClInclude Include="src\ThirdParty\iRay\Util.h" />
     <ClInclude Include="src\ThirdParty\RS-232\rs232.h" />
     <ClInclude Include="src\ui\app.h" />
-    <ClInclude Include="src\ui\log.h" />
+    <ClInclude Include="src\ui\log.h" />    
+    <ClInclude Include="src\ui\renders\render_image.hxx" />
+    <ClInclude Include="src\ui\renders\render_maintenance.hxx" />
+    <ClInclude Include="src\ui\renders\render_patient_info.hxx" />
+    <ClInclude Include="src\ui\renders\render_status.hxx" />
     <ClInclude Include="src\ui\ui.h" />
     <ClInclude Include="src\ui\image.h" />
     <ClInclude Include="src\ui\window.h" />

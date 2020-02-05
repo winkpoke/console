@@ -1,6 +1,9 @@
 #ifndef CONSOLE_UI_APP_H
 #define CONSOLE_UI_APP_H
 
+#include "def.h"
+#include "ui/image.h"
+
 namespace ui {
     static int w, h;
     static unsigned char* img = stbi_load("resources\\images\\img.jpg", &w, &h, NULL, 4);
@@ -11,42 +14,6 @@ namespace ui {
     image_view<unsigned char> g_image_widget[4];
 
     image_view<cl::u8> g_image_patient;
-
-    //enum error_t {
-    //    OK,
-    //    ERR_STATUS
-    //};
-
-    //enum fpd_status_t {
-    //    FPD_UNCONNECTED,
-    //    FPD_CONNECTING,
-    //    FPD_READY,
-    //    FPD_ERROR
-    //};
-
-    //enum hvg_status_t {
-    //    HVG_UNCONNECTED,
-    //    HVG_CONNECTING,
-    //    HVG_READY,
-    //    HVG_EXPOSURE,
-    //    HVG_ERROR
-    //};
-
-    //enum cbct_mode_t {
-    //    HEAD,
-    //    LUNG,
-    //    ABDOMINAL,
-    //    CUSTOM
-    //};
-
-    //enum resolution_t {
-    //    _128X128,
-    //    _256X256,
-    //    _384X384,
-    //    _512X512,
-    //    _768X768
-    //};
-
 
     struct app_t {
         // FPD 
@@ -70,7 +37,63 @@ namespace ui {
     bool render_patient_info_window(app_t* app);
     bool render_status_window(app_t* app);
 
-    bool init(app_t* app) 
+    bool init(app_t* app);
+    
+    void drop(app_t* app);
+
+    void run(app_t* app);
+
+    void update(app_t* app);
+
+    bool render_maintenance_window(app_t* app);
+
+    static void HelpMarker(const char* desc);
+
+    bool render_status_window(app_t* app);
+
+    bool render_image_window(app_t* app);
+
+    bool render_patient_info_window(app_t* app);
+
+    //bool process_camera_data(app_t* app)
+    //{
+    //    rs2::pipeline& p = app->camera;
+    //    // Block program until frames arrive
+    //    rs2::frameset frames = p.wait_for_frames();
+
+    //    // Try to get a frame of a depth image
+    //    rs2::depth_frame depth = frames.get_depth_frame();
+
+    //    // Get the depth frame's dimensions
+    //    float width = depth.get_width();
+    //    float height = depth.get_height();
+
+    //    // Query the distance from the camera to the object in the center of the image
+    //    float dist_to_center = depth.get_distance(width / 2, height / 2);
+
+    //    // Print the distance
+    //    std::cout << "The camera is facing an object " << dist_to_center << " meters away \r";
+    //    // printf("The camera is facing an object %0.4f meters away \r", dist_to_center);
+
+    //    return true;
+    //}
+
+} //namespace ui
+
+#endif // CONSOLE_UI_APP_H
+
+#ifdef CONSOLE_UI_APP_IMPLEMENTATION
+#ifndef CONSOLE_UI_APP_IMPLEMENTED
+#define CONSOLE_UI_APP_IMPLEMENTED
+
+#include "ui/window.h"
+#include "ui/log.h"
+#include "modal/modal.h"
+#include "control/control.h"
+
+namespace ui
+{
+    bool init(app_t* app)
     {
         app->fpd = modal::g_app_stat.fpd;
         app->hvg = modal::g_app_stat.hvg;
@@ -112,7 +135,7 @@ namespace ui {
                 toggle_fullscreen = !toggle_fullscreen;
             }
             return true;
-        });
+            });
 
         // renders
         app->win->renders.push_back([=](window_t*) {
@@ -122,12 +145,12 @@ namespace ui {
             render_maintenance_window(app);
             //win->renders.push_back(&ui::process_camera_data);
             return true;
-        });
+            });
 
         return true;
     }
-    
-    void drop(app_t* app) 
+
+    void drop(app_t* app)
     {
         if (app && app->win) {
             drop(app->win);
@@ -339,30 +362,6 @@ namespace ui {
         ImGui::End();
         return true;
     }
-
-    //bool process_camera_data(app_t* app)
-    //{
-    //    rs2::pipeline& p = app->camera;
-    //    // Block program until frames arrive
-    //    rs2::frameset frames = p.wait_for_frames();
-
-    //    // Try to get a frame of a depth image
-    //    rs2::depth_frame depth = frames.get_depth_frame();
-
-    //    // Get the depth frame's dimensions
-    //    float width = depth.get_width();
-    //    float height = depth.get_height();
-
-    //    // Query the distance from the camera to the object in the center of the image
-    //    float dist_to_center = depth.get_distance(width / 2, height / 2);
-
-    //    // Print the distance
-    //    std::cout << "The camera is facing an object " << dist_to_center << " meters away \r";
-    //    // printf("The camera is facing an object %0.4f meters away \r", dist_to_center);
-
-    //    return true;
-    //}
-
-} //namespace ui
-
-#endif // CONSOLE_UI_APP_H
+}
+#endif // !CONSOLE_UI_APP_IMPLEMENTED
+#endif // CONSOLE_UI_APP_IMPLEMENTATION
