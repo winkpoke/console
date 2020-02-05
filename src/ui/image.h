@@ -3,7 +3,7 @@
 #include <memory>
 #include <GLFW/glfw3.h>
 
-#include "control/sil.h"
+#include "sil.h"
 
 
 namespace ui {

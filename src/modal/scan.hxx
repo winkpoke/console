@@ -9,9 +9,9 @@ namespace modal {
         int id;
         int width;
         int height;
-        pixel_t* images;
         float angles[N_IMAGES];           // in degree
         int index;
+        pixel_t* images;
     };
 
     bool init(scan_t* scan, int width, int height);

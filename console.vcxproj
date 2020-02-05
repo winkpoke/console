@@ -220,9 +220,10 @@
     <ClInclude Include="src\include\spdlog\version.h" />
     <ClInclude Include="src\control\control.h" />
     <ClInclude Include="src\control\ops.h" />
-    <ClInclude Include="src\control\sil.h" />
+    <ClInclude Include="src\include\sil.h" />
     <ClInclude Include="src\include\stb_image.h" />
     <ClInclude Include="src\include\stb_image_resize.h" />
+    <ClInclude Include="src\modal\patient.hxx" />
     <ClInclude Include="src\modal\scan.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.h" />
