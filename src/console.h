@@ -20,3 +20,6 @@
 
 #define MODAL_PATIENT_IMPLEMENTATION
 #include "modal/patient.hxx"
+
+#define FLAT_PANEL_IMPLEMENTATION
+#include "common/flat_panel.hxx"

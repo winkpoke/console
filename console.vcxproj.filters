@@ -206,9 +206,6 @@
     <ClInclude Include="src\include\stb_image_resize.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\control\flat_panel.h">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\control\hvg.h">
       <Filter>header</Filter>
     </ClInclude>
@@ -252,6 +249,12 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="src\modal\patient.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\flat_panel.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\modal\scan.hxx">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

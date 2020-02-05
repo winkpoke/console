@@ -200,11 +200,11 @@
     <ClCompile Include="src\control\websocket.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\common\flat_panel.hxx" />
     <ClInclude Include="src\include\cl.h" />
     <ClInclude Include="src\console.h" />
     <ClInclude Include="src\include\def.h" />
     <ClInclude Include="src\modal\modal.h" />
-    <ClInclude Include="src\control\flat_panel.h" />
     <ClInclude Include="src\control\hvg.h" />
     <ClInclude Include="src\include\spdlog\async.h" />
     <ClInclude Include="src\include\spdlog\async_logger-inl.h" />
@@ -225,6 +225,7 @@
     <ClInclude Include="src\include\stb_image_resize.h" />
     <ClInclude Include="src\modal\patient.hxx" />
     <ClInclude Include="src\modal\scan.h" />
+    <ClInclude Include="src\modal\scan.hxx" />
     <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\gl3w.h" />

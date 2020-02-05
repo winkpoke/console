@@ -1,16 +1,11 @@
-//#pragma once
-
-// logging
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_sinks.h"
+#ifndef _FLAT_PANEL_INCLUDE_H_
+#define _FLAT_PANEL_INCLUDE_H_
 
 #include "DisplayProgressbar.h"
 #include "Detector.h"
 #include "IRayImage.h"
 
 namespace fpd {
-    using namespace spdlog;
-
     struct ApplicatioMode
     {
         int Index;
@@ -23,6 +18,46 @@ namespace fpd {
 
     static CDetector* gs_pDetInstance = NULL;
     static int s_nAcquireTime = 5000;
+
+    int Initializte();
+    void Deinit();
+
+    typedef void (*FP_CALLBACK_IMAGE_RECIEVED)(int width, int height, int byte_per_pixel, void* data);
+
+    void SDKCallbackHandler(int nDetectorID, int nEventID, int nEventLevel,
+        const char* pszMsg, int nParam1, int nParam2, int nPtrParamLen, void* pParam);
+
+    bool fp_init();
+
+    FPDRESULT fp_start_acquire();
+
+    FPDRESULT fp_stop_acquire();
+
+    void fp_set_callback_image_recieved(FP_CALLBACK_IMAGE_RECIEVED f);
+
+    ApplicatioMode GetAppModeAttr();
+
+    int Initializte();
+
+
+    void Deinit();
+}
+#endif // !_FLAT_PANEL_INCLUDE_H_
+
+#ifdef FLAT_PANEL_IMPLEMENTATION
+#ifndef FLAT_PANEL_IMPLEMENTED
+//#pragma once
+
+// logging
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_sinks.h"
+
+#include "DisplayProgressbar.h"
+#include "Detector.h"
+#include "IRayImage.h"
+
+namespace fpd {
+    using namespace spdlog;
 
     int Initializte();
     void Deinit();
@@ -167,3 +202,5 @@ namespace fpd {
         }
     }
 }
+#endif // !FLAT_PANEL_IMPLEMENTED
+#endif // FLAT_PANEL_IMPLEMENTATION

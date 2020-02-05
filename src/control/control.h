@@ -6,7 +6,7 @@
 
 
 #include "hvg.h"
-#include "flat_panel.h"
+#include "common/flat_panel.hxx"
 
 #include "modal/modal.h"
 
