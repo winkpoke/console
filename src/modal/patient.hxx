@@ -27,12 +27,12 @@ namespace modal {
     }
 
     struct patient_t {
-        std::string name;
-        std::string id; 
+        char name[256];
+        char id[256]; 
         cl::u8 age;
         gender_e gender;
-        std::string category;
-        std::string site;
+        char category[256];
+        char site[256];
         sil::image_t<cl::u8>* portrait;
     };
 
@@ -42,8 +42,24 @@ namespace modal {
 
 #endif //!_MODAL_PATIENT_INCLUDE_H_
 
-#ifdef _MODAL_PATIENT_IMPLEMENTATION
-#ifndef _MODAL_PATIENT_IMPLEMENTED
+#ifdef MODAL_PATIENT_IMPLEMENTATION
+#ifndef MODAL_PATIENT_IMPLEMENTED
 
-#endif // !_MODAL_PATIENT_IMPLEMENTATION
-#endif //_MODAL_PATIENT_IMPLEMENTATION
+namespace modal {
+    bool init(patient_t* p)
+    {
+        assert(p);
+        return true;
+    }
+    
+    void drop(patient_t* p)
+    {
+        if (p) {
+            drop(p->portrait);
+            free(p);
+        }
+    }
+
+}
+#endif // !MODAL_PATIENT_IMPLEMENTATION
+#endif //MODAL_PATIENT_IMPLEMENTATION

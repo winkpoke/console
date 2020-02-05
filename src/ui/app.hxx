@@ -2,6 +2,7 @@
 #define CONSOLE_UI_APP_H
 
 #include "def.h"
+#include "modal/patient.hxx"
 #include "ui/image.h"
 
 namespace ui {
@@ -20,6 +21,9 @@ namespace ui {
         float kv;
         float mAs;
         cbct_mode_t cbct_mode;
+
+        // Patient
+        modal::patient_t* patient;
 
         // Reconstruction 
         resolution_t resolution;
@@ -58,13 +62,18 @@ namespace ui
 {
     bool init(app_t* app)
     {
-        g_patient.name = "Li Si";
-        g_patient.id = "209845";
-        g_patient.age = 65;
-        g_patient.gender = modal::gender_e::FEMALE;
-        g_patient.category = "H&N";
-        g_patient.site = "Hospital 1";
-        g_patient.portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
+        assert(app);
+
+        app->patient = cl::build_raw<modal::patient_t>();
+        auto p = app->patient;
+        assert(p);
+        strncpy(p->name, "Li Si", sizeof(p->name));
+        strncpy(p->id, "209845", sizeof(p->id));
+        p->age = 65;
+        p->gender = modal::gender_e::MALE;
+        strncpy(p->category, "H&N", sizeof(p->category));
+        strncpy(p->site, "Hospital 1", sizeof(p->site));
+        app->patient->portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
 
 
         app->fpd = modal::g_app_stat.fpd;
@@ -110,7 +119,7 @@ namespace ui
         app->win->renders.push_back([=](window_t*) {
             render_status_window(app);
             render_image_window(app);
-            render_patient_info_window(app, &g_patient);
+            render_patient_info_window(app);
             render_maintenance_window(app);
             //win->renders.push_back(&ui::process_camera_data);
             return true;

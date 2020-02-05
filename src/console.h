@@ -17,3 +17,6 @@
 
 #define MODAL_SCAN_IMPLEMENTATION
 #include "modal/scan.hxx"
+
+#define MODAL_PATIENT_IMPLEMENTATION
+#include "modal/patient.hxx"
