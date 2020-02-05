@@ -49,6 +49,9 @@ namespace control {
 #endif   // CONSOLE_INCLUDE_CONTROL_H
 
 #ifdef CONSOLE_CONTROL_IMPLEMENTATION
+#ifndef CONSOLE_CONTROL_IMPLEMENTED
+#define CONSOLE_CONTROL_IMPLEMENTED
+
 namespace control {
     // FPD
     void callback_image_recieved(int width, int height, int byte_per_pixel, void* data)
@@ -278,7 +281,7 @@ namespace control {
         fpd::Deinit();
     }
 
-    bool init() 
+    bool init()
     {
         return true;
     }
@@ -306,4 +309,6 @@ namespace control {
         websocket::send(s, "<HELLO");
     }
 }
+#endif // !CONSOLE_CONTROL_IMPLEMENTED
+
 #endif   //CONSOLE_CONTROL_IMPLEMENTATION

@@ -73,6 +73,9 @@ namespace modal {
 #endif    // CONSOLE_INCLUDE_MODAL_H
 
 #ifdef CONSOLE_MODAL_IMPLEMENTATION
+#ifndef CONSOLE_MODAL_IMPLEMENTED
+#define CONSOLE_MODAL_IMPLEMENTED
+
 namespace modal {
     bool init(scan_t* scan, int width, int height)
     {
@@ -146,5 +149,7 @@ namespace modal {
         return g_app_stat;
     }
 }
+#endif // !CONSOLE_MODAL_IMPLEMENTED
+
 
 #endif   // CONSOLE_MODAL_IMPLEMENTATION
