@@ -247,8 +247,8 @@
     <ClInclude Include="src\ThirdParty\iRay\IRayInclude.h" />
     <ClInclude Include="src\ThirdParty\iRay\Util.h" />
     <ClInclude Include="src\ThirdParty\RS-232\rs232.h" />
-    <ClInclude Include="src\ui\app.h" />
-    <ClInclude Include="src\ui\log.h" />    
+    <ClInclude Include="src\ui\app.hxx" />
+    <ClInclude Include="src\ui\log.h" />
     <ClInclude Include="src\ui\renders\render_image.hxx" />
     <ClInclude Include="src\ui\renders\render_maintenance.hxx" />
     <ClInclude Include="src\ui\renders\render_patient_info.hxx" />

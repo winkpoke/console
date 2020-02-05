@@ -6,7 +6,7 @@
 #include "imgui_impl_opengl3.h"
 
 #include "def.h"
-#include "ui/app.h"
+#include "ui/app.hxx"
 #include "control/control.h"
 
 namespace ui {

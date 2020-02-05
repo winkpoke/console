@@ -54,7 +54,7 @@ namespace ui
 
 #include "window.h"
 
-#include "ui/app.h"
+#include "ui/app.hxx"
 
 namespace ui
 {

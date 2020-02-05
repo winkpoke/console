@@ -4,7 +4,7 @@
 #include "ui/window.h"
 
 #define CONSOLE_UI_APP_IMPLEMENTATION
-#include "ui/app.h"
+#include "ui/app.hxx"
 
 #define CONSOLE_UI_IMPLEMENTATION
 #include "ui/ui.h"

@@ -49,7 +49,6 @@ namespace ui {
     bool init(window_t* win, int x, int y, int w, int h, array<float, 4> background_color = { 0.45f, 0.55f, 0.60f, 1.00f });
     void drop(window_t* win);
 
-    void render(window_t* win);
     bool is_fullscreen(window_t* win);
 
     void set_fullscreen(window_t* win, bool fullscreen);
@@ -58,6 +57,7 @@ namespace ui {
     void on_key_event(window_t* win, int key);
     void new_frame(window_t* win);
     void draw(window_t* win);
+    void render(window_t* win);
     bool is_close(window_t* win);
 }
 
