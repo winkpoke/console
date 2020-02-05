@@ -11,8 +11,6 @@ namespace ui {
     static int w1, h1;
     static unsigned char* img1 = stbi_load("resources\\images\\patient.png", &w1, &h1, NULL, 4);
 
-    image_view<unsigned char> g_image_widget[4];
-
     image_view<cl::u8> g_image_patient;
 
     struct app_t {
@@ -90,6 +88,8 @@ namespace ui {
 #include "ui/log.h"
 #include "modal/modal.h"
 #include "control/control.h"
+
+#include "renders/render_image.hxx"
 
 namespace ui
 {
@@ -324,21 +324,6 @@ namespace ui
         if (show_demo_window) {
             ImGui::ShowDemoWindow(&show_demo_window);
         }
-        return true;
-    }
-
-    bool render_image_window(app_t* app)
-    {
-        static bool p_open;
-        ImGui::Begin("##Image", &p_open, ImGuiWindowFlags_NoTitleBar);
-
-        render(&g_image_widget[0]);
-        ImGui::SameLine();
-        render(&g_image_widget[1]);
-        render(&g_image_widget[2]);
-        ImGui::SameLine();
-        render(&g_image_widget[3]);
-        ImGui::End();
         return true;
     }
 
