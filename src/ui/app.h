@@ -11,8 +11,6 @@ namespace ui {
     static int w1, h1;
     static unsigned char* img1 = stbi_load("resources\\images\\patient.png", &w1, &h1, NULL, 4);
 
-    image_view<cl::u8> g_image_patient;
-
     struct app_t {
         // FPD 
         fpd_status_t fpd;
@@ -90,6 +88,7 @@ namespace ui {
 #include "control/control.h"
 
 #include "renders/render_image.hxx"
+#include "renders/render_patient_info.hxx"
 
 namespace ui
 {
@@ -324,27 +323,6 @@ namespace ui
         if (show_demo_window) {
             ImGui::ShowDemoWindow(&show_demo_window);
         }
-        return true;
-    }
-
-    bool render_patient_info_window(app_t* app)
-    {
-        static bool p_open;
-        ImGui::Begin("##patient_info", &p_open, ImGuiWindowFlags_NoTitleBar);
-        ImGui::Columns(3, 0, false);
-        ImGui::SetColumnWidth(0, 80);
-        render(&g_image_patient);
-        ImGui::NextColumn();
-        ImGui::Text("Name:     Zhang San");
-        ImGui::Text("ID:       209845");
-        ImGui::Text("Age:      65");
-        ImGui::NextColumn();
-        ImGui::Text("Gender:   M");
-        ImGui::Text("Category: H&N");
-        ImGui::Text("Site:     Hospital 1");
-        ImGui::Columns(1);
-
-        ImGui::End();
         return true;
     }
 }
