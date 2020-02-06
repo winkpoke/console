@@ -69,7 +69,7 @@ namespace ui
         app->patient = cl::build_raw<modal::patient_t>();
         auto p = app->patient;
         assert(p);
-        strncpy(p->name, "李四", sizeof(p->name));
+        strncpy(p->name, u8"李四", sizeof(p->name));
         strncpy(p->id, "209845", sizeof(p->id));
         p->age = 65;
         p->gender = modal::gender_e::MALE;
@@ -103,7 +103,11 @@ namespace ui
         app->font0 = io.Fonts->AddFontDefault();
         ImFontConfig config;
         config.MergeMode = true;
-        app->font1 = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\simfang.ttf", 15, &config, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+        //config.OversampleH = 3;
+        //config.OversampleV = 2;
+        //config.PixelSnapH = true;
+        config.RasterizerMultiply = 2.0f;
+        app->font1 = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\simyou.ttf", 13, &config, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
         io.Fonts->Build();
 
         // assert(font1);
