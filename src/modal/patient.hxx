@@ -41,16 +41,19 @@ namespace modal {
     };
 
     bool init(patient_t* p);
+    // bool init(patient_t* p, const json& j);
     void drop(patient_t* p);
 
-    std::shared_ptr<json> to_json(patient_t* p);
-    void from_json(patient_t* p);
+    std::string to_json(patient_t* p);
+    bool from_json(patient_t* p, std::string& str);
 }
 
 #endif //!_MODAL_PATIENT_INCLUDE_H_
 
 #ifdef MODAL_PATIENT_IMPLEMENTATION
 #ifndef MODAL_PATIENT_IMPLEMENTED
+
+#include "base64.hxx"
 
 namespace modal {
     using json = nlohmann::json;
@@ -69,17 +72,65 @@ namespace modal {
         }
     }
 
-    std::shared_ptr<json> to_json(patient_t* p)
+    bool from_json(patient_t* p, std::string& str)
+    {
+        assert(p);
+        try {
+            auto j = json::parse(str);
+            std::string name = j[u8"name"];
+            std::string id = j[u8"id"];
+            std::string category = j[u8"category"];
+            std::string site = j[u8"site"];
+            
+            strncpy(p->name, name.c_str(), 256);
+            strncpy(p->id, id.c_str(), 256);
+            strncpy(p->category, category.c_str(), 256);
+            strncpy(p->site, site.c_str(), 256);
+            
+            j.at("age").get_to(p->age);
+            j.at("gender").get_to(p->gender);
+            
+            auto portrait = j.find("portrait");
+            if (portrait != j.end()) {
+                int width = j["portrait"]["width"];
+                int height = j["portrait"]["height"];
+                int channel = j["portrait"]["channel"];
+                size_t input_len = j["portrait"]["len"];
+                std::string str = j["portrait"]["data"];
+                size_t output_len;
+                auto data = base64_decode(str.c_str(), str.length(), &output_len);
+
+                p->portrait = cl::build_raw <sil::image_t<cl::u8>>(width, height, channel, data);
+            }
+        }
+        catch (...) {
+            return false;
+        }
+        return true;
+    }
+
+    std::string to_json(patient_t* p)
     {
         json* j = new json;
         (*j)["name"] = p->name;
         (*j)["id"] = p->id;
         (*j)["age"] = p->age;
         (*j)["gender"] = p->gender;
+
         (*j)["category"] = p->category;
         (*j)["site"] = p->site;
-
-        return std::shared_ptr<json>(j);
+        if (p->portrait) {
+            size_t len;
+            auto img = p->portrait;
+            const char* data = base64_encode(img->data, img->width * img->height * img->channel * sizeof(cl::u8), &len);
+            (*j)["portrait"]["width"] = img->width;
+            (*j)["portrait"]["height"] = img->height;
+            (*j)["portrait"]["channel"] = img->channel;
+            (*j)["portrait"]["len"] = len;
+            (*j)["portrait"]["data"] = data;
+            free((void*)data);
+        }
+        return j->dump();
     }
 }
 #endif // !MODAL_PATIENT_IMPLEMENTATION

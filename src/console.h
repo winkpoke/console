@@ -26,3 +26,6 @@
 
 #define CONTROL_FPD_IMPLEMENTATION
 #include "control/fpd.hxx"
+
+#define BASE64_IMPLEMENTATION
+#include "base64.hxx"

@@ -50,7 +50,7 @@
 int main(int, char**)
 {
     //setlocale(LC_ALL, "chs");
-    //setlocale(LC_ALL, "zh-CN.UTF8");
+    setlocale(LC_ALL, "zh-CN.UTF8");
 
     //wchar_t hello[256] = L"我们";
     //wprintf(L"%s\n", hello);

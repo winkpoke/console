@@ -67,15 +67,19 @@ namespace ui
         assert(app);
 
         app->patient = cl::build_raw<modal::patient_t>();
-        auto p = app->patient;
-        assert(p);
+        // auto p = app->patient;
+        // assert(p);
+        auto p = cl::build_raw<modal::patient_t>();
         strncpy(p->name, u8"ÀîËÄ", sizeof(p->name));
         strncpy(p->id, "209845", sizeof(p->id));
         p->age = 65;
         p->gender = modal::gender_e::MALE;
         strncpy(p->category, u8"H&N", sizeof(p->category));
         strncpy(p->site, "Hospital 1", sizeof(p->site));
-        app->patient->portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
+        p->portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
+
+        auto j = modal::to_json(p);
+        modal::from_json(app->patient, j);
 
 
         app->fpd = modal::g_app_stat.fpd;
