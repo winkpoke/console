@@ -39,13 +39,13 @@ namespace fpd {
 
     int Initializte();
 
-
     void Deinit();
 }
 #endif // !_FLAT_PANEL_INCLUDE_H_
 
 #ifdef FLAT_PANEL_IMPLEMENTATION
 #ifndef FLAT_PANEL_IMPLEMENTED
+#define FLAT_PANEL_IMPLEMENTED
 //#pragma once
 
 // logging
@@ -62,7 +62,6 @@ namespace fpd {
     int Initializte();
     void Deinit();
 
-    typedef void (*FP_CALLBACK_IMAGE_RECIEVED)(int width, int height, int byte_per_pixel, void* data);
     FP_CALLBACK_IMAGE_RECIEVED fp_callback_image_recieved;
 
     void SDKCallbackHandler(int nDetectorID, int nEventID, int nEventLevel,

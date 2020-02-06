@@ -40,7 +40,7 @@ namespace modal {
         scan->index = -1;
         scan->width = width;
         scan->height = height;
-        int xx = sizeof(int);
+        //int xx = sizeof(int);
         scan->images = (scan_t::pixel_t*)calloc(scan->N_IMAGES, scan->width * scan->height * sizeof(scan_t::pixel_t));
         if (scan->images == NULL) {
             // error handling

@@ -311,10 +311,10 @@ namespace ui
         return true;
     }
 
-    void render(window::window_t* win)
-    {
-        render(win);
-    }
+    //void render(window::window_t* win)
+    //{
+    //    //render(win);
+    //}
 
     void drop()
     {}

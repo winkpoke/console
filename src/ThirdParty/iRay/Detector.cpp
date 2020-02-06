@@ -25,7 +25,7 @@ CDetector::~CDetector()
 
 int CDetector::LoadIRayLibrary()
 {
-	m_hModule = LoadLibrary(L"FpdSys.DLL");
+	m_hModule = LoadLibrary(TEXT("FpdSys.DLL"));
 	if (NULL == m_hModule)
 	{
 		return Err_LoadDllFailed;

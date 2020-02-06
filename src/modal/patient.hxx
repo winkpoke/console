@@ -1,10 +1,14 @@
 #ifndef _MODAL_PATIENT_INCLUDE_H_
 #define _MODAL_PATIENT_INCLUDE_H_
 
+#include "nlohmann/json.hpp"
+
 #include "cl.h"
 #include "sil.h"
 
 namespace modal {
+    using json = nlohmann::json;
+
     enum class gender_e
     {
         MALE, FEMALE, INTERSEX, UNKNOWN
@@ -38,6 +42,9 @@ namespace modal {
 
     bool init(patient_t* p);
     void drop(patient_t* p);
+
+    std::shared_ptr<json> to_json(patient_t* p);
+    void from_json(patient_t* p);
 }
 
 #endif //!_MODAL_PATIENT_INCLUDE_H_
@@ -46,6 +53,8 @@ namespace modal {
 #ifndef MODAL_PATIENT_IMPLEMENTED
 
 namespace modal {
+    using json = nlohmann::json;
+
     bool init(patient_t* p)
     {
         assert(p);
@@ -60,6 +69,18 @@ namespace modal {
         }
     }
 
+    std::shared_ptr<json> to_json(patient_t* p)
+    {
+        json* j = new json;
+        (*j)["name"] = p->name;
+        (*j)["id"] = p->id;
+        (*j)["age"] = p->age;
+        (*j)["gender"] = p->gender;
+        (*j)["category"] = p->category;
+        (*j)["site"] = p->site;
+
+        return std::shared_ptr<json>(j);
+    }
 }
 #endif // !MODAL_PATIENT_IMPLEMENTATION
 #endif //MODAL_PATIENT_IMPLEMENTATION

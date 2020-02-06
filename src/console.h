@@ -23,3 +23,6 @@
 
 #define FLAT_PANEL_IMPLEMENTATION
 #include "common/flat_panel.hxx"
+
+#define CONTROL_FPD_IMPLEMENTATION
+#include "control/fpd.hxx"

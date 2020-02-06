@@ -31,6 +31,8 @@ namespace ui {
 
         // Window
         struct window_t* win;
+        ImFont* font0;
+        ImFont* font1;
     };
 
     bool init(app_t* app);
@@ -67,11 +69,11 @@ namespace ui
         app->patient = cl::build_raw<modal::patient_t>();
         auto p = app->patient;
         assert(p);
-        strncpy(p->name, "Li Si", sizeof(p->name));
+        strncpy(p->name, "ÀîËÄ", sizeof(p->name));
         strncpy(p->id, "209845", sizeof(p->id));
         p->age = 65;
         p->gender = modal::gender_e::MALE;
-        strncpy(p->category, "H&N", sizeof(p->category));
+        strncpy(p->category, u8"H&N", sizeof(p->category));
         strncpy(p->site, "Hospital 1", sizeof(p->site));
         app->patient->portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
 
@@ -97,7 +99,14 @@ namespace ui
         ImGui::StyleColorsDark();
         //ImGui::StyleColorsClassic();
 
-        io.Fonts->AddFontDefault();
+        //io.Fonts->GetGlyphRangesChineseFull());// 
+        app->font0 = io.Fonts->AddFontDefault();
+        ImFontConfig config;
+        config.MergeMode = true;
+        app->font1 = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\simfang.ttf", 15, &config, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+        io.Fonts->Build();
+
+        // assert(font1);
         // auto image = sil::make_shared<unsigned char>(w, h, 4, img);
         auto image = cl::build_shared<sil::image_t<unsigned char>>(sil::drop, w, h, 4, img);
         init(&g_image_widget[0], 512, 512, image);

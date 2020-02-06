@@ -201,9 +201,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\flat_panel.hxx" />
+    <ClInclude Include="src\include\base64.hxx" />
     <ClInclude Include="src\include\cl.h" />
     <ClInclude Include="src\console.h" />
     <ClInclude Include="src\include\def.h" />
+    <ClInclude Include="src\control\fpd.hxx" />
+    <ClInclude Include="src\include\nlohmann\json.hpp" />
     <ClInclude Include="src\modal\modal.h" />
     <ClInclude Include="src\control\hvg.h" />
     <ClInclude Include="src\include\spdlog\async.h" />

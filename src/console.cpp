@@ -49,6 +49,15 @@
 
 int main(int, char**)
 {
+    //setlocale(LC_ALL, "chs");
+    //setlocale(LC_ALL, "zh-CN.UTF8");
+
+    //wchar_t hello[256] = L"我们";
+    //wprintf(L"%s\n", hello);
+    //printf(u8"你们\n");
+    //printf("%ls\n", L"他们");
+
+
     spdlog::set_level(spdlog::level::trace); // Set global log level to debug
     SPDLOG_INFO("CBCT Console starting ...");
 
@@ -58,18 +67,6 @@ int main(int, char**)
     //std::thread connect_to_hvg(modal::connect_to_hvg);
     std::thread connect_to_upstream_server(control::connect_to_upstream_server);
 
-    //auto win = cl::build_raw<ui::window_t>(300, 300, 1024, 768);
-
-    //if (win) {
-    //    ui::init(win);
-    //    //win->renders.push_back(&ui::render_status_window);
-    //    //win->renders.push_back(&ui::render_maintenance_window);
-    //    //win->renders.push_back(&ui::render_image_window);
-    //    //win->renders.push_back(&ui::render_patient_info_window);
-    //    //win->renders.push_back(&ui::process_camera_data);
-    //    ui::render(win);
-    //    drop(win);
-    //}
 
     auto app = cl::build_unique<ui::app_t>(ui::drop);
 

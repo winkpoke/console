@@ -257,5 +257,14 @@
     <ClInclude Include="src\modal\scan.hxx">
       <Filter>header</Filter>
     </ClInclude>
+    <ClInclude Include="src\control\fpd.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\nlohmann\json.hpp">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\base64.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
