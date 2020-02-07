@@ -22,7 +22,8 @@ namespace websocket {
 
     bool connect(websocket_t* s, cl::u64 timeout = 5000);
     bool send(websocket_t* s, const char* text);
-    void on_recv_text(websocket_t* s, std::function<void(const char* msg)> callback);
+    // void on_recv_text(websocket_t* s, std::function<void(const char* msg)> callback);
+    void on_recv_text(websocket_t* s, void(*callback)(const char* msg));
 }
 
 #endif // _INCLUDE_WEBSOCKET_H
@@ -96,7 +97,7 @@ namespace websocket {
         return true;
     }
 
-    void on_recv_text(websocket_t* s, std::function<void(const char* msg)> callback)
+    void on_recv_text(websocket_t* s, void(*callback)(const char* msg))
     {
         s->socket->setOnMessageCallback([=](const ix::WebSocketMessagePtr& msg) {
             if (msg->type == ix::WebSocketMessageType::Message)

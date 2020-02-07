@@ -35,6 +35,7 @@ namespace modal {
     }
 
     struct patient_t {
+        using unique_ptr = std::unique_ptr<patient_t, void(patient_t*)>;
         char name[256];
         char id[256]; 
         cl::u8 age;
@@ -73,7 +74,7 @@ namespace modal {
 
     bool init(patient_t* p, const char* name, const char* id, cl::u8 age,
         gender_e gender, const char* category, const char* site,
-        sil::image_t<cl::u8>** portrait)
+        cl::unique_ptr<sil::image_t<cl::u8>> portrait)
     {
         if (!p || !name || !id || !category || !site) {
             return false;
@@ -88,8 +89,7 @@ namespace modal {
 
         if (portrait) {
             // transfer the ownership
-            p->portrait = *portrait;
-            *portrait = nullptr;
+            p->portrait = portrait.release();
         }
         return true;
     }

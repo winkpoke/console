@@ -111,7 +111,7 @@ namespace ui
         //config.OversampleV = 2;
         //config.PixelSnapH = true;
         config.RasterizerMultiply = 2.0f;
-        auto font1 = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\simyou.ttf", 13, &config, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+        auto font1 = io.Fonts->AddFontFromFileTTF("resources\\fonts\\simyou.ttf", 13, &config, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
         assert(font1);
         io.Fonts->Build();
 
