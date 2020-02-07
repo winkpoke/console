@@ -5,6 +5,7 @@
 #include "modal/patient.hxx"
 #include "ui/image.h"
 #include "stb_image.h"
+#include "modal/modal.h"
 
 namespace ui {
     static int w, h;
@@ -40,7 +41,7 @@ namespace ui {
 
     void run(app_t* app);
 
-    void update(app_t* app);
+    void update(app_t* app, modal::app_stat_t* data);
 } //namespace ui
 
 #endif // CONSOLE_UI_APP_H
@@ -79,15 +80,6 @@ namespace ui
 
         auto j = modal::to_json(p);
         modal::from_json(app->patient, j);
-
-
-        app->fpd = modal::g_app_stat.fpd;
-        app->hvg = modal::g_app_stat.hvg;
-        app->kv = modal::g_app_stat.kv;
-        app->mAs = modal::g_app_stat.mAs;
-        app->cbct_mode = modal::g_app_stat.cbct_mode;
-        app->resolution = modal::g_app_stat.resolution;
-        app->slice_dist = modal::g_app_stat.slice_dist;
 
         app->win = cl::build_raw<window_t>(300, 300, 1024, 768);
         if (!app->win) {
@@ -143,6 +135,7 @@ namespace ui
             return true;
             });
 
+
         return true;
     }
 
@@ -153,6 +146,17 @@ namespace ui
         }
     }
 
+    void update(app_t* app, modal::app_stat_t* data)
+    {
+        app->fpd = data->fpd;
+        app->hvg = data->hvg;
+        app->kv = data->kv;
+        app->mAs = data->mAs;
+        app->cbct_mode = data->cbct_mode;
+        app->resolution = data->resolution;
+        app->slice_dist = data->slice_dist;
+    }
+
     void run(app_t* app)
     {
         // Main loop
@@ -160,16 +164,13 @@ namespace ui
         {
             new_frame(app->win);
 
+            update(app, control::get_data());
+
             render(app->win);
 
             process_event(app->win);
             draw(app->win);
         }
-    }
-
-    void update(app_t* app)
-    {
-
     }
 }
 #endif // !CONSOLE_UI_APP_IMPLEMENTED

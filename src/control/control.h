@@ -42,6 +42,9 @@ namespace control {
     // connect to upstream server via websocket
     void connect_to_upstream_server();
 
+    // accessors
+    modal::app_stat_t* get_data();
+
     // functions
     bool init();
     void drop();
@@ -307,6 +310,11 @@ namespace control {
             }
         );
         websocket::send(s, "<HELLO");
+    }
+
+    modal::app_stat_t* get_data()
+    {
+        return &modal::g_app_stat;
     }
 }
 #endif // !CONSOLE_CONTROL_IMPLEMENTED

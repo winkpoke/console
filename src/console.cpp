@@ -22,10 +22,9 @@ int main(int, char**)
     //std::thread connect_to_hvg(modal::connect_to_hvg);
     std::thread connect_to_upstream_server(control::connect_to_upstream_server);
 
-
     auto app = cl::build_unique<ui::app_t>(ui::drop);
 
-    run(app.get());
+    ui::run(app.get());
 
     connect_to_fpd.join();
     ////connect_to_hvg.join();

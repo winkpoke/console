@@ -46,9 +46,11 @@ namespace modal {
     };
 
     bool init(patient_t* p);
+    bool init(patient_t* p, const char* name, const char* id, cl::u8 age,
+        gender_e gender, const char* category, const char* site);
     bool init(patient_t* p, const char* name, const char* id, cl::u8 age, 
         gender_e gender, const char* category, const char* site, 
-        sil::image_t<cl::u8>** portrait = nullptr);
+        cl::unique_ptr<sil::image_t<cl::u8>> portrait);
     bool init(patient_t* p, std::string str);
     void drop(patient_t* p);
 
@@ -73,8 +75,7 @@ namespace modal {
     }
 
     bool init(patient_t* p, const char* name, const char* id, cl::u8 age,
-        gender_e gender, const char* category, const char* site,
-        cl::unique_ptr<sil::image_t<cl::u8>> portrait)
+        gender_e gender, const char* category, const char* site)
     {
         if (!p || !name || !id || !category || !site) {
             return false;
@@ -83,9 +84,18 @@ namespace modal {
         strncpy(p->id, id, 256);
         strncpy(p->category, category, 256);
         strncpy(p->site, site, 256);
-        
+
         p->age = age;
         p->gender = gender;
+        return true;
+    }
+
+    bool init(patient_t* p, const char* name, const char* id, cl::u8 age,
+        gender_e gender, const char* category, const char* site,
+        cl::unique_ptr<sil::image_t<cl::u8>> portrait)
+    {
+
+        init(p, name, id, age, gender, category, site);
 
         if (portrait) {
             // transfer the ownership

@@ -94,6 +94,13 @@ namespace cl {
     template <class T>
     using shared_ptr = std::shared_ptr<T>;
 
+    //template <class T>
+    //void dummy_drop(T*)
+    //{}
+
+    //template <class T>
+    //unique_ptr<T> unique_nullptr = unique_ptr<T>(nullptr, dummy_drop<T>);
+
     template <class T, class... Args>
     std::unique_ptr<T, void(*)(T*)> build_unique(void(*drop)(T*), Args... args)
     {
