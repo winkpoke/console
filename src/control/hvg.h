@@ -3,6 +3,8 @@
 #include <time.h>
 #include "imgui.h"
 
+#include "rs232.h"
+
 //// logging
 //#include "spdlog/spdlog.h"
 //#include "spdlog/sinks/stdout_sinks.h"

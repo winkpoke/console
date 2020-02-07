@@ -1,5 +1,15 @@
 #pragma once
 
+// seems stb need to be placed before other includes
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+// logging
+//#define SPDLOG_NO_FILE_LOC
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_sinks.h"
+
 #define WINDOW_IMPLEMENTATION
 #include "ui/window.h"
 

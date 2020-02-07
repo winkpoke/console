@@ -4,6 +4,7 @@
 #include "def.h"
 #include "modal/patient.hxx"
 #include "ui/image.h"
+#include "stb_image.h"
 
 namespace ui {
     static int w, h;
