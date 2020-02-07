@@ -39,3 +39,6 @@
 
 #define BASE64_IMPLEMENTATION
 #include "base64.hxx"
+
+#define UI_LOG_IMPLEMENTATION
+#include "ui/log.h"

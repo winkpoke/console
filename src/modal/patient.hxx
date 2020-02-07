@@ -28,6 +28,10 @@ namespace modal {
         default:
             assert(0);
         }
+        // the program shall not be here
+        // but just want to make sure every path
+        // returns a value
+        return "Unknown";
     }
 
     struct patient_t {
