@@ -42,3 +42,6 @@
 
 #define UI_LOG_IMPLEMENTATION
 #include "ui/log.h"
+
+#define WEBSOCKET_IMPLEMENTATION
+#include "control/websocket.hxx"

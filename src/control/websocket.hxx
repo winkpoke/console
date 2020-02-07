@@ -1,10 +1,41 @@
+#ifndef _INCLUDE_WEBSOCKET_H
+#define _INCLUDE_WEBSOCKET_H
+
+#include <string.h>
+#include <functional>
+
+// #include "ixwebsocket/IXWebSocketMessage.h"
+
+#include "cl.h"
+
+namespace ix {
+    class WebSocket;
+}
+
+namespace websocket {
+    struct websocket_t {
+        char url[1024];
+        ix::WebSocket* socket;
+    };
+    bool init(websocket_t* s, const char* url);
+    void drop(websocket_t* s);
+
+    bool connect(websocket_t* s, cl::u64 timeout = 5000);
+    bool send(websocket_t* s, const char* text);
+    void on_recv_text(websocket_t* s, std::function<void(const char* msg)> callback);
+}
+
+#endif // _INCLUDE_WEBSOCKET_H
+
+#ifdef WEBSOCKET_IMPLEMENTATION
+#ifndef WEBSOCKET_IMPLEMENTED
 #include <iostream>
 
 #include <ixwebsocket/IXNetSystem.h>
 #include <ixwebsocket/IXWebSocket.h>
 
 #include "cl.h"
-#include "websocket.h"
+//#include "websocket.h"
 
 namespace websocket {
     bool init(websocket_t* s, const char* url) {
@@ -32,8 +63,8 @@ namespace websocket {
         if (s) {
             ix::uninitNetSystem();
             if (s->socket) {
-                 s->socket->~WebSocket();
-                 free(s->socket);
+                s->socket->~WebSocket();
+                free(s->socket);
             }
             free(s);
         }
@@ -74,8 +105,10 @@ namespace websocket {
                     callback(msg->str.c_str());
                 }
             }
-        });
+            });
     }
 
     /*void set_*/
 }
+#endif // !WEBSOCKET_IMPLEMENTED
+#endif // WEBSOCKET_IMPLEMENTATION

@@ -197,7 +197,6 @@
     <ClCompile Include="src\ThirdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\ThirdParty\iRay\Detector.cpp" />
     <ClCompile Include="src\ThirdParty\RS-232\rs232.c" />
-    <ClCompile Include="src\control\websocket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\flat_panel.hxx" />
@@ -262,7 +261,7 @@
     <ClInclude Include="src\ui\ui.h" />
     <ClInclude Include="src\ui\image.h" />
     <ClInclude Include="src\ui\window.h" />
-    <ClInclude Include="src\control\websocket.h" />
+    <ClInclude Include="src\control\websocket.hxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
