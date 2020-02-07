@@ -41,7 +41,10 @@ namespace modal {
     };
 
     bool init(patient_t* p);
-    // bool init(patient_t* p, const json& j);
+    bool init(patient_t* p, const char* name, const char* id, cl::u8 age, 
+        gender_e gender, const char* category, const char* site, 
+        sil::image_t<cl::u8>** portrait = nullptr);
+    bool init(patient_t* p, std::string str);
     void drop(patient_t* p);
 
     std::string to_json(patient_t* p);
@@ -62,6 +65,34 @@ namespace modal {
     {
         assert(p);
         return true;
+    }
+
+    bool init(patient_t* p, const char* name, const char* id, cl::u8 age,
+        gender_e gender, const char* category, const char* site,
+        sil::image_t<cl::u8>** portrait)
+    {
+        if (!p || !name || !id || !category || !site) {
+            return false;
+        }
+        strncpy(p->name, name, 256);
+        strncpy(p->id, id, 256);
+        strncpy(p->category, category, 256);
+        strncpy(p->site, site, 256);
+        
+        p->age = age;
+        p->gender = gender;
+
+        if (portrait) {
+            // transfer the ownership
+            p->portrait = *portrait;
+            *portrait = nullptr;
+        }
+        return true;
+    }
+
+    bool init(patient_t* p, std::string str)
+    {
+        return from_json(p, str);
     }
     
     void drop(patient_t* p)

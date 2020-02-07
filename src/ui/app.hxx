@@ -31,8 +31,6 @@ namespace ui {
 
         // Window
         struct window_t* win;
-        ImFont* font0;
-        ImFont* font1;
     };
 
     bool init(app_t* app);
@@ -104,14 +102,16 @@ namespace ui
         //ImGui::StyleColorsClassic();
 
         //io.Fonts->GetGlyphRangesChineseFull());// 
-        app->font0 = io.Fonts->AddFontDefault();
+        auto font0 = io.Fonts->AddFontDefault();
+        assert(font0);
         ImFontConfig config;
         config.MergeMode = true;
         //config.OversampleH = 3;
         //config.OversampleV = 2;
         //config.PixelSnapH = true;
         config.RasterizerMultiply = 2.0f;
-        app->font1 = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\simyou.ttf", 13, &config, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+        auto font1 = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\simyou.ttf", 13, &config, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+        assert(font1);
         io.Fonts->Build();
 
         // assert(font1);
