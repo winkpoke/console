@@ -19,19 +19,20 @@ namespace ui {
         ImGui::Begin("##patient_info", &p_open, ImGuiWindowFlags_NoTitleBar);
         ImGui::Columns(3, 0, false);
         ImGui::SetColumnWidth(0, 80);
-        auto portrait = build_unique<image_view<cl::u8>>(ui::drop, 50, 73, std::shared_ptr<sil::image_t<cl::u8>>(p->portrait));
-        render(portrait.get());
+        if (p->portrait)
+        {
+            auto portrait = build_unique<image_view<cl::u8>>(ui::drop, 50, 73, std::shared_ptr<sil::image_t<cl::u8>>(p->portrait));
+            render(portrait.get());
+        }
         ImGui::NextColumn();
-        ImGui::Text("Name:     "); ImGui::SameLine(); ImGui::Text(p->name);
-        ImGui::Text("ID:       "); ImGui::SameLine(); ImGui::Text(p->id);
-        ImGui::Text("Age:      "); ImGui::SameLine(); ImGui::Text(std::to_string(p->age).c_str());
+        ImGui::Text("Name:     "); ImGui::SameLine(); if (p) ImGui::Text(p->name);
+        ImGui::Text("ID:       "); ImGui::SameLine(); if (p)ImGui::Text(p->id);
+        ImGui::Text("Age:      "); ImGui::SameLine(); if (p) ImGui::Text(std::to_string(p->age).c_str());
         ImGui::NextColumn();
-        ImGui::Text("Gender:   "); ImGui::SameLine(); ImGui::Text(modal::to_string(p->gender).c_str());
-        ImGui::Text("Category: "); ImGui::SameLine(); ImGui::Text(p->category);
-        ImGui::Text("Site:     "); ImGui::SameLine(); ImGui::Text(p->site);
+        ImGui::Text("Gender:   "); ImGui::SameLine(); if (p) ImGui::Text(modal::to_string(p->gender).c_str());
+        ImGui::Text("Category: "); ImGui::SameLine(); if (p) ImGui::Text(p->category);
+        ImGui::Text("Site:     "); ImGui::SameLine(); if (p) ImGui::Text(p->site);
         ImGui::Columns(1);
-
-
         ImGui::End();
         return true;
     }
