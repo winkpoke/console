@@ -13,11 +13,6 @@
 namespace hvg { struct context_t; }
 
 namespace modal {
-    const char* fpd_status_list[] = { "unconnected", "connecting", "ready", "error" };
-    const char* hvg_status_list[] = { "unconnected", "connecting", "ready", "exposure", "error" };
-    const char* cbct_mode_list[] = { "Head", "Lung", "Abdominal", "Custom" };
-    const char* resolution_list[] = { "128x128", "256x256", "384x384", "512x512", "768x768" };
-
     struct app_stat_t {
         // FPD 
         fpd_status_t fpd;

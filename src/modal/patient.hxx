@@ -80,10 +80,10 @@ namespace modal {
         if (!p || !name || !id || !category || !site) {
             return false;
         }
-        strncpy(p->name, name, 256);
-        strncpy(p->id, id, 256);
-        strncpy(p->category, category, 256);
-        strncpy(p->site, site, 256);
+        strncpy(p->name, name, sizeof(p->name));
+        strncpy(p->id, id, sizeof(p->id));
+        strncpy(p->category, category, sizeof(p->category));
+        strncpy(p->site, site, sizeof(p->site));
 
         p->age = age;
         p->gender = gender;
