@@ -1,4 +1,4 @@
-#ifndef CONSOLE_UI_APP_H
+ï»¿#ifndef CONSOLE_UI_APP_H
 #define CONSOLE_UI_APP_H
 
 #include "def.h"
@@ -50,6 +50,8 @@ namespace ui {
 #ifndef CONSOLE_UI_APP_IMPLEMENTED
 #define CONSOLE_UI_APP_IMPLEMENTED
 
+#include <filesystem>
+
 #include "ui/window.h"
 #include "ui/log.h"
 #include "modal/modal.h"
@@ -67,19 +69,25 @@ namespace ui
         assert(app);
 
         app->patient = cl::build_raw<modal::patient_t>();
-        // auto p = app->patient;
-        // assert(p);
-        auto p = cl::build_raw<modal::patient_t>();
-        strncpy(p->name, u8"ÀîËÄ", sizeof(p->name));
+         auto p = app->patient;
+         assert(p);
+
+        //auto p = cl::build_raw<modal::patient_t>();
+        strncpy(p->name, u8"å¼ ä¸‰", sizeof(p->name));
         strncpy(p->id, "209845", sizeof(p->id));
         p->age = 65;
         p->gender = modal::gender_e::MALE;
-        strncpy(p->category, u8"H&N", sizeof(p->category));
-        strncpy(p->site, "Hospital 1", sizeof(p->site));
+        strncpy(p->category, "H&N", sizeof(p->category));
+        strncpy(p->site, u8"æµ·å‰äºš", sizeof(p->site));
         p->portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
 
-        auto j = modal::to_json(p);
-        modal::from_json(app->patient, j);
+        //auto j = modal::to_json(p);
+        //modal::from_json(app->patient, j);
+
+        //FILE* fp;
+        //fp = fopen("D:\\patient.json", "w+");
+        //fprintf_s(fp, "%s", j.c_str());
+        //fclose(fp);
 
         app->win = cl::build_raw<window_t>(300, 300, 1024, 768);
         if (!app->win) {
@@ -103,9 +111,14 @@ namespace ui
         //config.OversampleV = 2;
         //config.PixelSnapH = true;
         config.RasterizerMultiply = 2.0f;
-        auto font1 = io.Fonts->AddFontFromFileTTF("resources\\fonts\\simyou.ttf", 13, &config, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
-        assert(font1);
-        io.Fonts->Build();
+
+        // Load chinese font into memory and merge with other loaded fonts
+        const char chinese_font_path[256] = "resources\\fonts\\simyou.ttf";
+        if (std::filesystem::exists(chinese_font_path)) {
+            auto font1 = io.Fonts->AddFontFromFileTTF(chinese_font_path, 13, &config, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+            assert(font1);
+            if (font1) io.Fonts->Build();
+        }
 
         // assert(font1);
         // auto image = sil::make_shared<unsigned char>(w, h, 4, img);

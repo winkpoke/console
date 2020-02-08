@@ -9,7 +9,8 @@ int main(int, char**)
 
     //wchar_t hello[256] = L"我们";
     //wprintf(L"%s\n", hello);
-    //printf(u8"你们\n");
+    //printf(u8"这个用了u8 张三\n");
+    //printf("这个没用u8 张三\n");
     //printf("%ls\n", L"他们");
 
 
