@@ -8,6 +8,7 @@
 #include "def.h"
 #include "ui/app.hxx"
 #include "control/control.h"
+#include "control/runtime_data.hxx"
 
 namespace ui {
     static void HelpMarker(const char* desc)

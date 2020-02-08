@@ -1,11 +1,14 @@
 ﻿#ifndef CONSOLE_UI_APP_H
 #define CONSOLE_UI_APP_H
 
+#include "stb_image.h"
+
 #include "def.h"
 #include "modal/patient.hxx"
-#include "ui/image.h"
-#include "stb_image.h"
 #include "modal/modal.h"
+#include "control/runtime_data.hxx"
+#include "ui/image.h"
+
 
 namespace ui {
     static int w, h;
@@ -41,7 +44,8 @@ namespace ui {
 
     void run(app_t* app);
 
-    void update(app_t* app, modal::app_stat_t* data);
+    void update(app_t* app, control::runtime_data_t* data);
+    void update(control::runtime_data_t* data, app_t* app);
 } //namespace ui
 
 #endif // CONSOLE_UI_APP_H
@@ -159,7 +163,7 @@ namespace ui
         }
     }
 
-    void update(app_t* app, modal::app_stat_t* data)
+    void update(app_t* app, control::runtime_data_t* data)
     {
         app->fpd = data->fpd;
         app->hvg = data->hvg;
@@ -168,6 +172,17 @@ namespace ui
         app->cbct_mode = data->cbct_mode;
         app->resolution = data->resolution;
         app->slice_dist = data->slice_dist;
+    }
+
+    void update(control::runtime_data_t* data, app_t* app)
+    {
+        data->fpd = app->fpd;
+        data->hvg = app->hvg;
+        data->kv = app->kv;
+        data->mAs = app->mAs;
+        data->cbct_mode = app->cbct_mode;
+        data->resolution = app->resolution;
+        data->slice_dist = app->slice_dist;
     }
 
     void run(app_t* app)
@@ -183,6 +198,8 @@ namespace ui
 
             process_event(app->win);
             draw(app->win);
+
+            update(control::get_data(), app);
         }
     }
 }

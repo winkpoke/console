@@ -45,3 +45,6 @@
 
 #define WEBSOCKET_IMPLEMENTATION
 #include "control/websocket.hxx"
+
+#define MODAL_RUNTIME_DATA_IMPLEMENTATION
+#include "control/runtime_data.hxx"

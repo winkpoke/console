@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include <librealsense2/rs.hpp>
+//#include <librealsense2/rs.hpp>
 
 #include "def.h"
 #include "control/websocket.hxx"
@@ -13,40 +13,40 @@
 namespace hvg { struct context_t; }
 
 namespace modal {
-    struct app_stat_t {
-        // FPD 
-        fpd_status_t fpd;
-        scan_t* scan = NULL;
+    //struct app_stat_t {
+    //    // FPD 
+    //    fpd_status_t fpd;
+    //    scan_t* scan = NULL;
 
-        // HVG 
-        hvg_status_t hvg;
-        float kv;
-        float mAs;
-        cbct_mode_t cbct_mode;
-        int serial_port;
-        int serail_baud;
-        hvg::context_t* hvg_context;
+    //    // HVG 
+    //    hvg_status_t hvg;
+    //    float kv;
+    //    float mAs;
+    //    cbct_mode_t cbct_mode;
+    //    int serial_port;
+    //    int serail_baud;
+    //    hvg::context_t* hvg_context;
 
-        // Reconstruction 
-        resolution_t resolution;
-        float slice_dist;
+    //    // Reconstruction 
+    //    resolution_t resolution;
+    //    float slice_dist;
 
-        // Upstream server
-        websocket::websocket_t* socket;
+    //    // Upstream server
+    //    websocket::websocket_t* socket;
 
-        // window
+    //    // window
 
-        // Camera
-        rs2::pipeline camera;
-    };
+    //    // Camera
+    //    //rs2::pipeline camera;
+    //};
 
-    static app_stat_t g_app_stat;
+    //static app_stat_t g_app_stat;
 
-    bool save();
-    bool load();
+    //bool save();
+    //bool load();
 
-    bool init();
-    void drop();
+    //bool init();
+    //void drop();
 }
 
 #endif    // CONSOLE_INCLUDE_MODAL_H
@@ -56,48 +56,48 @@ namespace modal {
 #define CONSOLE_MODAL_IMPLEMENTED
 
 namespace modal {
-    bool init(app_stat_t* app) {
-        app->fpd = FPD_UNCONNECTED;
-        app->hvg = HVG_UNCONNECTED;
-        app->kv = 70.0f;
-        app->mAs = 5.0f;
-        app->cbct_mode = CUSTOM;
-        app->serial_port = 3;
-        app->serail_baud = 19200;
-        app->hvg_context = NULL;
-        app->resolution = _512X512;
-        app->slice_dist = 2.5f;
+    //bool init(app_stat_t* app) {
+    //    app->fpd = FPD_UNCONNECTED;
+    //    app->hvg = HVG_UNCONNECTED;
+    //    app->kv = 70.0f;
+    //    app->mAs = 5.0f;
+    //    app->cbct_mode = CUSTOM;
+    //    app->serial_port = 3;
+    //    app->serail_baud = 19200;
+    //    app->hvg_context = NULL;
+    //    app->resolution = _512X512;
+    //    app->slice_dist = 2.5f;
 
-        //app->scan = scan::alloc();
-        app->scan = cl::build_raw<modal::scan_t>(3072, 3072);
+    //    //app->scan = scan::alloc();
+    //    app->scan = cl::build_raw<modal::scan_t>(3072, 3072);
 
-        // websocket
-        app->socket = cl::build_raw<websocket::websocket_t>("ws://172.17.95.188:3000/ws");
+    //    // websocket
+    //    app->socket = cl::build_raw<websocket::websocket_t>("ws://172.17.95.188:3000/ws");
 
-        // Configure and start the pipeline
-        app->camera.start();
+    //    // Configure and start the pipeline
+    //    //app->camera.start();
 
-        return true;
-    }
+    //    return true;
+    //}
 
-    void drop(app_stat_t* app) {
-        drop(app->scan);
-        websocket::drop(app->socket);
-    }
+    //void drop(app_stat_t* app) {
+    //    drop(app->scan);
+    //    websocket::drop(app->socket);
+    //}
 
-    bool init()
-    {
-        return init(&g_app_stat);
-    }
+    //bool init()
+    //{
+    //    return init(&g_app_stat);
+    //}
 
-    void drop()
-    {
-        drop(&g_app_stat);
-    }
+    //void drop()
+    //{
+    //    drop(&g_app_stat);
+    //}
 
-    app_stat_t& get_app_stat() {
-        return g_app_stat;
-    }
+    //app_stat_t& get_app_stat() {
+    //    return g_app_stat;
+    //}
 }
 #endif // !CONSOLE_MODAL_IMPLEMENTED
 

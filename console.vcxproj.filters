@@ -263,5 +263,8 @@
     <ClInclude Include="src\control\websocket.hxx">
       <Filter>header</Filter>
     </ClInclude>
+    <ClInclude Include="src\control\runtime_data.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

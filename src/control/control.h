@@ -43,7 +43,7 @@ namespace control {
     void connect_to_upstream_server();
 
     // accessors
-    modal::app_stat_t* get_data();
+    // modal::app_stat_t* get_data();
 
     // functions
     bool init();
@@ -55,21 +55,25 @@ namespace control {
 #ifndef CONSOLE_CONTROL_IMPLEMENTED
 #define CONSOLE_CONTROL_IMPLEMENTED
 
+#include "runtime_data.hxx"
+
 namespace control {
     // FPD
     void callback_image_recieved(int width, int height, int byte_per_pixel, void* data)
     {
-        if (modal::g_app_stat.hvg != HVG_EXPOSURE) {
+        runtime_data_t* d = get_data();
+        assert(d);
+        if (d->hvg != HVG_EXPOSURE) {
             // do nothing if HVG is not in exposure state
             return;
         }
 
-        if (modal::g_app_stat.scan == NULL) {
+        if (d->scan == NULL) {
             SPDLOG_ERROR("CBCT scan is not created during exposure.");
             return;
         }
 
-        modal::scan_t& scan = *modal::g_app_stat.scan;
+        modal::scan_t& scan = *d->scan;
         int& index = scan.index;
         const int w = scan.width;
         const int h = scan.height;
@@ -95,7 +99,10 @@ namespace control {
 
     void connect_to_fpd()
     {
-        fpd_status_t& status = modal::g_app_stat.fpd;
+        runtime_data_t* d = get_data();
+        assert(d);
+
+        fpd_status_t& status = d->fpd;
 
         status = FPD_CONNECTING;
         if (!fpd::fp_init()) {
@@ -115,7 +122,10 @@ namespace control {
     {
         SPDLOG_INFO("Hand shake with HVG.");
 
-        hvg::context_t*& context = modal::g_app_stat.hvg_context;
+        runtime_data_t* d = get_data();
+        assert(d);
+
+        hvg::context_t*& context = d->hvg_context;
 
         char msg[1024] = { 0 };
         int count = 0;
@@ -140,7 +150,10 @@ namespace control {
     bool set_hvg_exposure_parameters(float kv, float mAs, char focus, float fate, float fps, int retry)
     {
         SPDLOG_INFO("Set HVG exposure parameters");
-        hvg::context_t*& context = modal::g_app_stat.hvg_context;
+        runtime_data_t* d = get_data();
+        assert(d);
+
+        hvg::context_t*& context = d->hvg_context;
 
         char msg[1024] = { 0 };
         int count = 0;
@@ -176,7 +189,10 @@ namespace control {
 
     int get_hvg_status(int retry)
     {
-        hvg::context_t*& context = modal::g_app_stat.hvg_context;
+        runtime_data_t* d = get_data();
+        assert(d);
+
+        hvg::context_t*& context = d->hvg_context;
 
         char msg[1024] = { 0 };
         while (retry-- >= 0) {
@@ -197,10 +213,13 @@ namespace control {
 
     void connect_to_hvg()
     {
-        const int port = modal::g_app_stat.serial_port;
-        const int baud = modal::g_app_stat.serail_baud;
-        hvg_status_t& status = modal::g_app_stat.hvg;
-        hvg::context_t*& context = modal::g_app_stat.hvg_context;
+        runtime_data_t* d = get_data();
+        assert(d);
+
+        const int port = d->serial_port;
+        const int baud = d->serail_baud;
+        hvg_status_t& status = d->hvg;
+        hvg::context_t*& context = d->hvg_context;
 
 
         status = HVG_CONNECTING;
@@ -252,27 +271,39 @@ namespace control {
 
     void exposure()
     {
-        hvg::context_t*& context = modal::g_app_stat.hvg_context;
+        runtime_data_t* d = get_data();
+        assert(d);
+
+        hvg::context_t*& context = d->hvg_context;
         char msg[1024];
         int condition = 0;
         int n = hvg::send(context, "<SXP 0 0 0", NULL, &condition, 5000);
-        modal::g_app_stat.hvg = HVG_EXPOSURE;
+        d->hvg = HVG_EXPOSURE;
         n = hvg::send(context, "<SXP 1 0 1", exposure_callback);
     }
 
     bool is_ready_setup_patient()
     {
-        return modal::g_app_stat.hvg == HVG_READY && modal::g_app_stat.fpd == FPD_READY;
+        runtime_data_t* d = get_data();
+        assert(d);
+
+        return d->hvg == HVG_READY && d->fpd == FPD_READY;
     }
 
     bool is_exposure_ready()
     {
-        return modal::g_app_stat.hvg == HVG_READY && modal::g_app_stat.fpd == FPD_READY;
+        runtime_data_t* d = get_data();
+        assert(d);
+
+        return d->hvg == HVG_READY && d->fpd == FPD_READY;
     }
 
     void drop_hvg()
     {
-        hvg::context_t*& context = modal::g_app_stat.hvg_context;
+        runtime_data_t* d = get_data();
+        assert(d);
+
+        hvg::context_t*& context = d->hvg_context;
         if (hvg::close(context) == hvg::FAILURE) {
             SPDLOG_ERROR("{}", hvg::last_error_str<hvg::error_t>());
         }
@@ -297,7 +328,10 @@ namespace control {
 
     void connect_to_upstream_server()
     {
-        websocket::websocket_t* s = modal::g_app_stat.socket;
+        runtime_data_t* d = get_data();
+        assert(d);
+
+        websocket::websocket_t* s = d->socket;
         SPDLOG_INFO("Connecting to server: ", s->url);
         if (!websocket::connect(s)) {
             SPDLOG_ERROR("Fail to connect to the server.");
@@ -312,10 +346,10 @@ namespace control {
         websocket::send(s, "<HELLO");
     }
 
-    modal::app_stat_t* get_data()
-    {
-        return &modal::g_app_stat;
-    }
+    // modal::app_stat_t* get_data()
+    //{
+    //    return &modal::g_app_stat;
+    //}
 }
 #endif // !CONSOLE_CONTROL_IMPLEMENTED
 

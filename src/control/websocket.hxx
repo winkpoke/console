@@ -30,6 +30,8 @@ namespace websocket {
 
 #ifdef WEBSOCKET_IMPLEMENTATION
 #ifndef WEBSOCKET_IMPLEMENTED
+#define WEBSOCKET_IMPLEMENTED
+
 #include <iostream>
 
 #include <ixwebsocket/IXNetSystem.h>

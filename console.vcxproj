@@ -200,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\flat_panel.hxx" />
+    <ClInclude Include="src\control\runtime_data.hxx" />
     <ClInclude Include="src\include\base64.hxx" />
     <ClInclude Include="src\include\cl.h" />
     <ClInclude Include="src\console.h" />
