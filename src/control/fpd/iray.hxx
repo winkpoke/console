@@ -1,11 +1,11 @@
-#ifndef _FLAT_PANEL_INCLUDE_H_
-#define _FLAT_PANEL_INCLUDE_H_
+#ifndef _FLAT_PANEL_IRAY_INCLUDE_H_
+#define _FLAT_PANEL_IRAY_INCLUDE_H_
 
 #include "DisplayProgressbar.h"
 #include "Detector.h"
 #include "IRayImage.h"
 
-namespace fpd {
+namespace control::fpd {
     struct ApplicatioMode
     {
         int Index;
@@ -22,7 +22,8 @@ namespace fpd {
     int Initializte();
     void Deinit();
 
-    typedef void (*FP_CALLBACK_IMAGE_RECIEVED)(int width, int height, int byte_per_pixel, void* data);
+    //typedef void (*FP_CALLBACK_IMAGE_RECIEVED)(int width, int height, int byte_per_pixel, void* data);
+    using FP_CALLBACK_IMAGE_RECIEVED = std::function<void(int width, int height, int byte_per_pixel, void* data)>;
 
     void SDKCallbackHandler(int nDetectorID, int nEventID, int nEventLevel,
         const char* pszMsg, int nParam1, int nParam2, int nPtrParamLen, void* pParam);
@@ -43,9 +44,9 @@ namespace fpd {
 }
 #endif // !_FLAT_PANEL_INCLUDE_H_
 
-#ifdef FLAT_PANEL_IMPLEMENTATION
-#ifndef FLAT_PANEL_IMPLEMENTED
-#define FLAT_PANEL_IMPLEMENTED
+#ifdef FLAT_PANEL_IRAY_IMPLEMENTATION
+#ifndef FLAT_PANEL_IRAY_IMPLEMENTED
+#define FLAT_PANEL_IRAY_IMPLEMENTED
 //#pragma once
 
 // logging
@@ -56,7 +57,7 @@ namespace fpd {
 #include "Detector.h"
 #include "IRayImage.h"
 
-namespace fpd {
+namespace control::fpd {
     using namespace spdlog;
 
     int Initializte();
@@ -201,5 +202,5 @@ namespace fpd {
         }
     }
 }
-#endif // !FLAT_PANEL_IMPLEMENTED
-#endif // FLAT_PANEL_IMPLEMENTATION
+#endif // !FLAT_PANEL_IRAY_IMPLEMENTED
+#endif // FLAT_PANEL_IRAY_IMPLEMENTATION

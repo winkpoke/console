@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _HVG_SIEMENS_INCLUDE_H_
+#define _HVG_SIEMENS_INCLUDE_H_
 
 #include <time.h>
 #include "imgui.h"
@@ -121,6 +122,36 @@ namespace hvg {
         status_t status;
     };
 
+
+    enum callback_return_t {
+        CONTINUE,
+        BREAK,
+    };
+
+    typedef int (*HVG_CALLBACK_SEND)(const char* msg, int n);
+
+    context_t* open(int port, int baud, const char* mode);
+
+    int close(context_t* context);
+
+    int send(context_t* context, const char* command);
+
+    int recv(context_t* context, char* msg, int timeout = 200 /* ms */);
+
+    int send(context_t* context, const char* command, char* msg, int* condition, int timeout = 100 /* ms */);
+
+    int send(context_t* context, const char* command, HVG_CALLBACK_SEND callback);
+
+    int init_rs232(int port, int baud);
+}
+#endif // !_HVG_SIEMENS_INCLUDE_H_
+
+#ifdef HVG_SIEMENS_IMPLEMENTATION
+#ifndef HVG_SIEMENS_IMPLEMENTED
+#define HVG_SIEMENS_IMPLEMENTED
+
+namespace hvg {
+
     context_t* open(int port, int baud, const char* mode)
     {
         if (RS232_OpenComport(port, baud, mode, 0))
@@ -188,7 +219,7 @@ namespace hvg {
         return hvg::SUCCESS;
     }
 
-    int recv(context_t* context, char* msg, int timeout = 200 /* ms */)
+    int recv(context_t* context, char* msg, int timeout)
     {
         if (context == NULL) {
             // hvg::g_error = ERR_COM_CONTEXT_NULL;
@@ -249,7 +280,7 @@ namespace hvg {
         return FAILURE;
     }
 
-    int send(context_t* context, const char* command, char* msg, int* condition, int timeout = 100 /* ms */)
+    int send(context_t* context, const char* command, char* msg, int* condition, int timeout)
     {
         if (context == NULL) {
             //hvg::g_error = ERR_COM_CONTEXT_NULL;
@@ -341,14 +372,7 @@ namespace hvg {
         set_error<error_t>(error_t::ERR_CMD_TIMEOUT);
         return FAILURE;
     }
-
-    enum callback_return_t {
-        CONTINUE,
-        BREAK,
-    };
-
-    typedef int (*HVG_CALLBACK_SEND)(const char* msg, int n);
-    
+   
     int send(context_t* context, const char* command, HVG_CALLBACK_SEND callback)
     {
         if (context == NULL) {
@@ -467,4 +491,6 @@ namespace hvg {
         return port;
     }
 }
+#endif // HVG_SIEMENS_IMPLEMENTED
+#endif // HVG_SIEMENS_IMPLEMENTATION
 

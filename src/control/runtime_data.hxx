@@ -9,7 +9,7 @@
 #include "modal/scan.hxx"
 
 #include "control/websocket.hxx"
-#include "control/fpd.hxx"
+#include "fpd/fpd.hxx"
 
 
 namespace hvg { struct context_t; }

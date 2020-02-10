@@ -11,8 +11,8 @@
 #include "spdlog/sinks/stdout_sinks.h"
 
 
-#define FLAT_PANEL_IMPLEMENTATION
-#include "common/flat_panel.hxx"
+#define FLAT_PANEL_IRAY_IMPLEMENTATION
+#include "control/fpd/iray.hxx"
 
 #define BASE64_IMPLEMENTATION
 #include "base64.hxx"
@@ -27,7 +27,7 @@
 #include "modal/patient.hxx"
 
 #define CONTROL_FPD_IMPLEMENTATION
-#include "control/fpd.hxx"
+#include "control/fpd/fpd.hxx"
 
 #define WEBSOCKET_IMPLEMENTATION
 #include "control/websocket.hxx"
@@ -49,3 +49,6 @@
 
 #define UI_LOG_IMPLEMENTATION
 #include "ui/log.h"
+
+#define HVG_SIEMENS_IMPLEMENTATION
+#include "control/hvg/hvg.hxx"

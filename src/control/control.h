@@ -5,8 +5,8 @@
 #include "spdlog/sinks/stdout_sinks.h"
 
 
-#include "hvg.h"
-#include "common/flat_panel.hxx"
+#include "hvg/hvg.hxx"
+#include "fpd/iray.hxx"
 
 #include "modal/modal.h"
 
