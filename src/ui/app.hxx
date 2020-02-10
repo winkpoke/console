@@ -127,10 +127,10 @@ namespace ui
         // assert(font1);
         // auto image = sil::make_shared<unsigned char>(w, h, 4, img);
         auto image = cl::build_shared<sil::image_t<unsigned char>>(sil::drop, w, h, 4, img);
-        init(&g_image_widget[0], 512, 512, image);
-        init(&g_image_widget[1], 512, 512, image);
-        init(&g_image_widget[2], 512, 512, image);
-        init(&g_image_widget[3], 512, 512, image);
+        init(&renders::g_image_widget[0], 512, 512, image);
+        init(&renders::g_image_widget[1], 512, 512, image);
+        init(&renders::g_image_widget[2], 512, 512, image);
+        init(&renders::g_image_widget[3], 512, 512, image);
 
         // key events
         app->win->key_events.push_back([](window_t* win, int key) -> bool {
@@ -144,10 +144,10 @@ namespace ui
 
         // renders
         app->win->renders.push_back([=](window_t*) {
-            render_status_window(app);
-            render_image_window(app);
-            render_patient_info_window(app);
-            render_maintenance_window(app);
+            renders::render_status_window(app);
+            renders::render_image_window(app);
+            renders::render_patient_info_window(app);
+            renders::render_maintenance_window(app);
             //win->renders.push_back(&ui::process_camera_data);
             return true;
             });

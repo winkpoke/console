@@ -62,6 +62,7 @@ namespace modal {
 
 #ifdef MODAL_PATIENT_IMPLEMENTATION
 #ifndef MODAL_PATIENT_IMPLEMENTED
+#define MODAL_PATIENT_IMPLEMENTED
 
 #include "base64.hxx"
 
