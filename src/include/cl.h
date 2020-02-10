@@ -158,6 +158,13 @@ namespace cl {
         return std::shared_ptr<T>(p, drop);
     }
 
+    template <class T, class... Args>
+    T apply(T(*f)(Args... args), Args... args)
+    {
+        return f(args);
+    }
+
+
     template <class... Args>
     bool retry(int n, std::function<bool (Args...)> f, Args... args)
     {
