@@ -1,6 +1,9 @@
 ﻿#ifndef CONSOLE_UI_APP_H
 #define CONSOLE_UI_APP_H
 
+#include <mutex>
+#include <shared_mutex>
+
 #include "stb_image.h"
 
 #include "def.h"
@@ -164,6 +167,7 @@ namespace ui
 
     void update(app_t* app, control::runtime_data_t* data)
     {
+        std::shared_lock(data->mutex);
         app->fpd_status = data->fpd->status;
         app->hvg_status = data->hvg->status;
         app->kv = data->hvg->kv;
@@ -175,6 +179,7 @@ namespace ui
 
     void update(control::runtime_data_t* data, app_t* app)
     {
+        std::unique_lock(data->mutex);
         data->fpd->status = app->fpd_status;
         data->hvg->status = app->hvg_status;
         data->hvg->kv = app->kv;

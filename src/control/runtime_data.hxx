@@ -2,8 +2,10 @@
 #define MODAL_RUNTIME_DATA_INCLUDE_H
 
 #include <memory>
+#include <mutex>
+#include <shared_mutex>
 
-#include <librealsense2/rs.hpp>
+// #include <librealsense2/rs.hpp>
 
 #include "def.h"
 #include "modal/scan.hxx"
@@ -17,6 +19,8 @@ namespace hvg { struct context_t; }
 
 namespace control {
     struct runtime_data_t {
+        std::shared_mutex mutex;
+
         cl::unique_ptr<fpd::fpd_t> fpd;
         cl::unique_ptr<hvg::hvg_t> hvg;
         cbct_mode_t cbct_mode;
@@ -49,6 +53,8 @@ namespace control {
 namespace control {
     bool init(runtime_data_t* d) {
         //d->hvg = HVG_UNCONNECTED;
+        new(&d->mutex)std::shared_mutex();
+        std::unique_lock(d->mutex);
         d->fpd = cl::build_unique<fpd::fpd_t>(3072, 3072);
         d->hvg = cl::build_unique<hvg::hvg_t>(70.0f, 5.0f, nullptr);
         d->cbct_mode = CUSTOM;
@@ -64,7 +70,8 @@ namespace control {
         return true;
     }
 
-    void drop(runtime_data_t* d) {
+    void drop(runtime_data_t* d) 
+    {
         // d->fpd is unique_ptr and would be destroyed automatically
         websocket::drop(d->socket);
         d->~runtime_data_t();
