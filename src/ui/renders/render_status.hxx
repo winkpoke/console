@@ -9,6 +9,7 @@
 #include "ui/app.hxx"
 #include "control/control.h"
 #include "control/runtime_data.hxx"
+#include "control/fpd/fpd.hxx"
 
 namespace ui {
     namespace renders {
@@ -35,7 +36,7 @@ namespace ui {
 
             ImGui::Text("FPD status  ... ");
             ImGui::SameLine();
-            ImGui::Text(fpd_status_list[app->fpd]);
+            ImGui::Text(control::fpd::to_string(app->fpd_status).c_str());
 
             ImGui::AlignTextToFramePadding();
             ImGui::Text("HVG status  ... ");
@@ -44,7 +45,7 @@ namespace ui {
 
             ImGui::SameLine();
             if (ImGui::Button("Connect")) {
-                app->fpd = (fpd_status_t)((app->fpd + 1) % 4);
+                app->fpd_status = (control::fpd::fpd_t::status_e)((static_cast<int>(app->fpd_status) + 1) % 4);
             }
 
             ImGui::Separator();

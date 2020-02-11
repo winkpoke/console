@@ -200,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\control\fpd\iray.hxx" />
+    <ClInclude Include="src\control\hvg\hvg.hxx" />
     <ClInclude Include="src\control\runtime_data.hxx" />
     <ClInclude Include="src\include\base64.hxx" />
     <ClInclude Include="src\include\cl.h" />
@@ -208,7 +209,7 @@
     <ClInclude Include="src\control\fpd\fpd.hxx" />
     <ClInclude Include="src\include\nlohmann\json.hpp" />
     <ClInclude Include="src\modal\modal.h" />
-    <ClInclude Include="src\control\hvg\hvg.hxx" />
+    <ClInclude Include="src\control\hvg\siemens.hxx" />
     <ClInclude Include="src\include\spdlog\async.h" />
     <ClInclude Include="src\include\spdlog\async_logger-inl.h" />
     <ClInclude Include="src\include\spdlog\async_logger.h" />

@@ -1,496 +1,220 @@
-#ifndef _HVG_SIEMENS_INCLUDE_H_
-#define _HVG_SIEMENS_INCLUDE_H_
+#ifndef _CONTROL_HVG_H_
+#define _CONTROL_HVG_H_
 
-#include <time.h>
-#include "imgui.h"
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_sinks.h"
 
-#include "rs232.h"
+#include "siemens.hxx"
 
-//// logging
-//#include "spdlog/spdlog.h"
-//#include "spdlog/sinks/stdout_sinks.h"
-
-namespace hvg {
-    const int SUCCESS = 0;
-    const int FAILURE = -1;
-    //enum error_t {
-    //    ERR_NONE,
-    //    ERR_STATUS,
-    //    ERR_COM_OPEN,
-    //    ERR_COM_CLOSE,
-    //    ERR_COM_STATUS,
-    //    ERR_COM_CONTEXT_NULL,
-    //    ERR_CMD_STATUS_PARSE,
-    //    ERR_CMD_TIMEOUT,
-    //};
-    //static error_t g_error = ERR_NONE;
-    //const char* error_description[] = {
-    //    "no error",                       // ERR_NONE
-    //    "HVG status is not ready",        // ERR_STATUS
-    //    "cannot open COM port",           // ERR_COM_OPEN
-    //    "cannot close COM port",          // ERR_COM_CLOSE
-    //    "illegal COM status",             // ERR_COM_STATUS
-    //    "COM context cannot be NULL",     // ERR_COM_CONTEXT_NULL
-    //    "cannot parse status code",       // ERR_CMD_STATUS_PARSE
-    //    "command execution timeout",      // ERR_CMD_TIMEOUT
-    //}; // error_description
-
-    //error_t last_error()
-    //{
-    //    return g_error;
-    //}
-
-    //const char* error_str(error_t e)
-    //{
-    //    return hvg::error_description[e];
-    //}
-
-    struct error_t {
-        static enum id_t {
-            ERR_NONE,
-            ERR_STATUS,
-            ERR_COM_OPEN,
-            ERR_COM_CLOSE,
-            ERR_COM_STATUS,
-            ERR_COM_CONTEXT_NULL,
-            ERR_CMD_STATUS_PARSE,
-            ERR_CMD_TIMEOUT,
-        } id;
-        const static char* desc[];
-        static id_t last_error;
-    } error;
-    error_t::id_t error_t::last_error = error_t::ERR_NONE;
-    const char* error_t::desc[] = {
-        "no error",                       // ERR_NONE
-        "HVG status is not ready",        // ERR_STATUS
-        "cannot open COM port",           // ERR_COM_OPEN
-        "cannot close COM port",          // ERR_COM_CLOSE
-        "illegal COM status",             // ERR_COM_STATUS
-        "COM context cannot be NULL",     // ERR_COM_CONTEXT_NULL
-        "cannot parse status code",       // ERR_CMD_STATUS_PARSE
-        "command execution timeout",      // ERR_CMD_TIMEOUT
-    };
-
-    // error handing:
-    // error class shall have following fields:
-    // 1.  enum id_t id
-    // 2.  const char* [] desc
-    // 3.  static int last_error
-
-    template <class E>
-    void set_error(typename E::id_t e)
-    {
-        E::last_error = e;
-    }
-
-    template <class E>
-    typename E::id_t last_error()
-    {
-        return E::last_error;
-    }
-
-    template <class E>
-    const char* error_str(typename E::id_t e)
-    {
-        return E::desc[e];
-    }
-
-    template <class E>
-    const char* last_error_str()
-    {
-        return error_str<E>(last_error<E>());
-    }
-
-    const char* COMMMAND_STOPS = "\r\n";
-    const size_t BUF_SIZE = 4096;
-
-    struct context_t {
-        enum status_t {
-            PENDING,
-            SENDING,
-            SENT,
-            RECIEVING,
-            //RECIEVED,      // not used
-            //TIMEOUT
+namespace control::hvg {
+    struct hvg_t {
+        enum class status_e {
+            HVG_UNCONNECTED,
+            HVG_CONNECTING,
+            HVG_READY,
+            HVG_EXPOSURE,
+            HVG_ERROR
         };
-        int port;
-        int baud;
-        char mode[4];
-        int pos;
-        int len;
-        char buf[BUF_SIZE];
-        status_t status;
+        const static char* status_strs[];
+
+        status_e status;
+        float kv;
+        float mAs;
+        context_t* context;
     };
 
+    bool init(hvg_t* hvg, float kv, float mAs, std::unique_ptr<context_t> context);
 
-    enum callback_return_t {
-        CONTINUE,
-        BREAK,
-    };
+    void drop(hvg_t* hvg);
 
-    typedef int (*HVG_CALLBACK_SEND)(const char* msg, int n);
+    bool hand_shake(hvg_t* hvg, int retry = 2);
 
-    context_t* open(int port, int baud, const char* mode);
+    bool set_exposure_parm(hvg_t* hvg, float kv, float mAs, char focus, float fate, float fps, int retry = 2);
 
-    int close(context_t* context);
+    int query_status(hvg_t* hvg, int retry = 2);
 
-    int send(context_t* context, const char* command);
+    bool connect(hvg_t* hvg, int port, int baud, const char* mode);
 
-    int recv(context_t* context, char* msg, int timeout = 200 /* ms */);
+    int exposure_callback(const char* msg, int len);
 
-    int send(context_t* context, const char* command, char* msg, int* condition, int timeout = 100 /* ms */);
-
-    int send(context_t* context, const char* command, HVG_CALLBACK_SEND callback);
-
-    int init_rs232(int port, int baud);
+    void exposure(hvg_t* hvg);
 }
-#endif // !_HVG_SIEMENS_INCLUDE_H_
 
-#ifdef HVG_SIEMENS_IMPLEMENTATION
-#ifndef HVG_SIEMENS_IMPLEMENTED
-#define HVG_SIEMENS_IMPLEMENTED
+#endif // !_CONTROL_HVG_H_
 
-namespace hvg {
+#ifdef CONTROL_HVG_IMPLEMENTATION
+#ifndef CONTROL_HVG_IMPLEMENTED
+#define CONTROL_HVG_IMPLEMENTED
 
-    context_t* open(int port, int baud, const char* mode)
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_sinks.h"
+
+
+namespace control::hvg {
+    
+    const char* status_strs[] = { "unconnected", "connecting", "ready", "exposure", "error" };
+
+    using status_e = hvg_t::status_e;
+
+    bool init(hvg_t* hvg, float kv, float mAs, std::unique_ptr<context_t> context)
     {
-        if (RS232_OpenComport(port, baud, mode, 0))
-        {
-            // hvg::g_error = ERR_COM_OPEN;
-            set_error<error_t>(error_t::ERR_COM_OPEN);
-            return NULL;
+        if (!hvg || !context) {
+            return false;
         }
-        context_t* context = (context_t*)malloc(sizeof(context_t));
-        context->port = port;
-        context->baud = baud;
-        context->pos = 0;
-        context->len = 0;
-        memset(context->buf, 0, BUF_SIZE);
-        context->status = context_t::PENDING;
-        strncpy(context->mode, mode, 4);
-        return context;
+        hvg->status = status_e::HVG_UNCONNECTED;
+        hvg->kv = kv;
+        hvg->mAs = mAs;
+        hvg->context = context.release();
+        return true;
     }
 
-    int close(context_t* context)
+    void drop(hvg_t* hvg)
     {
-        if (context != NULL) {
-            free(context);
-            return hvg::SUCCESS;
+        if (hvg) {
+            if (hvg::close(hvg->context) == FAILURE) {
+                SPDLOG_ERROR("{}", last_error_str<error_t>());
+            }
+            close(hvg->context);
+            hvg->~hvg_t();
+            free(hvg);
+        }
+    }
+
+    bool hand_shake(hvg_t* hvg, int retry)
+    {
+        SPDLOG_INFO("Hand shake with HVG.");
+
+        if (!hvg || !hvg->context) {
+            return false;
+        }
+
+        char msg[1024] = { 0 };
+        int count = 0;
+        while (retry-- >= 0) {
+            SPDLOG_TRACE("try - {:d}", count++);
+            int condition = 0;
+            int n = send(hvg->context, "<IFV", msg, &condition, 1000);
+            if (condition != 0) {
+                SPDLOG_DEBUG("condition changed: {:.8X}", condition);
+            }
+            if (n <= 0 || strncmp(msg, ">IFV 1", n) != 0) {
+                SPDLOG_TRACE("err: {:d} - {}: {}", n, msg, last_error_str<hvg::error_t>());
+                SPDLOG_TRACE("len = {:d}; pos = {:d}, buf = {}", hvg->context->len, hvg->context->pos, hvg->context->buf);
+                continue;
+            }
+            SPDLOG_TRACE("ok: {:d} - {}", n, msg);
+            return true;
+        }
+        return false;
+    }
+
+    bool set_exposure_parm(hvg_t* hvg, float kv, float mAs, char focus, float fate, float fps, int retry)
+    {
+        SPDLOG_INFO("Set HVG exposure parameters");
+
+        char msg[1024] = { 0 };
+        int count = 0;
+        float mA = mAs / (fate / fps / 1000);
+        //char focus = 'L';
+        while (retry-- >= 0) {
+            SPDLOG_DEBUG("try - {:d}", count++);
+            char param[1024] = { 0 };
+            sprintf(param, "0 %.1f %0.2f %.3f 0000 %c %.1f", kv, mAs, mA, focus, fps);
+            char cmd[1024];
+            char rtv[1024];
+            sprintf(cmd, "<ES3 %s", param);
+            sprintf(rtv, ">VS3 %s", param);
+            //printf("\n%s\n", rtv);
+            int condition = 0;
+            int n = send(hvg->context, cmd, msg, &condition, 5000);
+            if (condition != 0) {
+                printf("condition changed: %.8X", condition);
+            }
+            if (n <= 0 || strncmp(msg, rtv, n) != 0) {
+                SPDLOG_DEBUG("error [{:d}] {} :: n {} :: {}", last_error<error_t>(), last_error_str<error_t>(), n, msg);
+                SPDLOG_DEBUG("len = {:d}; pos = {:d}, buf = {}", hvg->context->len, hvg->context->pos, hvg->context->buf);
+                if (retry < 0) {
+                    break;
+                }
+                continue;
+            }
+            SPDLOG_DEBUG("ok: {:d} - {}", n, msg);
+            return true;
+        }
+        return false;
+    }
+
+    int query_status(hvg_t* hvg, int retry)
+    {
+        char msg[1024] = { 0 };
+        while (retry-- >= 0) {
+            int condition = 0;
+            int n = send(hvg->context, "<GST", msg, &condition, 1000);
+            if (n > 0) {
+                int cond0 = 0;
+                int cond1 = 0;
+                int rtv = sscanf(msg, ">GST %x %x", &cond0, &cond1);
+                if (rtv != 2) {
+                    return -1;
+                }
+                return (cond0 << 16) | cond1;
+            }
+        }
+        return -1;
+    }
+
+    bool connect(hvg_t* hvg, int port, int baud, const char* mode)
+    {
+        hvg->status = status_e::HVG_CONNECTING;
+        // Init RS232
+        hvg->context = open(port, baud, mode);
+        if (hvg->context == NULL) {
+            SPDLOG_ERROR(last_error_str<error_t>());
+            hvg->status = status_e::HVG_ERROR;
+            return false;
         }
         else {
-            set_error<error_t>(error_t::ERR_COM_CONTEXT_NULL);
-            return hvg::FAILURE;
-        }
-    }
-
-    int send(context_t* context, const char* command)
-    {
-        if (context == NULL) {
-            set_error<error_t>(error_t::ERR_COM_CONTEXT_NULL);
-            return hvg::FAILURE;
-        }
-
-        // TODO: check command is valid
-
-        const char* stops = hvg::COMMMAND_STOPS;
-        static char send_buf[4096];
-        const int port = context->port;
-        context_t::status_t& status = context->status;
-        context_t::status_t old_status = status;
-
-        // check status: send only when status is PENDING
-        if (status != context_t::PENDING) { 
-
-            // hvg::g_error = ERR_COM_STATUS;
-            set_error<error_t>(error_t::ERR_COM_STATUS);
-            return hvg::FAILURE;
-        }
-
-        // always flush TX buffer before sending command
-        RS232_flushTX(port);
-
-        // Send command to HVG
-        sprintf(send_buf, "%s%s", command, stops);
-        status = context_t::SENDING;
-        RS232_cputs(port, send_buf);
-        status = context_t::SENT;
-        status = context_t::PENDING;
-
-        return hvg::SUCCESS;
-    }
-
-    int recv(context_t* context, char* msg, int timeout)
-    {
-        if (context == NULL) {
-            // hvg::g_error = ERR_COM_CONTEXT_NULL;
-            set_error<error_t>(error_t::ERR_COM_CONTEXT_NULL);
-            return hvg::FAILURE;
-        }
-
-        const char* stops = hvg::COMMMAND_STOPS;
-        static char send_buf[4096];
-        const int port = context->port;
-        context_t::status_t& status = context->status;
-        context_t::status_t old_status = status;
-
-        // check status: send only when status is PENDING
-        if (status != context_t::PENDING) { 
-            // hvg::g_error = ERR_COM_STATUS;
-            set_error<error_t>(error_t::ERR_COM_STATUS);
-            return hvg::FAILURE;
-        }
-
-        if (msg == NULL) {
-            // in case of no return data
-            status = context_t::PENDING;
-            return 0;
-        }
-        unsigned char* buf = (unsigned char*)context->buf;
-        int& n = context->len;
-        int& pos = context->pos;
-        time_t start = time(NULL);
-        time_t now = time(NULL);
-
-        status = context_t::RECIEVING;
-        n = RS232_PollComport(port, buf, BUF_SIZE);
-        pos = 0;
-
-        char* d = msg;
-        while (difftime(now, start) < timeout / 1000.0) {
-            if (n > 0) {
-                buf[n] = 0;   /* always put a "null" at the end of a string! */
-                char* s = (char*)buf + pos;
-                while (n > 0) {
-                    SPDLOG_DEBUG("pos = {:d}, len = {:d}, s = {}", pos, n, *s);
-                    if (*s == '\n' && *(d - 1) == '\r') {
-                        *(d - 1) = 0;
-                        status = context_t::PENDING;
-                        return d - msg - 1;
-                    }
-                    *d++ = *s++;
-                    pos++, n--;
-                }
+            if (!hand_shake(hvg, 2)) {
+                hvg->status = status_e::HVG_ERROR;
+                return false;
             }
-            n = RS232_PollComport(port, buf, BUF_SIZE);
-            pos = 0;
-            now = time(NULL);
-        }
-        // hvg::g_error = ERR_CMD_TIMEOUT;
-        set_error<error_t>(error_t::ERR_CMD_TIMEOUT);
-        return FAILURE;
-    }
 
-    int send(context_t* context, const char* command, char* msg, int* condition, int timeout)
-    {
-        if (context == NULL) {
-            //hvg::g_error = ERR_COM_CONTEXT_NULL;
-            set_error<error_t>(error_t::ERR_COM_CONTEXT_NULL);
-            return hvg::FAILURE;
-        }
-
-        // TODO: check command is valid
-
-        const char* stops = hvg::COMMMAND_STOPS;
-        static char send_buf[4096];
-        const int port = context->port;
-        context_t::status_t& status = context->status;
-        context_t::status_t old_status = status;
-
-        // check status: send only when status is PENDING
-        if (status != context_t::PENDING) { // && status != context_t::TIMEOUT) {
-            // hvg::g_error = ERR_COM_STATUS;
-            set_error<error_t>(error_t::ERR_COM_STATUS);
-            return hvg::FAILURE;
-        }
-
-        // always flush RX/TX buffer before sending command
-        RS232_flushRXTX(port);
-
-        // Send command to HVG
-        sprintf(send_buf, "%s%s", command, stops);
-        status = context_t::SENDING;
-        RS232_cputs(port, send_buf);
-        status = context_t::SENT;
-
-        if (msg == NULL) {
-            // in case of no return data
-            status = context_t::PENDING;
-            return 0;
-        }
-
-        unsigned char* buf = (unsigned char*)context->buf;
-        int& n = context->len;
-        int& pos = context->pos;
-        time_t start = time(NULL);
-        time_t now = time(NULL);
-
-        status = context_t::RECIEVING;
-        n = RS232_PollComport(port, buf, BUF_SIZE);
-        pos = 0;
-
-        char* d = msg;
-        while (difftime(now, start) < timeout / 1000.0) {
-            if (n > 0) {
-                buf[n] = 0;   /* always put a "null" at the end of a string! */
-                char* s = (char*)buf + pos;
-                while (n > 0) {
-                    //SPDLOG_DEBUG("pos = {:d}, len = {:d}, s = {2.2X}, d = {0.2X} \n", pos, n, *s, *d);
-                    SPDLOG_DEBUG("pos = {:d}, len = {:d}, s = {}", pos, n, *s);
-                    if (*s == '\n' && *(d - 1) == '\r') {
-                        *(d - 1) = 0;
-                        const int len = d - msg - 1;
-                        if (strncmp((char*)msg, ">RDY", 4) != 0) {
-                            // hvg::g_error = ERR_CMD_STATUS_PARSE;
-                            set_error<error_t>(error_t::ERR_CMD_STATUS_PARSE);
-                            status = context_t::PENDING;
-                            return len;
-                        }
-
-                        // in case the HVG status is changed 
-                        int cond0 = 0;
-                        int cond1 = 0;
-                        int rtv = sscanf((char*)msg, ">RDY %x %x", &cond0, &cond1);
-                        if (rtv != 2) {
-                            status = context_t::PENDING;
-                            return FAILURE;
-                        }
-                        *condition = (cond0 << 16) | cond1;
-                        s++, pos++, n--;    // skip \n
-                        d = msg;
-                    }
-                    *d++ = *s++;
-                    pos++, n--;
-                }
+            if (!set_exposure_parm(hvg, 100.0f, 0.5f, 'L', 300, 6, 2)) {
+                hvg->status = status_e::HVG_ERROR;
+                return false;
             }
-            n = RS232_PollComport(port, buf, BUF_SIZE);
-            pos = 0;
-            now = time(NULL);
-            // spdlog::debug("difftime = {:f}", difftime(now, start));
+            hvg->status = status_e::HVG_READY;
+            SPDLOG_DEBUG(">GST {:.8X}", query_status(hvg));
+            return true;
         }
-        status = context_t::PENDING;
-        // hvg::g_error = ERR_CMD_TIMEOUT;
-        set_error<error_t>(error_t::ERR_CMD_TIMEOUT);
-        return FAILURE;
     }
-   
-    int send(context_t* context, const char* command, HVG_CALLBACK_SEND callback)
+
+    int exposure_callback(const char* msg, int len)
     {
-        if (context == NULL) {
-            // hvg::g_error = ERR_COM_CONTEXT_NULL;
-            set_error<error_t>(error_t::ERR_COM_CONTEXT_NULL);
-            return hvg::FAILURE;
+        SPDLOG_DEBUG("in HVG callback");
+        if (strncmp(msg, ">EPA", 4) == 0) {
+            SPDLOG_DEBUG(msg);
+            return callback_return_t::CONTINUE;
         }
-
-        // TODO: check command is valid
-
-        const char* stops = hvg::COMMMAND_STOPS;
-        static char send_buf[4096];
-        const int port = context->port;
-        context_t::status_t& status = context->status;
-        context_t::status_t old_status = status;
-
-        // check status: send only when status is PENDING
-        if (status != context_t::PENDING) { // && status != context_t::TIMEOUT) {
-            // hvg::g_error = ERR_COM_STATUS;
-            set_error<error_t>(error_t::ERR_COM_STATUS);
-            return hvg::FAILURE;
+        else if (strncmp(msg, ">SBY", 4) == 0) {
+            SPDLOG_DEBUG("standby ...");
+            return hvg::callback_return_t::BREAK;
         }
+        else {
+            SPDLOG_DEBUG(msg);
+            return hvg::callback_return_t::CONTINUE;
+        }
+    }
 
-        // always flush RX/TX buffer before sending command
-        RS232_flushRXTX(port);
-
-        // Send command to HVG
-        sprintf(send_buf, "%s%s", command, stops);
-        status = context_t::SENDING;
-        RS232_cputs(port, send_buf);
-        status = context_t::SENT;
-
-        unsigned char* buf = (unsigned char*)context->buf;
-        int& n = context->len;
-        int& pos = context->pos;
-        time_t start = time(NULL);
-        time_t now = time(NULL);
-
-        status = context_t::RECIEVING;
-        n = RS232_PollComport(port, buf, BUF_SIZE);
-        pos = 0;
-
+    void exposure(hvg_t* hvg)
+    {
         char msg[1024];
-        char* d = msg;
-        while (1) {
-            if (n > 0) {
-                buf[n] = 0;   /* always put a "null" at the end of a string! */
-                char* s = (char*)buf + pos;
-                while (n > 0) {
-                    //SPDLOG_DEBUG("pos = {:d}, len = {:d}, s = {2.2X}, d = {0.2X} \n", pos, n, *s, *d);
-                    SPDLOG_DEBUG("pos = {:d}, len = {:d}, s = {}", pos, n, *s);
-                    if (*s == '\n' && *(d - 1) == '\r') {
-                        *(d - 1) = 0;
-                        const int len = d - msg - 1;
-                        int e = callback(msg, len);
-                        if (e == BREAK) {
-                            status = context_t::PENDING;
-                            return 0;
-                        }
-                        s++, pos++, n--;    // skip \n
-                        d = msg;
-                    }
-                    *d++ = *s++;
-                    pos++, n--;
-                }
-            }
-            n = RS232_PollComport(port, buf, BUF_SIZE);
-            pos = 0;
-        }
-    }
-
-    //int send(int port, const char* command, char* str, int timeout = 100 /* ms */)
-    //{
-    //    const char* stops = hvg::COMMMAND_STOPS;
-    //    static char send_buf[4096];
-
-    //    sprintf(send_buf, "%s%s", command, stops);
-    //    RS232_cputs(port, send_buf);
-
-    //    unsigned char r_buf[4096];
-    //    time_t start = time(NULL);
-    //    time_t now = time(NULL);
-    //    printf("difftime = %f", difftime(now, start));
-    //    while (difftime(now, start) < timeout / 1000.0) {
-    //        int n = RS232_PollComport(port, r_buf, 4095);
-    //        if (n > 0) {
-    //            r_buf[n] = 0;   /* always put a "null" at the end of a string! */
-    //            char* s = (char*)r_buf;
-    //            char* d = str;
-    //            while (n-- > 0) {
-    //                if (*s == '\n' && *(d - 1) == '\r') {
-    //                    *(d - 1) = 0;
-    //                    return d - str - 1;
-    //                }
-    //                else {
-    //                    *d++ = *s++;
-    //                }
-    //            }
-    //        }
-    //        now = time(NULL);
-    //    }
-    //    return 0;
-    //}
-
-    int init_rs232(int port, int baud)
-    {
-        //unsigned char buf[4096];
-        char mode[] = { '8','N','2',0 };
-
-        if (RS232_OpenComport(port, baud, mode, 0))
-        {
-            // hvg::g_error = ERR_COM_OPEN;
-            set_error<error_t>(error_t::ERR_COM_OPEN);
-            return hvg::FAILURE;
-        }
-        return port;
+        int condition = 0;
+        int n = hvg::send(hvg->context, "<SXP 0 0 0", NULL, &condition, 5000);
+        hvg->status = status_e::HVG_EXPOSURE;
+        n = hvg::send(hvg->context, "<SXP 1 0 1", exposure_callback);
     }
 }
-#endif // HVG_SIEMENS_IMPLEMENTED
-#endif // HVG_SIEMENS_IMPLEMENTATION
 
+#endif // CONTROL_HVG_IMPLEMENTED
+#endif // !CONTROL_HVG_IMPLEMENTATION

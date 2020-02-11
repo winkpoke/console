@@ -101,5 +101,4 @@ namespace modal {
 }
 #endif // !CONSOLE_MODAL_IMPLEMENTED
 
-
 #endif   // CONSOLE_MODAL_IMPLEMENTATION

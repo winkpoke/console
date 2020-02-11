@@ -51,4 +51,7 @@
 #include "ui/log.h"
 
 #define HVG_SIEMENS_IMPLEMENTATION
+#include "control/hvg/siemens.hxx"
+
+#define CONTROL_HVG_IMPLEMENTATION
 #include "control/hvg/hvg.hxx"

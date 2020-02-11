@@ -8,6 +8,7 @@
 #include "modal/modal.h"
 #include "control/runtime_data.hxx"
 #include "ui/image.h"
+#include "control/fpd/fpd.hxx"
 
 
 namespace ui {
@@ -19,7 +20,7 @@ namespace ui {
 
     struct app_t {
         // FPD 
-        fpd_status_t fpd;
+        control::fpd::fpd_t::status_e fpd_status;
 
         // HVG 
         hvg_status_t hvg;
@@ -165,7 +166,7 @@ namespace ui
 
     void update(app_t* app, control::runtime_data_t* data)
     {
-        app->fpd = data->fpd;
+        app->fpd_status = data->fpd->status;
         app->hvg = data->hvg;
         app->kv = data->kv;
         app->mAs = data->mAs;
@@ -176,7 +177,7 @@ namespace ui
 
     void update(control::runtime_data_t* data, app_t* app)
     {
-        data->fpd = app->fpd;
+        data->fpd->status = app->fpd_status;
         data->hvg = app->hvg;
         data->kv = app->kv;
         data->mAs = app->mAs;
@@ -192,14 +193,14 @@ namespace ui
         {
             new_frame(app->win);
 
-            update(app, control::get_data());
+            update(app, control::get_runtime_data());
 
             render(app->win);
 
             process_event(app->win);
             draw(app->win);
 
-            update(control::get_data(), app);
+            update(control::get_runtime_data(), app);
         }
     }
 }

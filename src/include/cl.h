@@ -102,6 +102,28 @@ namespace cl {
     //unique_ptr<T> unique_nullptr = unique_ptr<T>(nullptr, dummy_drop<T>);
 
     template <class T, class... Args>
+    cl::unique_ptr<T> build_unique(Args... args)
+    {
+        auto p = build_raw<T>(args...);
+        auto f = [](T* p)
+        {
+            drop(p);
+        };
+        return cl::unique_ptr<T>(p, f);
+    }
+
+    template <class T, class... Args>
+    cl::shared_ptr<T> build_shared(Args... args)
+    {
+        auto p = build_raw<T>(args...);
+        auto f = [](T* p)
+        {
+            drop(p);
+        };
+        return std::shared_ptr<T>(p, f);
+    }
+
+    template <class T, class... Args>
     std::unique_ptr<T, void(*)(T*)> build_unique(void(*drop)(T*), Args... args)
     {
         auto p = build_raw<T>(args...);
@@ -144,26 +166,19 @@ namespace cl {
         return std::shared_ptr<T>(p, drop);
     }
     
-    template <class T>
-    std::unique_ptr<T, std::function<void(T*)>> build_unique(std::function<void(T*)> drop, T* p)
-    {
-        assert(p);
-        return std::unique_ptr<T, decltype(drop)>(p, drop);
-    }
+    //template <class T>
+    //std::unique_ptr<T, std::function<void(T*)>> build_unique(std::function<void(T*)> drop, T* p)
+    //{
+    //    assert(p);
+    //    return std::unique_ptr<T, decltype(drop)>(p, drop);
+    //}
 
-    template <class T>
-    std::shared_ptr<T> build_shared(std::function<void(T*)> drop, T* p)
-    {
-        assert(p);
-        return std::shared_ptr<T>(p, drop);
-    }
-
-    template <class T, class... Args>
-    T apply(T(*f)(Args... args), Args... args)
-    {
-        return f(args);
-    }
-
+    //template <class T>
+    //std::shared_ptr<T> build_shared(std::function<void(T*)> drop, T* p)
+    //{
+    //    assert(p);
+    //    return std::shared_ptr<T>(p, drop);
+    //}
 
     template <class... Args>
     bool retry(int n, std::function<bool (Args...)> f, Args... args)

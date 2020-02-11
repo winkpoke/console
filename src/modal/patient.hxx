@@ -14,25 +14,7 @@ namespace modal {
         MALE, FEMALE, INTERSEX, UNKNOWN
     };
 
-    std::string to_string(gender_e g)
-    {
-        switch (g) {
-        case gender_e::MALE:
-            return "Male";
-        case gender_e::FEMALE :
-            return "Female";
-        case gender_e::UNKNOWN :
-            return "Unknown";
-        case gender_e::INTERSEX:
-            return "Intersex";
-        default:
-            assert(0);
-        }
-        // the program shall not be here
-        // but just want to make sure every path
-        // returns a value
-        return "Unknown";
-    }
+    std::string to_string(gender_e g);
 
     struct patient_t {
         using unique_ptr = std::unique_ptr<patient_t, void(patient_t*)>;
@@ -68,6 +50,26 @@ namespace modal {
 
 namespace modal {
     using json = nlohmann::json;
+
+    std::string to_string(gender_e g)
+    {
+        switch (g) {
+        case gender_e::MALE:
+            return "Male";
+        case gender_e::FEMALE:
+            return "Female";
+        case gender_e::UNKNOWN:
+            return "Unknown";
+        case gender_e::INTERSEX:
+            return "Intersex";
+        default:
+            assert(0);
+        }
+        // the program shall not be here
+        // but just want to make sure every path
+        // returns a value
+        return "Unknown";
+    }
 
     bool init(patient_t* p)
     {
@@ -114,6 +116,7 @@ namespace modal {
     {
         if (p) {
             drop(p->portrait);
+            p->~patient_t();
             free(p);
         }
     }

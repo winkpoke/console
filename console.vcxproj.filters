@@ -263,6 +263,9 @@
     <ClInclude Include="src\control\fpd\iray.hxx">
       <Filter>header</Filter>
     </ClInclude>
+    <ClInclude Include="src\control\hvg\siemens.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
     <ClInclude Include="src\control\hvg\hvg.hxx">
       <Filter>header</Filter>
     </ClInclude>
