@@ -9,6 +9,7 @@
 #include "control/runtime_data.hxx"
 #include "ui/image.h"
 #include "control/fpd/fpd.hxx"
+#include "control/hvg/hvg.hxx"
 
 
 namespace ui {
@@ -19,11 +20,8 @@ namespace ui {
     static unsigned char* img1 = stbi_load("resources\\images\\patient.png", &w1, &h1, NULL, 4);
 
     struct app_t {
-        // FPD 
-        control::fpd::fpd_t::status_e fpd_status;
-
-        // HVG 
-        hvg_status_t hvg;
+        control::fpd::status_e fpd_status;
+        control::hvg::status_e hvg_status;
         float kv;
         float mAs;
         cbct_mode_t cbct_mode;
@@ -60,7 +58,7 @@ namespace ui {
 #include "ui/window.h"
 #include "ui/log.h"
 #include "modal/modal.h"
-#include "control/control.h"
+#include "control/control.hxx"
 
 #include "renders/render_image.hxx"
 #include "renders/render_patient_info.hxx"
@@ -167,9 +165,9 @@ namespace ui
     void update(app_t* app, control::runtime_data_t* data)
     {
         app->fpd_status = data->fpd->status;
-        app->hvg = data->hvg;
-        app->kv = data->kv;
-        app->mAs = data->mAs;
+        app->hvg_status = data->hvg->status;
+        app->kv = data->hvg->kv;
+        app->mAs = data->hvg->mAs;
         app->cbct_mode = data->cbct_mode;
         app->resolution = data->resolution;
         app->slice_dist = data->slice_dist;
@@ -178,9 +176,9 @@ namespace ui
     void update(control::runtime_data_t* data, app_t* app)
     {
         data->fpd->status = app->fpd_status;
-        data->hvg = app->hvg;
-        data->kv = app->kv;
-        data->mAs = app->mAs;
+        data->hvg->status = app->hvg_status;
+        data->hvg->kv = app->kv;
+        data->hvg->mAs = app->mAs;
         data->cbct_mode = app->cbct_mode;
         data->resolution = app->resolution;
         data->slice_dist = app->slice_dist;

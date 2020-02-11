@@ -10,14 +10,6 @@ namespace sil {
     using namespace std;
     using namespace cl;
 
-    //struct error_t {
-    //    enum id {ERROR_NONE};
-
-    //    static const char* const desc[] = {
-    //        "hello",
-    //    };
-    //};
-
     template <class pixel_t>
     struct image_t {
         typedef pixel_t pixel_t;
@@ -26,11 +18,6 @@ namespace sil {
         size_t width;
         pixel_t* data;
     };
-
-    template <class pixel_t>
-    bool init(image_t<pixel_t>* image, size_t width, size_t height, u16 channel, pixel_t* data = nullptr);
-    template <class pixel_t>
-    void drop(image_t<pixel_t>* image);
 
     template <class T>
     bool init(image_t<T>* image, size_t width, size_t height, u16 channel, T* data)
@@ -68,13 +55,5 @@ namespace sil {
             free(image);
         }
     }
-
-    template <class T>
-    decltype(T::pixel_t) min_value()
-    {
-        return 10;
-    }
-
-    
 }
 

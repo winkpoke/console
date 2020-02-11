@@ -206,9 +206,6 @@
     <ClInclude Include="src\control\ops.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\control\control.h">
-      <Filter>source\modal</Filter>
-    </ClInclude>
     <ClInclude Include="src\modal\modal.h">
       <Filter>source\data</Filter>
     </ClInclude>
@@ -268,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="src\control\hvg\hvg.hxx">
       <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\control\control.hxx">
+      <Filter>source\modal</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

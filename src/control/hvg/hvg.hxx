@@ -22,10 +22,13 @@ namespace control::hvg {
         float mAs;
         context_t* context;
     };
+    using status_e = hvg_t::status_e;
 
     bool init(hvg_t* hvg, float kv, float mAs, std::unique_ptr<context_t> context);
 
     void drop(hvg_t* hvg);
+
+    std::string to_string(status_e status);
 
     bool hand_shake(hvg_t* hvg, int retry = 2);
 
@@ -56,9 +59,14 @@ namespace control::hvg {
 
     using status_e = hvg_t::status_e;
 
+    std::string to_string(status_e status)
+    {
+        return status_strs[static_cast<int>(status)];
+    }
+
     bool init(hvg_t* hvg, float kv, float mAs, std::unique_ptr<context_t> context)
     {
-        if (!hvg || !context) {
+        if (!hvg) {
             return false;
         }
         hvg->status = status_e::HVG_UNCONNECTED;

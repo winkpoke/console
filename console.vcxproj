@@ -222,7 +222,7 @@
     <ClInclude Include="src\include\spdlog\spdlog.h" />
     <ClInclude Include="src\include\spdlog\tweakme.h" />
     <ClInclude Include="src\include\spdlog\version.h" />
-    <ClInclude Include="src\control\control.h" />
+    <ClInclude Include="src\control\control.hxx" />
     <ClInclude Include="src\control\ops.h" />
     <ClInclude Include="src\include\sil.h" />
     <ClInclude Include="src\include\stb_image.h" />

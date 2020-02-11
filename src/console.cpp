@@ -23,10 +23,13 @@ int main(int, char**)
     //std::thread connect_to_hvg(modal::connect_to_hvg);
     std::thread connect_to_upstream_server(control::connect_to_upstream_server);
 
-    auto app = cl::build_unique<ui::app_t>(ui::drop);
+    std::thread ui_run([]() {
+        if (ui::init()) {
+            ui::run();
+            ui::drop();
+        }});
 
-    ui::run(app.get());
-
+    ui_run.join();
     connect_to_fpd.join();
     ////connect_to_hvg.join();
     connect_to_upstream_server.join();

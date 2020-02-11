@@ -7,7 +7,7 @@
 
 #include "def.h"
 #include "ui/app.hxx"
-#include "control/control.h"
+#include "control/control.hxx"
 #include "control/runtime_data.hxx"
 #include "control/fpd/fpd.hxx"
 
@@ -41,7 +41,7 @@ namespace ui {
             ImGui::AlignTextToFramePadding();
             ImGui::Text("HVG status  ... ");
             ImGui::SameLine();
-            ImGui::Text(hvg_status_list[app->hvg]);
+            ImGui::Text(control::hvg::to_string(app->hvg_status).c_str());
 
             ImGui::SameLine();
             if (ImGui::Button("Connect")) {

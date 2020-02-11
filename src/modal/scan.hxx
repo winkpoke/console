@@ -1,6 +1,8 @@
 #ifndef _CONSOLE_SCAN_H_
 #define _CONSOLE_SCAN_H_
 
+#include "cl.h"
+
 namespace modal {
     struct scan_t {
         typedef unsigned short pixel_t;

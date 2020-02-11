@@ -101,6 +101,7 @@ namespace cl {
     //template <class T>
     //unique_ptr<T> unique_nullptr = unique_ptr<T>(nullptr, dummy_drop<T>);
 
+
     template <class T, class... Args>
     cl::unique_ptr<T> build_unique(Args... args)
     {

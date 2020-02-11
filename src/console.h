@@ -36,7 +36,7 @@
 #include "control/runtime_data.hxx"
 
 #define CONSOLE_CONTROL_IMPLEMENTATION
-#include "control/control.h"
+#include "control/control.hxx"
 
 #define WINDOW_IMPLEMENTATION
 #include "ui/window.h"

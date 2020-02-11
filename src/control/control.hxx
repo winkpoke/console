@@ -65,7 +65,7 @@ namespace control {
         const int port = 3;
         const int baud = 19200;
 
-        hvg::connect(d->hvg1.get(), port, baud, "8N2");
+        hvg::connect(d->hvg.get(), port, baud, "8N2");
     }
 
     void setup_patient()
@@ -79,7 +79,8 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        return d->hvg == HVG_READY && d->fpd->status == fpd::fpd_t::status_e::FPD_READY;
+        return d->hvg->status == hvg::status_e::HVG_READY && 
+               d->fpd->status == fpd::status_e::FPD_READY;
     }
 
     bool is_exposure_ready()
@@ -87,24 +88,8 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        return d->hvg == HVG_READY && d->fpd->status == fpd::fpd_t::status_e::FPD_READY;
-    }
-
-    void drop_hvg()
-    {
-        runtime_data_t* d = get_runtime_data();
-        assert(d);
-
-        hvg::context_t*& context = d->hvg_context;
-        if (hvg::close(context) == hvg::FAILURE) {
-            SPDLOG_ERROR("{}", hvg::last_error_str<hvg::error_t>());
-        }
-    }
-
-    void drop_fpd()
-    {
-        //fpd::fp_stop_acquire();
-        //fpd::Deinit();
+        return d->hvg->status == hvg::status_e::HVG_READY && 
+               d->fpd->status == fpd::status_e::FPD_READY;
     }
 
     bool init()
@@ -114,8 +99,10 @@ namespace control {
 
     void drop()
     {
-        drop_hvg();
-        drop_fpd();
+        auto p = get_runtime_data();
+        if (p) {
+            drop(p);
+        }
     }
 
     void connect_to_upstream_server()
@@ -137,11 +124,6 @@ namespace control {
         );
         websocket::send(s, "<HELLO");
     }
-
-    // modal::app_stat_t* get_data()
-    //{
-    //    return &modal::g_app_stat;
-    //}
 }
 #endif // !CONSOLE_CONTROL_IMPLEMENTED
 
