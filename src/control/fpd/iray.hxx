@@ -6,6 +6,24 @@
 #include "IRayImage.h"
 
 namespace control::fpd {
+    struct iray_t {
+        using on_image_f = std::function<void(int width, int height, int byte_per_pixel, void* data)>;
+        struct mode_t {
+            int index;
+            int PGA;
+            int binning;
+            int zoom;
+            float freq;
+            char subset[32];
+        } mode;
+        CDetector* detector;
+        int acquire_time = 5000;
+    };
+
+    bool init(iray_t* iray);
+    void drop(iray_t* iray);
+
+
     struct ApplicatioMode
     {
         int Index;

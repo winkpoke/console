@@ -16,8 +16,13 @@ namespace ui {
             modal::patient_t* p = app->patient;
             assert(p);
 
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove |
+                                            ImGuiWindowFlags_NoResize |
+                                            ImGuiWindowFlags_NoCollapse |
+                                            ImGuiWindowFlags_NoTitleBar;
+
             static bool p_open;
-            ImGui::Begin("##patient_info", &p_open, ImGuiWindowFlags_NoTitleBar);
+            ImGui::Begin("##patient_info", &p_open, window_flags);
             ImGui::Columns(3, 0, false);
             ImGui::SetColumnWidth(0, 80);
             if (p->portrait)

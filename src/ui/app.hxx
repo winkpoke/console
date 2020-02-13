@@ -70,6 +70,21 @@ namespace ui {
 
 namespace ui
 {
+    static void set_window_style(app_t* app)
+    {
+        assert(app);
+        auto win = app->win;
+        assert(win);
+
+        ImGuiStyle& style = ImGui::GetStyle();
+        style.FramePadding = ImVec2(11.0f, 8.f);
+        style.ItemInnerSpacing[0] = 11.f;
+        style.GrabMinSize = 20.f;
+        style.WindowRounding = 0.f;
+        style.FrameRounding = 3.f;
+        style.ScrollbarRounding = 3.f;
+    }
+
     bool init(app_t* app)
     {
         assert(app);
@@ -110,6 +125,8 @@ namespace ui
 
         //io.Fonts->GetGlyphRangesChineseFull());// 
         auto font0 = io.Fonts->AddFontDefault();
+        //const char font_path[256] = "resources\\fonts\\fontawesome-webfont.ttf";
+        //auto font0 = io.Fonts->AddFontFromFileTTF(font_path, 18);
         assert(font0);
         ImFontConfig config;
         config.MergeMode = true;
@@ -154,6 +171,9 @@ namespace ui
             return true;
             });
 
+        // set style
+        set_window_style(app);
+
 
         return true;
     }
@@ -168,7 +188,11 @@ namespace ui
     void update(app_t* app, control::runtime_data_t* data)
     {
         std::shared_lock(data->mutex);
-        app->fpd_status = data->fpd->status;
+        
+        auto fpd = get<control::fpd::fpd_t>(data, "fpd");
+        assert(fpd);
+
+        app->fpd_status = fpd->status;
         app->hvg_status = data->hvg->status;
         app->kv = data->hvg->kv;
         app->mAs = data->hvg->mAs;
@@ -180,7 +204,11 @@ namespace ui
     void update(control::runtime_data_t* data, app_t* app)
     {
         std::unique_lock(data->mutex);
-        data->fpd->status = app->fpd_status;
+
+        auto fpd = get<control::fpd::fpd_t>(data, "fpd");
+        assert(fpd);
+
+        fpd->status = app->fpd_status;
         data->hvg->status = app->hvg_status;
         data->hvg->kv = app->kv;
         data->hvg->mAs = app->mAs;

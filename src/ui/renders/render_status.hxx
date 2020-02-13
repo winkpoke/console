@@ -30,7 +30,10 @@ namespace ui {
         {
             static bool show_demo_window = false;
 
-            ImGuiWindowFlags window_flags = 0; // ImGuiWindowFlags_NoMove;
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove     | 
+                                            ImGuiWindowFlags_NoResize   |
+                                            ImGuiWindowFlags_NoCollapse |
+                                            ImGuiWindowFlags_NoTitleBar;
             static bool* p_open;
             ImGui::Begin("##Status", p_open, window_flags);                          // Create a window called "Hello, world!" and append into it.
 
@@ -83,13 +86,13 @@ namespace ui {
 
             //ImGui::Text("Control:");
             ImGui::SameLine(50);
-            ImGui::Button("Setup Patient", ImVec2(100, 50));
-            ImGui::SameLine(180);
+            ImGui::Button("Setup Patient", ImVec2(150, 50));
+            ImGui::SameLine();
             static ImGuiButtonFlags exposure_button_flag = ImGuiButtonFlags_Disabled;
             if (control::is_exposure_ready()) {
                 exposure_button_flag &= ~ImGuiButtonFlags_Disabled;
             }
-            if (ImGui::ButtonEx("Exposure", ImVec2(100, 50), exposure_button_flag)) {
+            if (ImGui::ButtonEx("Exposure", ImVec2(150, 50), exposure_button_flag)) {
                 //control::exposure();
             }
 

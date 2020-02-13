@@ -5,8 +5,9 @@
 #include "spdlog/sinks/stdout_sinks.h"
 
 
-#include "hvg/siemens.hxx"
-#include "fpd/iray.hxx"
+#include "hvg/hvg.hxx"
+#include "fpd/fpd.hxx"
+#include "runtime_data.hxx"
 
 #include "modal/modal.h"
 
@@ -52,7 +53,12 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        fpd::connect(d->fpd.get());
+        // fpd::connect(d->fpd.get());
+        auto fpd = cl::build_unique<fpd::fpd_t>(3072, 3072);
+
+        register_data(d, "fpd", move(fpd));
+        control::fpd::fpd_t* p = control::get<control::fpd::fpd_t>(d, "fpd");
+        fpd::connect(p);
     }
 
     // HVG
@@ -79,8 +85,11 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
+        auto fpd = get<fpd::fpd_t>(d, "fpd");
+        assert(fpd);
+
         return d->hvg->status == hvg::status_e::HVG_READY && 
-               d->fpd->status == fpd::status_e::FPD_READY;
+               fpd->status == fpd::status_e::FPD_READY;
     }
 
     bool is_exposure_ready()
@@ -88,8 +97,11 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
+        auto fpd = get<fpd::fpd_t>(d, "fpd");
+        assert(fpd);
+
         return d->hvg->status == hvg::status_e::HVG_READY && 
-               d->fpd->status == fpd::status_e::FPD_READY;
+               fpd->status == fpd::status_e::FPD_READY;
     }
 
     bool init()

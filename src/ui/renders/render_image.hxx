@@ -10,8 +10,12 @@ namespace ui {
 
         bool render_image_window(struct app_t* app)
         {
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove |
+                                            ImGuiWindowFlags_NoResize |
+                                            ImGuiWindowFlags_NoCollapse |
+                                            ImGuiWindowFlags_NoTitleBar;
             static bool p_open;
-            ImGui::Begin("##Image", &p_open, ImGuiWindowFlags_NoTitleBar);
+            ImGui::Begin("##Image", &p_open, window_flags);
 
             render(&g_image_widget[0]);
             ImGui::SameLine();
