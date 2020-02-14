@@ -52,11 +52,6 @@ namespace control {
     {
         runtime_data_t* d = get_runtime_data();
         assert(d);
-
-        // fpd::connect(d->fpd.get());
-        auto fpd = cl::build_unique<fpd::fpd_t>(3072, 3072);
-
-        register_data(d, "fpd", move(fpd));
         control::fpd::fpd_t* p = control::get<control::fpd::fpd_t>(d, "fpd");
         fpd::connect(p);
     }
@@ -70,8 +65,10 @@ namespace control {
 
         const int port = 3;
         const int baud = 19200;
+        auto hvg = get<hvg::hvg_t>(d, "hvg");
+        assert(hvg);
 
-        hvg::connect(d->hvg.get(), port, baud, "8N2");
+        hvg::connect(hvg, port, baud, "8N2");
     }
 
     void setup_patient()
@@ -88,7 +85,10 @@ namespace control {
         auto fpd = get<fpd::fpd_t>(d, "fpd");
         assert(fpd);
 
-        return d->hvg->status == hvg::status_e::HVG_READY && 
+        auto hvg = get<hvg::hvg_t>(d, "hvg");
+        assert(hvg);
+
+        return hvg->status == hvg::status_e::HVG_READY && 
                fpd->status == fpd::status_e::FPD_READY;
     }
 
@@ -100,12 +100,23 @@ namespace control {
         auto fpd = get<fpd::fpd_t>(d, "fpd");
         assert(fpd);
 
-        return d->hvg->status == hvg::status_e::HVG_READY && 
+        auto hvg = get<hvg::hvg_t>(d, "hvg");
+        assert(hvg);
+
+        return hvg->status == hvg::status_e::HVG_READY && 
                fpd->status == fpd::status_e::FPD_READY;
     }
 
     bool init()
     {
+        runtime_data_t* d = get_runtime_data();
+        assert(d);
+
+        // fpd::connect(d->fpd.get());
+        auto fpd = cl::build_unique<fpd::fpd_t>(3072, 3072);
+        auto hvg = cl::build_unique<hvg::hvg_t>(70.0f, 5.0f, nullptr);
+        register_data(d, "fpd", move(fpd));
+        register_data(d, "hvg", move(hvg));
         return true;
     }
 
@@ -113,6 +124,8 @@ namespace control {
     {
         auto p = get_runtime_data();
         if (p) {
+            unregister_data(p, "fpd");
+            unregister_data(p, "hvg");
             drop(p);
         }
     }

@@ -20,26 +20,26 @@
 namespace hvg { struct context_t; }
 
 namespace control {
-    class RuntimeWrapper {
+    class RuntimeWrapperBase {
     public:
-        //virtual void get() = 0;
-        virtual ~RuntimeWrapper() = default;
+        virtual ~RuntimeWrapperBase() = default;
+        std::string get_name() { return _name; }
+        std::shared_mutex& get_mutex() { return _mutex; }
     private:
         std::string _name;
+        std::shared_mutex _mutex;
     };
 
     template <class T>
-    class RuntimeWrapperImpl : public RuntimeWrapper {
+    class RuntimeWrapper : public RuntimeWrapperBase {
     public:
-        RuntimeWrapperImpl(cl::unique_ptr<T> data):_data(move(data)),_mutex()
+        RuntimeWrapper(cl::unique_ptr<T>&& data):_data(move(data))
         {
-            // _data.reset(data);
+            //_data.reset(data.release());
         }
-        virtual ~RuntimeWrapperImpl() {}
+        virtual ~RuntimeWrapper() {}
         
-        virtual T* get() { return _data.get(); }
-
-        std::shared_mutex _mutex;
+        T* get() { return _data.get(); }      
 
     private:
         cl::unique_ptr<T> _data;
@@ -49,7 +49,7 @@ namespace control {
     struct runtime_data_t {
         std::shared_mutex mutex;
 
-        std::map<std::string, std::unique_ptr<RuntimeWrapper>> runtime_data;
+        std::map<std::string, std::unique_ptr<RuntimeWrapperBase>> runtime_data;
 
         //cl::unique_ptr<fpd::fpd_t> fpd;
         cl::unique_ptr<hvg::hvg_t> hvg;
@@ -82,7 +82,7 @@ namespace control {
         }
 
         // p->runtime_data[str] = std::unique_ptr<RuntimeWrapper>(new RuntimeWrapperImpl<T>(d.get()));
-        p->runtime_data[str] = std::unique_ptr<RuntimeWrapper>(new RuntimeWrapperImpl<T>(std::move(d)));
+        p->runtime_data[str] = std::unique_ptr<RuntimeWrapperBase>(new RuntimeWrapper<T>(std::move(d)));
         return true;
     }
 
@@ -93,7 +93,7 @@ namespace control {
         std::shared_lock(p->mutex);
         auto iter = p->runtime_data.find(str);
         if (iter != p->runtime_data.end()) {
-            T* ptr = dynamic_cast<RuntimeWrapperImpl<T>*>(p->runtime_data[str].get())->get();
+            T* ptr = dynamic_cast<RuntimeWrapper<T>*>(p->runtime_data[str].get())->get();
             return ptr;
         }
         else {
@@ -114,12 +114,9 @@ namespace control {
 
 namespace control {
     bool init(runtime_data_t* d) {
-        //d->hvg = HVG_UNCONNECTED;
         new(&d->mutex)std::shared_mutex();
         std::unique_lock(d->mutex);
-        new(&d->runtime_data)std::map<std::string, std::unique_ptr<RuntimeWrapper>>();
-        //d->fpd = cl::build_unique<fpd::fpd_t>(3072, 3072);
-        d->hvg = cl::build_unique<hvg::hvg_t>(70.0f, 5.0f, nullptr);
+        new(&d->runtime_data)std::map<std::string, std::unique_ptr<RuntimeWrapperBase>>();
         d->cbct_mode = CUSTOM;
         d->resolution = _512X512;
         d->slice_dist = 2.5f;

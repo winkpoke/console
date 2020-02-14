@@ -126,7 +126,8 @@ namespace ui
         //io.Fonts->GetGlyphRangesChineseFull());// 
         auto font0 = io.Fonts->AddFontDefault();
         //const char font_path[256] = "resources\\fonts\\fontawesome-webfont.ttf";
-        //auto font0 = io.Fonts->AddFontFromFileTTF(font_path, 18);
+        //const char font_path[256] = "resources\\fonts\\AdventPro-Regular.ttf";
+        //auto font0 = io.Fonts->AddFontFromFileTTF(font_path, 20);
         assert(font0);
         ImFontConfig config;
         config.MergeMode = true;
@@ -191,11 +192,13 @@ namespace ui
         
         auto fpd = get<control::fpd::fpd_t>(data, "fpd");
         assert(fpd);
+        auto hvg = get<control::hvg::hvg_t>(data, "hvg");
+        assert(hvg);
 
         app->fpd_status = fpd->status;
-        app->hvg_status = data->hvg->status;
-        app->kv = data->hvg->kv;
-        app->mAs = data->hvg->mAs;
+        app->hvg_status = hvg->status;
+        app->kv = hvg->kv;
+        app->mAs = hvg->mAs;
         app->cbct_mode = data->cbct_mode;
         app->resolution = data->resolution;
         app->slice_dist = data->slice_dist;
@@ -208,10 +211,13 @@ namespace ui
         auto fpd = get<control::fpd::fpd_t>(data, "fpd");
         assert(fpd);
 
+        auto hvg = get<control::hvg::hvg_t>(data, "hvg");
+        assert(hvg);
+
         fpd->status = app->fpd_status;
-        data->hvg->status = app->hvg_status;
-        data->hvg->kv = app->kv;
-        data->hvg->mAs = app->mAs;
+        hvg->status = app->hvg_status;
+        hvg->kv = app->kv;
+        hvg->mAs = app->mAs;
         data->cbct_mode = app->cbct_mode;
         data->resolution = app->resolution;
         data->slice_dist = app->slice_dist;

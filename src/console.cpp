@@ -18,7 +18,7 @@ int main(int, char**)
     SPDLOG_INFO("CBCT Console starting ...");
 
     //// CBCT init
-    // modal::init();
+    control::init();
     std::thread connect_to_fpd(control::connect_to_fpd);
     //std::thread connect_to_hvg(modal::connect_to_hvg);
     std::thread connect_to_upstream_server(control::connect_to_upstream_server);
@@ -31,7 +31,7 @@ int main(int, char**)
 
     ui_run.join();
     connect_to_fpd.join();
-    ////connect_to_hvg.join();
+    // connect_to_hvg.join();
     connect_to_upstream_server.join();
 
     control::drop();
