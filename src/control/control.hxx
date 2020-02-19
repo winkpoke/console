@@ -52,8 +52,9 @@ namespace control {
     {
         runtime_data_t* d = get_runtime_data();
         assert(d);
-        control::fpd::fpd_t* p = control::get<control::fpd::fpd_t>(d, "fpd");
-        fpd::connect(p);
+        // control::fpd::fpd_t* p = control::get<control::fpd::fpd_t>(d, "fpd");
+        std::shared_ptr<control::fpd::fpd_t> p = cl::get<control::fpd::fpd_t>(d->runtime_data2, "fpd");
+        fpd::connect(p.get());
     }
 
     // HVG
@@ -82,7 +83,7 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        auto fpd = get<fpd::fpd_t>(d, "fpd");
+        auto fpd = cl::get<fpd::fpd_t>(d->runtime_data2, "fpd");
         assert(fpd);
 
         auto hvg = get<hvg::hvg_t>(d, "hvg");
@@ -97,7 +98,7 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        auto fpd = get<fpd::fpd_t>(d, "fpd");
+        auto fpd = cl::get<fpd::fpd_t>(d->runtime_data2, "fpd");
         assert(fpd);
 
         auto hvg = get<hvg::hvg_t>(d, "hvg");
@@ -113,10 +114,11 @@ namespace control {
         assert(d);
 
         // fpd::connect(d->fpd.get());
-        auto fpd = cl::build_unique<fpd::fpd_t>(3072, 3072);
+        //auto fpd = cl::build_unique<fpd::fpd_t>(3072, 3072);
         auto hvg = cl::build_unique<hvg::hvg_t>(70.0f, 5.0f, nullptr);
-        register_data(d, "fpd", move(fpd));
-        register_data(d, "hvg", move(hvg));
+        //register_data(d, move(fpd), "fpd", "0.0.1");
+        register_data(d, move(hvg), "hvg", "0.0.1");
+        cl::mount(d->runtime_data2, cl::build_shared<fpd::fpd_t>(3072, 3072), "fpd", "0.01");
         return true;
     }
 
@@ -124,7 +126,8 @@ namespace control {
     {
         auto p = get_runtime_data();
         if (p) {
-            unregister_data(p, "fpd");
+            //unregister_data(p, "fpd");
+            unmount(p->runtime_data2, "fpd");
             unregister_data(p, "hvg");
             drop(p);
         }

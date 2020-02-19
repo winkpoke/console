@@ -20,36 +20,81 @@
 namespace hvg { struct context_t; }
 
 namespace control {
+
+    struct runtime_wrapper_t {
+        using drop_fun_t = void(*)(void*);
+        std::string name;
+        std::string version;
+        std::shared_mutex mutex;
+        void* object;
+        drop_fun_t drop;
+        virtual ~runtime_wrapper_t() = default;
+    };
+
+    void init(runtime_wrapper_t* p, std::string name, std::string);
+
+    template <class T>
+    void drop(void* p)
+    {
+        drop(static_cast<T*>(p));
+    }
+
+    //template <class T>
+    //struct runtime_wrapper_impl_t : public runtime_wrapper_t {
+    //    T* object;
+    //    virtual ~runtime_wrapper_impl_t() { drop(object); }
+    //};
+
+    //std::string get_name(const runtime_wrapper_t* obj)
+    //{
+    //    assert(obj);
+    //    return obj->name;
+    //}
+
     class RuntimeWrapperBase {
     public:
+        RuntimeWrapperBase(std::string name, std::string version)
+            :_name(name), _version(version) {}
         virtual ~RuntimeWrapperBase() = default;
         std::string get_name() { return _name; }
         std::shared_mutex& get_mutex() { return _mutex; }
     private:
         std::string _name;
+        std::string _version;
         std::shared_mutex _mutex;
     };
 
     template <class T>
     class RuntimeWrapper : public RuntimeWrapperBase {
     public:
-        RuntimeWrapper(cl::unique_ptr<T>&& data):_data(move(data))
+        RuntimeWrapper(T* data, std::string name, std::string version)
+            :_data(data), RuntimeWrapperBase(name, version)
         {
             //_data.reset(data.release());
         }
-        virtual ~RuntimeWrapper() {}
+        virtual ~RuntimeWrapper() { drop(_data); }
         
-        T* get() { return _data.get(); }      
+        T* get() { return _data; }      
 
     private:
-        cl::unique_ptr<T> _data;
+        // cl::unique_ptr<T> _data;
+        T* _data;
+
     };
+
+    //template <class T>
+    //RuntimeWrapperBase* build_runtime_wrapper(T* obj, std::string name, std::string version)
+    //{
+    //    
+    //}
 
 
     struct runtime_data_t {
         std::shared_mutex mutex;
 
         std::map<std::string, std::unique_ptr<RuntimeWrapperBase>> runtime_data;
+
+        cl::runtime_object_t* runtime_data2;
 
         //cl::unique_ptr<fpd::fpd_t> fpd;
         cl::unique_ptr<hvg::hvg_t> hvg;
@@ -72,7 +117,7 @@ namespace control {
     void drop(runtime_data_t* d);
 
     template <class T>
-    bool register_data(runtime_data_t* p, std::string str, cl::unique_ptr<T> d)
+    bool register_data(runtime_data_t* p, cl::unique_ptr<T> d, std::string str, std::string ver)
     {
         assert(p);
         std::scoped_lock(p->mutex);
@@ -81,8 +126,7 @@ namespace control {
             return false;
         }
 
-        // p->runtime_data[str] = std::unique_ptr<RuntimeWrapper>(new RuntimeWrapperImpl<T>(d.get()));
-        p->runtime_data[str] = std::unique_ptr<RuntimeWrapperBase>(new RuntimeWrapper<T>(std::move(d)));
+        p->runtime_data[str] = std::unique_ptr<RuntimeWrapperBase>(new RuntimeWrapper<T>(d.release(), str, ver));
         return true;
     }
 
@@ -117,6 +161,8 @@ namespace control {
         new(&d->mutex)std::shared_mutex();
         std::unique_lock(d->mutex);
         new(&d->runtime_data)std::map<std::string, std::unique_ptr<RuntimeWrapperBase>>();
+
+        d->runtime_data2 = cl::build_raw<cl::runtime_object_t>();
         d->cbct_mode = CUSTOM;
         d->resolution = _512X512;
         d->slice_dist = 2.5f;
@@ -134,6 +180,7 @@ namespace control {
     {
         // d->fpd is unique_ptr and would be destroyed automatically
         websocket::drop(d->socket);
+        drop(d->runtime_data2);
         d->~runtime_data_t();
         free(d);
     }

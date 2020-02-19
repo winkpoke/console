@@ -1,6 +1,7 @@
 #ifndef _COMMON_LIBRARY_H_
 #define _COMMON_LIBRARY_H_
 
+#include <cassert>
 #include <memory>
 #include <array>
 #include <string>
@@ -9,6 +10,8 @@
 #include <functional>
 #include <thread>
 #include <future>
+#include <mutex>
+#include <shared_mutex>
 
 namespace cl {
     // type define 
@@ -190,6 +193,92 @@ namespace cl {
             }
         }
         return false;
+    }
+
+    class runtime_wrapper_base {
+    public:
+        runtime_wrapper_base(std::string name, std::string version)
+            :_name(name), _version(version) {}
+        virtual ~runtime_wrapper_base() = default;
+        std::string get_name() { return _name; }
+        std::shared_mutex& get_mutex() { return _mutex; }
+    private:
+        std::string _name;
+        std::string _version;
+        std::shared_mutex _mutex;
+    };
+
+    template <class T>
+    class runtime_wrapper : public runtime_wrapper_base {
+    public:
+        runtime_wrapper(cl::shared_ptr<T> data, std::string name, std::string version)
+            :_data(data), runtime_wrapper_base(name, version)
+        {
+            //_data.reset(data.release());
+        }
+        virtual ~runtime_wrapper() {  }
+        cl::shared_ptr<T> get() { return _data; }
+    private:
+        cl::shared_ptr<T> _data;
+
+    };
+
+    struct runtime_object_t {
+        std::map<std::string, std::unique_ptr<runtime_wrapper_base>> data;
+        std::shared_mutex mutex;
+    };
+
+    static bool init(runtime_object_t* p)
+    {
+        new(&p->data)std::map<std::string, std::unique_ptr<runtime_wrapper_base>>();
+        new(&p->mutex)std::shared_mutex();
+        return true;
+    }
+
+    static void drop(runtime_object_t* p)
+    {
+        assert(p);
+        p->data.~map<std::string, std::unique_ptr<runtime_wrapper_base>>();
+        p->mutex.~shared_mutex();
+        free(p);
+    }
+
+    template <class T>
+    bool mount(runtime_object_t* d, cl::shared_ptr<T> p, std::string str, std::string ver)
+    {
+        assert(p);
+        assert(d);
+        std::scoped_lock<std::shared_mutex> lk(d->mutex);
+        auto iter = d->data.find(str);
+        if (iter != d->data.end()) {
+            return false;
+        }
+
+        d->data[str] = std::unique_ptr<runtime_wrapper_base>(new runtime_wrapper<T>(p, str, ver));
+        return true;
+    }
+
+    bool unmount(runtime_object_t* d, std::string str)
+    {
+        std::scoped_lock<std::shared_mutex> lk(d->mutex);
+        d->data.erase(str);
+        return true;
+    }
+
+    template <class T>
+    cl::shared_ptr<T> get(runtime_object_t* d, std::string str)
+    {
+        assert(d);
+        std::shared_lock(d->mutex);
+        auto iter = d->data.find(str);
+        if (iter != d->data.end()) {
+            runtime_wrapper_base* p = d->data[str].get();
+            runtime_wrapper<T>* ptr = dynamic_cast<runtime_wrapper<T>*>(p);
+            if (ptr != nullptr) {
+                return ptr->get();
+            }
+        }
+        return nullptr;
     }
 }
 
