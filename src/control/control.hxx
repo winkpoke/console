@@ -52,8 +52,7 @@ namespace control {
     {
         runtime_data_t* d = get_runtime_data();
         assert(d);
-        // control::fpd::fpd_t* p = control::get<control::fpd::fpd_t>(d, "fpd");
-        std::shared_ptr<control::fpd::fpd_t> p = cl::get<control::fpd::fpd_t>(d->runtime_data2, "fpd");
+        std::shared_ptr<control::fpd::fpd_t> p = cl::get<control::fpd::fpd_t>(d->objects, "fpd");
         fpd::connect(p.get());
     }
 
@@ -66,10 +65,10 @@ namespace control {
 
         const int port = 3;
         const int baud = 19200;
-        auto hvg = get<hvg::hvg_t>(d, "hvg");
+        auto hvg = cl::get<hvg::hvg_t>(d->objects, "hvg");
         assert(hvg);
 
-        hvg::connect(hvg, port, baud, "8N2");
+        hvg::connect(hvg.get(), port, baud, "8N2");
     }
 
     void setup_patient()
@@ -83,10 +82,10 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        auto fpd = cl::get<fpd::fpd_t>(d->runtime_data2, "fpd");
+        auto fpd = cl::get<fpd::fpd_t>(d->objects, "fpd");
         assert(fpd);
 
-        auto hvg = get<hvg::hvg_t>(d, "hvg");
+        auto hvg = cl::get<hvg::hvg_t>(d->objects, "hvg");
         assert(hvg);
 
         return hvg->status == hvg::status_e::HVG_READY && 
@@ -98,10 +97,10 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        auto fpd = cl::get<fpd::fpd_t>(d->runtime_data2, "fpd");
+        auto fpd = cl::get<fpd::fpd_t>(d->objects, "fpd");
         assert(fpd);
 
-        auto hvg = get<hvg::hvg_t>(d, "hvg");
+        auto hvg = cl::get<hvg::hvg_t>(d->objects, "hvg");
         assert(hvg);
 
         return hvg->status == hvg::status_e::HVG_READY && 
@@ -113,12 +112,8 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        // fpd::connect(d->fpd.get());
-        //auto fpd = cl::build_unique<fpd::fpd_t>(3072, 3072);
-        auto hvg = cl::build_unique<hvg::hvg_t>(70.0f, 5.0f, nullptr);
-        //register_data(d, move(fpd), "fpd", "0.0.1");
-        register_data(d, move(hvg), "hvg", "0.0.1");
-        cl::mount(d->runtime_data2, cl::build_shared<fpd::fpd_t>(3072, 3072), "fpd", "0.01");
+        cl::mount(d->objects, cl::build_shared<hvg::hvg_t>(70.f, 5.f, nullptr), "hvg", "0.01");
+        cl::mount(d->objects, cl::build_shared<fpd::fpd_t>(3072, 3072), "fpd", "0.01");
         return true;
     }
 
@@ -126,9 +121,8 @@ namespace control {
     {
         auto p = get_runtime_data();
         if (p) {
-            //unregister_data(p, "fpd");
-            unmount(p->runtime_data2, "fpd");
-            unregister_data(p, "hvg");
+            unmount(p->objects, "fpd");
+            unmount(p->objects, "hvg");
             drop(p);
         }
     }

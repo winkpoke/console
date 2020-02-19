@@ -190,9 +190,9 @@ namespace ui
     {
         std::shared_lock(data->mutex);
         
-        auto fpd = cl::get<control::fpd::fpd_t>(data->runtime_data2, "fpd");
+        auto fpd = cl::get<control::fpd::fpd_t>(data->objects, "fpd");
         assert(fpd);
-        auto hvg = get<control::hvg::hvg_t>(data, "hvg");
+        auto hvg = cl::get<control::hvg::hvg_t>(data->objects, "hvg");
         assert(hvg);
 
         app->fpd_status = fpd->status;
@@ -208,10 +208,10 @@ namespace ui
     {
         std::unique_lock(data->mutex);
 
-        auto fpd = cl::get<control::fpd::fpd_t>(data->runtime_data2, "fpd");
+        auto fpd = cl::get<control::fpd::fpd_t>(data->objects, "fpd");
         assert(fpd);
 
-        auto hvg = get<control::hvg::hvg_t>(data, "hvg");
+        auto hvg = cl::get<control::hvg::hvg_t>(data->objects, "hvg");
         assert(hvg);
 
         fpd->status = app->fpd_status;
