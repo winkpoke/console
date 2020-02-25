@@ -6,7 +6,8 @@
 #include "ui/image.h"
 #include "control.hxx"
 
-namespace ui {
+namespace mod::patient::ui{
+    namespace modal = mod::patient::modal;
     struct patient_t {
         char name[256];
         char id[256];
@@ -14,21 +15,21 @@ namespace ui {
         modal::gender_e gender;
         char category[256];
         char site[256];
-        image_view<cl::u8>* image;
+        ::ui::image_view<cl::u8>* image;
 
         std::shared_mutex mutex;
         bool dirty;
     };
 
-    bool init(patient_t* p, control::patient_t* modal);
+    bool init(patient_t* p, mod::patient::control::patient_t* modal);
     void drop(patient_t* p);
 
     bool is_dirty(patient_t* p);
 
-    void update(ui::patient_t* dst, control::patient_t* src);
-    void update_ui_data(ui::patient_t* dst, control::patient_t* src);
+    void update(ui::patient_t* dst, mod::patient::control::patient_t* src);
+    void update_ui_data(ui::patient_t* dst, mod::patient::control::patient_t* src);
     void update_ui_data(cl::runtime_object_t* dst, cl::runtime_object_t* src);
-    void update_control_data(control::patient_t* dst, ui::patient_t* src);
+    void update_control_data(mod::patient::control::patient_t* dst, mod::patient::ui::patient_t* src);
 
     bool render(ui::patient_t* p);
 }
@@ -39,7 +40,7 @@ namespace ui {
 #ifndef PATIENT_UI_IMPLEMENTED
 #define PATIENT_UI_IMPLEMENTED
 
-namespace ui {
+namespace mod::patient::ui {
 
     bool init(patient_t* p, control::patient_t* control)
     {
@@ -88,7 +89,7 @@ namespace ui {
         }
 
         if (src->modal->portrait) {
-            dst->image = cl::build_raw<image_view<cl::u8>>(50, 73, std::shared_ptr<sil::image_t<cl::u8>>(src->modal->portrait));
+            dst->image = cl::build_raw<::ui::image_view<cl::u8>>(50, 73, std::shared_ptr<sil::image_t<cl::u8>>(src->modal->portrait));
         }
     }
 

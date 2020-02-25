@@ -7,7 +7,7 @@
 #include "stb_image.h"
 
 #include "def.h"
-#include "module/patient/ui.hxx"
+#include "mod/patient/ui.hxx"
 #include "modal/modal.h"
 #include "control/runtime_data.hxx"
 #include "ui/image.h"
@@ -122,8 +122,8 @@ namespace ui
 
         // ui::patient has to be initialized after window's created
         auto control_runtime = control::get_runtime_data();
-        auto obj = cl::get<control::patient_t>(control_runtime->objects, "patient");
-        auto patient = cl::build_shared<ui::patient_t>(obj.get());
+        auto obj = cl::get<mod::patient::control::patient_t>(control_runtime->objects, "patient");
+        auto patient = cl::build_shared<mod::patient::ui::patient_t>(obj.get());
         cl::mount(app->objects, patient, "patient", "0.0.1");
         //auto j = modal::to_json(p);
         //modal::from_json(app->patient, j);
@@ -158,8 +158,8 @@ namespace ui
             //renders::render_patient_info_window(app);
             renders::render_maintenance_window(app);
             //win->renders.push_back(&ui::process_camera_data);
-            auto patient = cl::get<ui::patient_t>(app->objects, "patient");
-            ui::render(patient.get());
+            auto patient = cl::get<mod::patient::ui::patient_t>(app->objects, "patient");
+            mod::patient::ui::render(patient.get());
             return true;
             });
 
@@ -187,10 +187,10 @@ namespace ui
         auto hvg = cl::get<control::hvg::hvg_t>(data->objects, "hvg");
         assert(hvg);
 
-        auto patient = cl::get<control::patient_t>(data->objects, "patient");
+        auto patient = cl::get<mod::patient::control::patient_t>(data->objects, "patient");
         assert(patient);
 
-        ui::update_ui_data(app->objects, data->objects);
+        mod::patient::ui::update_ui_data(app->objects, data->objects);
 
         app->fpd_status = fpd->status;
         app->hvg_status = hvg->status;

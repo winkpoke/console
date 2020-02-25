@@ -5,7 +5,8 @@
 #include "modal.hxx"
 
 
-namespace control {
+namespace mod::patient::control {
+    namespace modal = mod::patient::modal;
     struct patient_t {
          cl::shared_ptr<modal::patient_t> modal;
          std::shared_mutex mutex;
@@ -26,7 +27,8 @@ namespace control {
 #ifdef CONTROL_PATIENT_IMPLEMENTATION
 #ifndef CONTROL_PATIENT_IMPLEMENTED
 #define CONTROL_PATIENT_IMPLEMENTED
-namespace control {
+namespace mod::patient::control {
+    using namespace mod::patient;
     bool init(patient_t* p, modal::patient_t* modal)
     {
         assert(p);

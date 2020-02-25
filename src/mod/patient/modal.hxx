@@ -6,7 +6,7 @@
 #include "cl.h"
 #include "sil.h"
 
-namespace modal {
+namespace mod::patient::modal {
     using json = nlohmann::json;
 
     enum class gender_e
@@ -47,7 +47,7 @@ namespace modal {
 
 #include "base64.hxx"
 
-namespace modal {
+namespace mod::patient::modal {
     using json = nlohmann::json;
 
     std::string to_string(gender_e g)

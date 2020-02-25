@@ -191,7 +191,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\console.cpp" />
-    <ClCompile Include="src\module\patient\patient.cpp" />
+    <ClCompile Include="src\mod\patient\patient.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\gl3w.c" />
@@ -231,12 +231,12 @@
     <ClInclude Include="src\include\sil.h" />
     <ClInclude Include="src\include\stb_image.h" />
     <ClInclude Include="src\include\stb_image_resize.h" />
-    <ClInclude Include="src\module\patient\control.hxx" />
-    <ClInclude Include="src\module\patient\modal.hxx" />
+    <ClInclude Include="src\mod\patient\control.hxx" />
+    <ClInclude Include="src\mod\patient\modal.hxx" />
     <ClInclude Include="src\modal\scan.h" />
     <ClInclude Include="src\modal\scan.hxx" />
-    <ClInclude Include="src\module\patient\patient.h" />
-    <ClInclude Include="src\module\patient\ui.hxx" />
+    <ClInclude Include="src\mod\patient\patient.h" />
+    <ClInclude Include="src\mod\patient\ui.hxx" />
     <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\gl3w.h" />
