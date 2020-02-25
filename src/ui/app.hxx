@@ -7,7 +7,7 @@
 #include "stb_image.h"
 
 #include "def.h"
-#include "module/patient/modal/patient.hxx"
+#include "module/patient/ui.hxx"
 #include "modal/modal.h"
 #include "control/runtime_data.hxx"
 #include "ui/image.h"
@@ -18,9 +18,6 @@
 namespace ui {
     static int w, h;
     static unsigned char* img = stbi_load("resources\\images\\img.jpg", &w, &h, NULL, 4);
-
-    static int w1, h1;
-    static unsigned char* img1 = stbi_load("resources\\images\\patient.png", &w1, &h1, NULL, 4);
 
     struct app_t {
         control::fpd::status_e fpd_status;
@@ -57,13 +54,13 @@ namespace ui {
 
 #include <filesystem>
 
+#include "cl.h"
 #include "ui/window.h"
 #include "ui/log.h"
 #include "modal/modal.h"
 #include "control/control.hxx"
 
 #include "renders/render_image.hxx"
-#include "renders/render_patient_info.hxx"
 #include "renders/render_maintenance.hxx"
 #include "renders/render_status.hxx"
 
@@ -89,28 +86,6 @@ namespace ui
         assert(app);
 
         app->objects = cl::build_raw<cl::runtime_object_t>();
-        
-        cl::shared_ptr<modal::patient_t> p = cl::build_shared<modal::patient_t>();
-
-        //auto p = cl::build_raw<modal::patient_t>();
-        strncpy(p->name, u8"张三", sizeof(p->name));
-        strncpy(p->id, "209845", sizeof(p->id));
-        p->age = 65;
-        p->gender = modal::gender_e::MALE;
-        strncpy(p->category, "H&N", sizeof(p->category));
-        strncpy(p->site, u8"海吉亚", sizeof(p->site));
-        p->portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
-
-        cl::mount<>(app->objects, p, "patient", "0.0.1");
-
-        //auto j = modal::to_json(p);
-        //modal::from_json(app->patient, j);
-
-        //FILE* fp;
-        //fp = fopen("D:\\patient.json", "w+");
-        //fprintf_s(fp, "%s", j.c_str());
-        //fclose(fp);
-
         app->win = cl::build_raw<window_t>(300, 300, 1024, 768);
         if (!app->win) {
             return false;
@@ -145,6 +120,19 @@ namespace ui
             if (font1) io.Fonts->Build();
         }
 
+        // ui::patient has to be initialized after window's created
+        auto control_runtime = control::get_runtime_data();
+        auto obj = cl::get<control::patient_t>(control_runtime->objects, "patient");
+        auto patient = cl::build_shared<ui::patient_t>(obj.get());
+        cl::mount(app->objects, patient, "patient", "0.0.1");
+        //auto j = modal::to_json(p);
+        //modal::from_json(app->patient, j);
+
+        //FILE* fp;
+        //fp = fopen("D:\\patient.json", "w+");
+        //fprintf_s(fp, "%s", j.c_str());
+        //fclose(fp);
+
         // assert(font1);
         // auto image = sil::make_shared<unsigned char>(w, h, 4, img);
         auto image = cl::build_shared<sil::image_t<unsigned char>>(sil::drop, w, h, 4, img);
@@ -167,9 +155,11 @@ namespace ui
         app->win->renders.push_back([=](window_t*) {
             renders::render_status_window(app);
             renders::render_image_window(app);
-            renders::render_patient_info_window(app);
+            //renders::render_patient_info_window(app);
             renders::render_maintenance_window(app);
             //win->renders.push_back(&ui::process_camera_data);
+            auto patient = cl::get<ui::patient_t>(app->objects, "patient");
+            ui::render(patient.get());
             return true;
             });
 
@@ -190,12 +180,17 @@ namespace ui
 
     void update(app_t* app, control::runtime_data_t* data)
     {
-        std::shared_lock(data->mutex);
+        std::shared_lock lk(data->mutex);
         
         auto fpd = cl::get<control::fpd::fpd_t>(data->objects, "fpd");
         assert(fpd);
         auto hvg = cl::get<control::hvg::hvg_t>(data->objects, "hvg");
         assert(hvg);
+
+        auto patient = cl::get<control::patient_t>(data->objects, "patient");
+        assert(patient);
+
+        ui::update_ui_data(app->objects, data->objects);
 
         app->fpd_status = fpd->status;
         app->hvg_status = hvg->status;

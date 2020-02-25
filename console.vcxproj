@@ -231,12 +231,12 @@
     <ClInclude Include="src\include\sil.h" />
     <ClInclude Include="src\include\stb_image.h" />
     <ClInclude Include="src\include\stb_image_resize.h" />
-    <ClInclude Include="src\module\patient\control\control.hxx" />
-    <ClInclude Include="src\module\patient\modal\patient.hxx" />
+    <ClInclude Include="src\module\patient\control.hxx" />
+    <ClInclude Include="src\module\patient\modal.hxx" />
     <ClInclude Include="src\modal\scan.h" />
     <ClInclude Include="src\modal\scan.hxx" />
     <ClInclude Include="src\module\patient\patient.h" />
-    <ClInclude Include="src\module\patient\ui\patient.hxx" />
+    <ClInclude Include="src\module\patient\ui.hxx" />
     <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\gl3w.h" />
@@ -265,7 +265,6 @@
     <ClInclude Include="src\ui\log.h" />
     <ClInclude Include="src\ui\renders\render_image.hxx" />
     <ClInclude Include="src\ui\renders\render_maintenance.hxx" />
-    <ClInclude Include="src\ui\renders\render_patient_info.hxx" />
     <ClInclude Include="src\ui\renders\render_status.hxx" />
     <ClInclude Include="src\ui\ui.h" />
     <ClInclude Include="src\ui\image.h" />

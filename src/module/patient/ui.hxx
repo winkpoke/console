@@ -4,7 +4,7 @@
 #include "imgui.h"
 #include "cl.h"
 #include "ui/image.h"
-#include "module/patient/control/control.hxx"
+#include "control.hxx"
 
 namespace ui {
     struct patient_t {
@@ -20,13 +20,14 @@ namespace ui {
         bool dirty;
     };
 
-    bool init(patient_t* p, modal::patient_t* modal);
+    bool init(patient_t* p, control::patient_t* modal);
     void drop(patient_t* p);
 
     bool is_dirty(patient_t* p);
 
     void update(ui::patient_t* dst, control::patient_t* src);
     void update_ui_data(ui::patient_t* dst, control::patient_t* src);
+    void update_ui_data(cl::runtime_object_t* dst, cl::runtime_object_t* src);
     void update_control_data(control::patient_t* dst, ui::patient_t* src);
 
     bool render(ui::patient_t* p);
@@ -103,6 +104,16 @@ namespace ui {
             update(dst, src);
             clear_dirty(src);
         }
+    }
+
+    void update_ui_data(cl::runtime_object_t* dst, cl::runtime_object_t* src)
+    {
+        auto control = cl::get<control::patient_t>(src, "patient");
+        assert(control);
+        auto ui = cl::get<ui::patient_t>(dst, "patient");
+        assert(ui);
+
+        update_ui_data(ui.get(), control.get());
     }
 
     void update_control_data(control::patient_t* dst, ui::patient_t* src)

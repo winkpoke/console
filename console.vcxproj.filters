@@ -224,9 +224,6 @@
     <ClInclude Include="src\ui\renders\render_status.hxx">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\renders\render_patient_info.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui\renders\render_maintenance.hxx">
       <Filter>header</Filter>
     </ClInclude>
@@ -269,16 +266,16 @@
     <ClInclude Include="src\control\control.hxx">
       <Filter>source\modal</Filter>
     </ClInclude>
-    <ClInclude Include="src\module\patient\control\control.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="src\module\patient\modal\patient.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="src\module\patient\ui\patient.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\module\patient\patient.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\module\patient\ui.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\module\patient\modal.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\module\patient\control.hxx">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

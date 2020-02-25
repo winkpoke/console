@@ -2,7 +2,8 @@
 #define _CONTROL_PATIENT_INCLUDE_H_
 
 #include "cl.h"
-#include "module/patient/modal/patient.hxx"
+#include "modal.hxx"
+
 
 namespace control {
     struct patient_t {

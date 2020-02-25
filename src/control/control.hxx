@@ -44,6 +44,7 @@ namespace control {
 #define CONSOLE_CONTROL_IMPLEMENTED
 
 #include "runtime_data.hxx"
+#include "module/patient/control.hxx"
 
 namespace control {
     // FPD
@@ -114,6 +115,20 @@ namespace control {
 
         cl::mount(d->objects, cl::build_shared<hvg::hvg_t>(70.f, 5.f, nullptr), "hvg", "0.0.1");
         cl::mount(d->objects, cl::build_shared<fpd::fpd_t>(3072, 3072), "fpd", "0.0.1");
+
+        // patient
+        int w1, h1;
+        unsigned char* img1 = stbi_load("resources\\images\\patient.png", &w1, &h1, NULL, 4);
+        auto p = cl::build_raw<modal::patient_t>();
+        strncpy(p->name, u8"张三", sizeof(p->name));
+        strncpy(p->id, "209845", sizeof(p->id));
+        p->age = 65;
+        p->gender = modal::gender_e::MALE;
+        strncpy(p->category, "H&N", sizeof(p->category));
+        strncpy(p->site, u8"海吉亚", sizeof(p->site));
+        p->portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
+        auto patient = cl::build_shared<control::patient_t>(p);
+        cl::mount(d->objects, patient, "patient", "0.01");
         return true;
     }
 
