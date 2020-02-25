@@ -1,10 +1,11 @@
 #pragma once
+#include <vector>
+#include <utility>
 
-#define MODAL_PATIENT_IMPLEMENTATION
-#include "modal.hxx"
+namespace mod::patient {
+    using mod_deps_t = std::vector<std::pair<const char*, const char*>>;
+    const static char* mod_name = "patient";
+    const static char* mod_version = "0.0.1";
+    const static mod_deps_t mod_deps = { };
 
-#define PATIENT_UI_IMPLEMENTATION
-#include "ui.hxx"
-
-#define CONTROL_PATIENT_IMPLEMENTATION
-#include "control.hxx"
+}

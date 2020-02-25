@@ -45,6 +45,7 @@ namespace control {
 
 #include "runtime_data.hxx"
 #include "mod/patient/control.hxx"
+#include "mod/patient/patient.h"
 
 namespace control {
     // FPD
@@ -128,7 +129,7 @@ namespace control {
         strncpy(p->site, u8"º£¼ªÑÇ", sizeof(p->site));
         p->portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
         auto patient = cl::build_shared<mod::patient::control::patient_t>(p);
-        cl::mount(d->objects, patient, "patient", "0.01");
+        cl::mount(d->objects, patient, mod::patient::mod_name, mod::patient::mod_version);
         return true;
     }
 

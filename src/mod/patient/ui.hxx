@@ -40,8 +40,9 @@ namespace mod::patient::ui{
 #ifndef PATIENT_UI_IMPLEMENTED
 #define PATIENT_UI_IMPLEMENTED
 
-namespace mod::patient::ui {
+#include "patient.h"
 
+namespace mod::patient::ui {
     bool init(patient_t* p, control::patient_t* control)
     {
         assert(p);
@@ -109,9 +110,9 @@ namespace mod::patient::ui {
 
     void update_ui_data(cl::runtime_object_t* dst, cl::runtime_object_t* src)
     {
-        auto control = cl::get<control::patient_t>(src, "patient");
+        auto control = cl::get<control::patient_t>(src, mod::patient::mod_name);
         assert(control);
-        auto ui = cl::get<ui::patient_t>(dst, "patient");
+        auto ui = cl::get<ui::patient_t>(dst, mod::patient::mod_name);
         assert(ui);
 
         update_ui_data(ui.get(), control.get());

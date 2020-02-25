@@ -62,7 +62,7 @@ namespace control {
         d->slice_dist = 2.5f;
 
         // websocket
-        d->socket = cl::build_raw<websocket::websocket_t>("ws://172.21.98.182:3000/ws");
+        d->socket = cl::build_raw<websocket::websocket_t>("ws://172.17.214.17:3000/ws");
 
         // Configure and start the pipeline
         //app->camera.start();
