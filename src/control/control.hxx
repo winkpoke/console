@@ -112,8 +112,8 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        cl::mount(d->objects, cl::build_shared<hvg::hvg_t>(70.f, 5.f, nullptr), "hvg", "0.01");
-        cl::mount(d->objects, cl::build_shared<fpd::fpd_t>(3072, 3072), "fpd", "0.01");
+        cl::mount(d->objects, cl::build_shared<hvg::hvg_t>(70.f, 5.f, nullptr), "hvg", "0.0.1");
+        cl::mount(d->objects, cl::build_shared<fpd::fpd_t>(3072, 3072), "fpd", "0.0.1");
         return true;
     }
 
@@ -121,8 +121,7 @@ namespace control {
     {
         auto p = get_runtime_data();
         if (p) {
-            unmount(p->objects, "fpd");
-            unmount(p->objects, "hvg");
+            cl::unmount_all(p->objects);
             drop(p);
         }
     }

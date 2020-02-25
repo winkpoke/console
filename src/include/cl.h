@@ -258,10 +258,17 @@ namespace cl {
         return true;
     }
 
-    bool unmount(runtime_object_t* d, std::string str)
+    static bool unmount(runtime_object_t* d, std::string str)
     {
         std::scoped_lock<std::shared_mutex> lk(d->mutex);
         d->data.erase(str);
+        return true;
+    }
+
+    static bool unmount_all(runtime_object_t* d)
+    {
+        std::scoped_lock<std::shared_mutex> lk(d->mutex);
+        d->data.clear();
         return true;
     }
 

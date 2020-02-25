@@ -12,12 +12,12 @@ namespace sil {
 
     template <class pixel_t>
     struct image_t {
-        typedef pixel_t pixel_t;
         u16 channel;
         size_t height;
         size_t width;
         pixel_t* data;
     };
+
 
     template <class T>
     bool init(image_t<T>* image, size_t width, size_t height, u16 channel, T* data)
@@ -54,6 +54,15 @@ namespace sil {
             }
             free(image);
         }
+    }
+
+    template <class T>
+    image_t<T>* clone(image_t<T>* image)
+    {
+        image_t<T>* p = cl::build_raw<image_t<T>>(image->width, image->height, image->channel, (T*)nullptr);
+        size_t s = sizeof(T) * image->width * image->height * image->channel;
+        memcpy(p->data, image->data, s);
+        return p;
     }
 }
 

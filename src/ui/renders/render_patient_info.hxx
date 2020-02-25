@@ -2,18 +2,17 @@
 
 
 #include "imgui.h"
-#include "modal/patient.hxx"
+#include "module/patient/modal/patient.hxx"
 #include "ui/image.h"
 
 namespace ui {
     struct app_t;
     namespace  renders {
-
         bool render_patient_info_window(app_t* app)
         {
             assert(app);
 
-            modal::patient_t* p = app->patient;
+            auto p = cl::get<modal::patient_t>(app->objects, "patient");
             assert(p);
 
             ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove |
@@ -32,7 +31,7 @@ namespace ui {
             }
             ImGui::NextColumn();
             ImGui::Text("Name:     "); ImGui::SameLine(); if (p) ImGui::Text(p->name);
-            ImGui::Text("ID:       "); ImGui::SameLine(); if (p)ImGui::Text(p->id);
+            ImGui::Text("ID:       "); ImGui::SameLine(); if (p) ImGui::Text(p->id);
             ImGui::Text("Age:      "); ImGui::SameLine(); if (p) ImGui::Text(std::to_string(p->age).c_str());
             ImGui::NextColumn();
             ImGui::Text("Gender:   "); ImGui::SameLine(); if (p) ImGui::Text(modal::to_string(p->gender).c_str());

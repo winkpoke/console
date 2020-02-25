@@ -23,9 +23,6 @@
 #define MODAL_SCAN_IMPLEMENTATION
 #include "modal/scan.hxx"
 
-#define MODAL_PATIENT_IMPLEMENTATION
-#include "modal/patient.hxx"
-
 #define CONTROL_FPD_IMPLEMENTATION
 #include "control/fpd/fpd.hxx"
 

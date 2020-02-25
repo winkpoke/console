@@ -17,7 +17,6 @@ namespace modal {
     std::string to_string(gender_e g);
 
     struct patient_t {
-        using unique_ptr = std::unique_ptr<patient_t, void(patient_t*)>;
         char name[256];
         char id[256]; 
         cl::u8 age;

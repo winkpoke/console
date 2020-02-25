@@ -7,7 +7,7 @@
 #include "stb_image.h"
 
 #include "def.h"
-#include "modal/patient.hxx"
+#include "module/patient/modal/patient.hxx"
 #include "modal/modal.h"
 #include "control/runtime_data.hxx"
 #include "ui/image.h"
@@ -29,8 +29,7 @@ namespace ui {
         float mAs;
         cbct_mode_t cbct_mode;
 
-        // Patient
-        modal::patient_t* patient;
+        cl::runtime_object_t* objects;
 
         // Reconstruction 
         resolution_t resolution;
@@ -89,9 +88,9 @@ namespace ui
     {
         assert(app);
 
-        app->patient = cl::build_raw<modal::patient_t>();
-         auto p = app->patient;
-         assert(p);
+        app->objects = cl::build_raw<cl::runtime_object_t>();
+        
+        cl::shared_ptr<modal::patient_t> p = cl::build_shared<modal::patient_t>();
 
         //auto p = cl::build_raw<modal::patient_t>();
         strncpy(p->name, u8"张三", sizeof(p->name));
@@ -101,6 +100,8 @@ namespace ui
         strncpy(p->category, "H&N", sizeof(p->category));
         strncpy(p->site, u8"海吉亚", sizeof(p->site));
         p->portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
+
+        cl::mount<>(app->objects, p, "patient", "0.0.1");
 
         //auto j = modal::to_json(p);
         //modal::from_json(app->patient, j);
@@ -181,8 +182,9 @@ namespace ui
 
     void drop(app_t* app)
     {
-        if (app && app->win) {
+        if (app) {
             drop(app->win);
+            drop(app->objects);
         }
     }
 

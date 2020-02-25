@@ -72,6 +72,9 @@
     <ClCompile Include="src\ThirdParty\iRay\Detector.cpp">
       <Filter>iRay</Filter>
     </ClCompile>
+    <ClCompile Include="src\module\patient\patient.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ThirdParty\imgui\imconfig.h">
@@ -236,9 +239,6 @@
     <ClInclude Include="src\include\sil.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\modal\patient.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\modal\scan.hxx">
       <Filter>header</Filter>
     </ClInclude>
@@ -268,6 +268,18 @@
     </ClInclude>
     <ClInclude Include="src\control\control.hxx">
       <Filter>source\modal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\module\patient\control\control.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\module\patient\modal\patient.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\module\patient\ui\patient.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\module\patient\patient.h">
+      <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
