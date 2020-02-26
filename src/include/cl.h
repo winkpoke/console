@@ -34,33 +34,6 @@ namespace cl {
         return (T*)malloc(s);
     }
 
-    //template <class T, class... Args>
-    //T* build_raw(Args... args)
-    //{
-    //    auto p = (T*)alloc<T>();
-    //    if (!p) {
-    //        return nullptr;
-    //    }
-    //    if (!T::init(p, args...)) {
-    //        T::drop(p);
-    //        return nullptr;
-    //    }
-    //    return p;
-    //}
-
-    //template <class T, class... Args>
-    //std::shared_ptr<T> build_shared(Args... args)
-    //{
-    //    auto p = build_raw<T>(args...);
-    //    return std::shared_ptr<T>(p, T::drop);
-    //}
-
-    //template <class T, class... Args>
-    //std::unique_ptr<T, decltype(&T::drop)> build_unique(Args... args)
-    //{
-    //    auto p = build_raw<T>(args...);
-    //    return std::unique_ptr<T, decltype(&T::drop)>(p, T::drop);
-    //}
 
     template <class T, class... Args>
     T* build_raw(Args... args)
@@ -96,14 +69,6 @@ namespace cl {
 
     template <class T>
     using shared_ptr = std::shared_ptr<T>;
-
-    //template <class T>
-    //void dummy_drop(T*)
-    //{}
-
-    //template <class T>
-    //unique_ptr<T> unique_nullptr = unique_ptr<T>(nullptr, dummy_drop<T>);
-
 
     template <class T, class... Args>
     cl::unique_ptr<T> build_unique(Args... args)
@@ -170,20 +135,6 @@ namespace cl {
         return std::shared_ptr<T>(p, drop);
     }
     
-    //template <class T>
-    //std::unique_ptr<T, std::function<void(T*)>> build_unique(std::function<void(T*)> drop, T* p)
-    //{
-    //    assert(p);
-    //    return std::unique_ptr<T, decltype(drop)>(p, drop);
-    //}
-
-    //template <class T>
-    //std::shared_ptr<T> build_shared(std::function<void(T*)> drop, T* p)
-    //{
-    //    assert(p);
-    //    return std::shared_ptr<T>(p, drop);
-    //}
-
     template <class... Args>
     bool retry(int n, std::function<bool (Args...)> f, Args... args)
     {

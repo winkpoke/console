@@ -1,3 +1,5 @@
+## Misc
+
 The program depends on ixwebsocket library to handle the websocket communication with upstream server to get the patient information. The easiest way to make ixwebsocket available is to use vcpkg.
 
 
