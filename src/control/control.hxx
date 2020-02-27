@@ -10,6 +10,7 @@
 #include "runtime_data.hxx"
 
 #include "modal/modal.h"
+#include "mod/ops/ops.h"
 
 namespace control {
     using namespace spdlog;
@@ -120,16 +121,14 @@ namespace control {
         // patient
         int w1, h1;
         unsigned char* img1 = stbi_load("resources\\images\\patient.png", &w1, &h1, NULL, 4);
-        auto p = cl::build_raw<mod::patient::modal::patient_t>();
-        strncpy(p->name, u8"张三", sizeof(p->name));
-        strncpy(p->id, "209845", sizeof(p->id));
-        p->age = 65;
-        p->gender = mod::patient::modal::gender_e::MALE;
-        strncpy(p->category, "H&N", sizeof(p->category));
-        strncpy(p->site, u8"海吉亚", sizeof(p->site));
+        auto p = cl::build_raw<mod::patient::modal::patient_t>(u8"张三", u8"9527", 65, mod::patient::modal::gender_e::MALE, u8"H&N", u8"重庆海吉亚");
         p->portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
         auto patient = cl::build_shared<mod::patient::control::patient_t>(p);
         cl::mount(d->objects, patient, mod::patient::mod_name, mod::patient::mod_version);
+
+        // OPS
+        cl::mount(d->objects, cl::build_shared<mod::ops::control::ops_t>(), mod::ops::mod_name, mod::ops::mod_version);
+
         return true;
     }
 

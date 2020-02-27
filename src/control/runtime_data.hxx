@@ -6,9 +6,6 @@
 #include <mutex>
 #include <shared_mutex>
 
-// #include <librealsense2/rs.hpp>
-
-#include "def.h"
 #include "cl.h"
 #include "modal/scan.hxx"
 

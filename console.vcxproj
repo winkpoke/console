@@ -191,6 +191,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\console.cpp" />
+    <ClCompile Include="src\mod\ops\ops.cpp" />
     <ClCompile Include="src\mod\patient\patient.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.cpp" />
@@ -227,10 +228,10 @@
     <ClInclude Include="src\include\spdlog\tweakme.h" />
     <ClInclude Include="src\include\spdlog\version.h" />
     <ClInclude Include="src\control\control.hxx" />
-    <ClInclude Include="src\control\ops.h" />
     <ClInclude Include="src\include\sil.h" />
     <ClInclude Include="src\include\stb_image.h" />
     <ClInclude Include="src\include\stb_image_resize.h" />
+    <ClInclude Include="src\mod\ops\ops.h" />
     <ClInclude Include="src\mod\patient\control.hxx" />
     <ClInclude Include="src\mod\patient\modal.hxx" />
     <ClInclude Include="src\modal\scan.h" />
