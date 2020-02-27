@@ -1,6 +1,7 @@
 #pragma once
 
-
+#include <thread>
+#include <atomic>
 #include "cl.h"
 #include <librealsense2/rs.hpp>
 
@@ -15,6 +16,8 @@ namespace mod::ops {
 namespace mod::ops::control {
     struct ops_t {
         rs2::pipeline pipeline;
+        std::thread* thread;
+        std::atomic_flag runnable;
     };
     bool init(ops_t* p);
 

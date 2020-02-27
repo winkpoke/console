@@ -129,6 +129,8 @@ namespace control {
         // OPS
         cl::mount(d->objects, cl::build_shared<mod::ops::control::ops_t>(), mod::ops::mod_name, mod::ops::mod_version);
 
+        auto ops = cl::get<mod::ops::control::ops_t>(d->objects, mod::ops::mod_name);
+        mod::ops::control::start(ops.get());
         return true;
     }
 

@@ -8,6 +8,8 @@ namespace mod::ops::control {
         assert(p);
         if (p) {
             new(&p->pipeline)rs2::pipeline;
+            new(&p->runnable)std::atomic_flag;
+            p->runnable.clear();
         }
         return true;
     }
@@ -16,6 +18,12 @@ namespace mod::ops::control {
     {
         assert(p);
         if (p) {
+            
+            if (p->thread) {
+                p->runnable.clear();
+                p->thread->join();
+                delete p->thread;
+            }
             p->pipeline.~pipeline();
             free(p);
         }
@@ -27,13 +35,15 @@ namespace mod::ops::control {
         assert(ops);
         rs2::pipeline& p = ops->pipeline;
         p.start();
+        ops->thread = new std::thread(capture, ops);
     }
 
     void capture(ops_t* ops)
     {
         assert(ops);
         rs2::pipeline& p = ops->pipeline;
-        while (true)
+        ops->runnable.test_and_set();
+        while (ops->runnable.test_and_set())
         {
             // Block program until frames arrive
             rs2::frameset frames = p.wait_for_frames();
