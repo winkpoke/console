@@ -8,9 +8,10 @@ namespace modal {
         typedef unsigned short pixel_t;
         static const int N_IMAGES = 360;
 
-        int id;
-        int width;
-        int height;
+        cl::usize id;
+        cl::usize width;
+        cl::usize height;
+
         float angles[N_IMAGES];           // in degree
         int index;
         pixel_t* images;

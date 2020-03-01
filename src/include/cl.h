@@ -26,6 +26,7 @@ namespace cl {
     typedef uint16_t    u16;
     typedef uint32_t    u32;
     typedef uint64_t    u64;
+    typedef uint64_t    usize;
     typedef float       f32;
     typedef double      f64;
 

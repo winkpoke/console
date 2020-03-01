@@ -13,8 +13,8 @@ namespace sil {
     template <class pixel_t>
     struct image_t {
         u16 channel;
-        size_t height;
-        size_t width;
+        cl::usize height;
+        cl::usize width;
         pixel_t* data;
     };
 
@@ -63,6 +63,27 @@ namespace sil {
         size_t s = sizeof(T) * image->width * image->height * image->channel;
         memcpy(p->data, image->data, s);
         return p;
+    }
+
+    template <class T>
+    cl::usize width(image_t<T>* p)
+    {
+        assert(p);
+        return p->width;
+    }
+
+    template <class T>
+    cl::usize height(image_t<T>* p)
+    {
+        assert(p);
+        return p->height;
+    }
+
+    template <class T>
+    cl::usize channel(image_t<T>* p)
+    {
+        assert(p);
+        return p->channel;
     }
 }
 

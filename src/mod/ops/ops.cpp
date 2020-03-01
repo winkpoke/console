@@ -47,6 +47,8 @@ namespace mod::ops::control {
         {
             // Block program until frames arrive
             rs2::frameset frames = p.wait_for_frames();
+            rs2::pointcloud pc;
+            rs2::points ps = pc.calculate(frames.get_depth_frame());
 
             // Try to get a frame of a depth image
             rs2::depth_frame depth = frames.get_depth_frame();
