@@ -54,8 +54,27 @@ namespace control::fpd {
         }
 
         fpd->status = fpd_t::status_e::FPD_UNCONNECTED;
-        fpd->scan = cl::build_raw<modal::scan_t>(width, height);
-        assert(fpd->scan);
+        
+        constexpr cl::usize n_images = 360;
+        // const char* raw_data_path = R"(C:\Projects\CBCT\data\headneck_1024x1024\headneck_360_1024.raw)";
+        const char* raw_data_path = R"(C:\Projects\CBCT\data\headneck_1024x1024\raw\headneck_360_1024.raw)";
+        auto raw_data = cl::alloc<modal::scan_t::pixel_t>(width * height * n_images);
+       
+        
+        cl::f64 angles[n_images];
+        for (int i = 1; i <= n_images; ++i) {
+            char file_name[1024];
+            sprintf(file_name, "%s.%03d", raw_data_path, i);
+            FILE* fp = fopen(file_name, "rb");
+            ptrdiff_t shift = width * height * (i - 1);
+            cl::usize n_read = fread(raw_data + shift, sizeof(modal::scan_t::pixel_t), width * height, fp);
+            fclose(fp);
+            angles[i - 1] = static_cast<cl::f64>(i);
+        }
+
+        fpd->scan = cl::build_raw<modal::scan_t>(width, height, 0.471, 0.417, n_images, angles, raw_data);
+        // fpd->scan = cl::build_raw<modal::scan_t>(width, height, 0.417, 0.417, 360);
+        // assert(fpd->scan);
 
         return true;
     }
@@ -100,7 +119,7 @@ namespace control::fpd {
             }
 
             modal::scan_t& scan = *fpd->scan;
-            int& index = scan.index;
+            cl::usize& index = scan.index;
             const int w = scan.width;
             const int h = scan.height;
 

@@ -34,10 +34,16 @@ namespace cl {
     template <class T>
     T* alloc()
     {
-        const size_t s = sizeof(T);
+        constexpr usize s = sizeof(T);
         return (T*)malloc(s);
     }
 
+    template <class T>
+    T* alloc(usize n)
+    {
+        constexpr size_t s = sizeof(T);
+        return (T*)malloc(s * n);
+    }
 
     template <class T, class... Args>
     T* build_raw(Args... args)

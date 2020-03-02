@@ -116,7 +116,7 @@ namespace control {
         assert(d);
 
         cl::mount(d->objects, cl::build_shared<hvg::hvg_t>(70.f, 5.f, nullptr), "hvg", "0.0.1");
-        cl::mount(d->objects, cl::build_shared<fpd::fpd_t>(3072, 3072), "fpd", "0.0.1");
+        cl::mount(d->objects, cl::build_shared<fpd::fpd_t>(1024, 1024), "fpd", "0.0.1");
 
         // patient
         int w1, h1;
