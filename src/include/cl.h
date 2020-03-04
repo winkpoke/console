@@ -15,6 +15,7 @@
 #include <future>
 #include <mutex>
 #include <shared_mutex>
+#include <set>
 
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_sinks.h"
@@ -34,6 +35,10 @@ namespace cl {
     typedef double      f64;
 
     // data lifetime management
+#if !defined(NDEBUG)
+    static std::map<void*, std::string> g_allocation;
+#endif 
+
     template <class T>
     inline T* alloc()
     {
@@ -41,6 +46,7 @@ namespace cl {
         const auto p = (T*)calloc(1, s);
 #if !defined(NDEBUG)
         if (p) {
+            g_allocation.insert(std::make_pair(p, typeid(T).name()));
             SPDLOG_DEBUG(u8"allocator: successfully allocated {:d} bytes for {:s} at {:p}", s, typeid(T).name(), (void*)p);
         }
         else {
@@ -57,6 +63,7 @@ namespace cl {
         const auto p = (T*)calloc(n, s);
 #if !defined(NDEBUG)
         if (p) {
+            g_allocation.insert(std::make_pair(p, typeid(T).name()));
             SPDLOG_DEBUG(u8"allocator: successfully allocated {:d} {:s} with {:d} bytes each at {:p}", n, typeid(T).name(), s, (void*)p);
         }
         else {
@@ -72,6 +79,7 @@ namespace cl {
     {
 #if !defined(NDEBUG)
         if (p) {
+            g_allocation.erase(p);
             SPDLOG_DEBUG(u8"deallocator: deallocate {:s} at {:p}", typeid(T).name(), (void*)p);
         }
         else {
@@ -168,6 +176,26 @@ namespace cl {
     //}
 
     template <class T>
+    cl::unique_ptr<T> build_unique(T* p)
+    {
+        auto f = [](T* p)
+        {
+            drop(p);
+        };
+        return cl::unique_ptr<T>(p, f);
+    }
+
+    template <class T>
+    cl::shared_ptr<T> build_shared(T* p)
+    {
+        auto f = [](T* p)
+        {
+            drop(p);
+        };
+        return std::shared_ptr<T>(p, f);
+    }
+
+    template <class T>
     std::unique_ptr<T, void(*)(T*)> build_unique(void(*drop)(T*), T* p)
     {
         assert(p);
@@ -237,7 +265,7 @@ namespace cl {
         assert(p);
         p->data.~map<std::string, std::unique_ptr<runtime_wrapper_base>>();
         p->mutex.~shared_mutex();
-        free(p);
+        cl::dealloc(p);
     }
 
     template <class T>

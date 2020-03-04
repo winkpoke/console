@@ -176,7 +176,7 @@ namespace mod::patient::modal {
             (*j)["portrait"]["channel"] = img->channel;
             (*j)["portrait"]["len"] = len;
             (*j)["portrait"]["data"] = data;
-            free((void*)data);
+            cl::dealloc((void*)data);
         }
         return j->dump();
     }

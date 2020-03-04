@@ -67,9 +67,9 @@ namespace websocket {
             ix::uninitNetSystem();
             if (s->socket) {
                 s->socket->~WebSocket();
-                free(s->socket);
+                cl::dealloc(s->socket);
             }
-            free(s);
+            cl::dealloc(s);
         }
     }
 

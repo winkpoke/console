@@ -30,5 +30,12 @@ int main(int, char**)
     control::drop();
     // modal::drop();
 
+#if !defined(NDEBUG)
+    SPDLOG_ERROR("memory leaks: ");
+    for (auto iter : cl::g_allocation) {
+        SPDLOG_ERROR(" {:p} wit type of {:s} ", (void*)iter.first, iter.second);
+    }
+    
+#endif 
     return 0;
 }

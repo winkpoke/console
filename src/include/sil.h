@@ -34,8 +34,8 @@ namespace sil {
         pixel_t* data;
     };
 
-    template <class T>
-    bool init(image_t<T>* image, size_t width, size_t height, u16 channel, T* data)
+    template <class T, class DP>
+    bool init(image_t<T, DP>* image, size_t width, size_t height, u16 channel, T* data)
     {
         if (image == NULL) {
             return false;
@@ -46,7 +46,6 @@ namespace sil {
         }
 
         image->channel = channel;
-
         image->height = height;
         image->width = width;
 

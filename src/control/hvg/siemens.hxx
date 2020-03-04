@@ -174,7 +174,7 @@ namespace control::hvg {
     int close(context_t* context)
     {
         if (context != NULL) {
-            free(context);
+            cl::dealloc(context);
             return hvg::SUCCESS;
         }
         else {

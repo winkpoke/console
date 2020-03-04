@@ -73,8 +73,8 @@ namespace control::fpd {
     {
         if (dummy) {
             drop(dummy->fpd);
-            free(dummy->image_buf);
-            free(dummy);
+            //cl::dealloc(dummy->image_buf);
+            cl::dealloc(dummy);
         }
     }
 }

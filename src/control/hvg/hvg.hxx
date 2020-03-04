@@ -84,7 +84,7 @@ namespace control::hvg {
             }
             close(hvg->context);
             hvg->~hvg_t();
-            free(hvg);
+            cl::dealloc(hvg);
         }
     }
 
