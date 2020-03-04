@@ -11,7 +11,7 @@
 namespace control::fpd {
     struct fpd_dummy_t {
         fpd_t* fpd;
-        cl::u16* image_buf;
+        //cl::u16* image_buf;
     };
 
     using status_e = fpd_t::status_e;
@@ -72,9 +72,8 @@ namespace control::fpd {
     void drop(fpd_dummy_t* dummy)
     {
         if (dummy) {
-            drop(dummy->fpd);
+            cl::recycle(dummy->fpd);
             //cl::dealloc(dummy->image_buf);
-            cl::dealloc(dummy);
         }
     }
 }

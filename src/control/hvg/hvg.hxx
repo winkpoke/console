@@ -83,8 +83,6 @@ namespace control::hvg {
                 SPDLOG_ERROR("{}", last_error_str<error_t>());
             }
             close(hvg->context);
-            hvg->~hvg_t();
-            cl::dealloc(hvg);
         }
     }
 

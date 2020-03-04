@@ -25,7 +25,6 @@ namespace mod::ops::control {
                 delete p->thread;
             }
             p->pipeline.~pipeline();
-            cl::dealloc(p);
         }
     }
 

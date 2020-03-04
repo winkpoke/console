@@ -89,6 +89,13 @@ namespace cl {
         free(p);
     }
 
+    template <class T>
+    void recycle(T* p)
+    {
+        drop(p);
+        dealloc(p);
+    }
+
     template <class T, class... Args>
     T* build_raw(Args... args)
     {
@@ -98,6 +105,7 @@ namespace cl {
         }
         if (!init(p, args...)) {
             drop(p);
+            dealloc(p);
             return nullptr;
         }
         return p;
@@ -107,12 +115,12 @@ namespace cl {
     T* build_raw(bool(*init)(T*, Args...), void(*drop)(T*), Args... args)
     {
         auto p = (T*)alloc<T>();
-        memset(p, 0, sizeof(T));
         if (!p) {
             return nullptr;
         }
         if (!init(p, args...)) {
             drop(p);
+            dealloc(p);
             return nullptr;
         }
         return p;
@@ -131,6 +139,7 @@ namespace cl {
         auto f = [](T* p)
         {
             drop(p);
+            dealloc(p);
         };
         return cl::unique_ptr<T>(p, f);
     }
@@ -142,22 +151,44 @@ namespace cl {
         auto f = [](T* p)
         {
             drop(p);
+            dealloc(p);
         };
-        return std::shared_ptr<T>(p, f);
+        return cl::shared_ptr<T>(p, f);
+    }
+
+    template <class T, class U>
+    void func1(T f0, U f1)
+    {
+        f0(f1);
+        dealloc(f1);
     }
 
     template <class T, class... Args>
-    std::unique_ptr<T, void(*)(T*)> build_unique(void(*drop)(T*), Args... args)
+    cl::unique_ptr<T> build_unique(void(*drop)(T*), Args... args)
     {
         auto p = build_raw<T>(args...);
-        return std::unique_ptr<T, decltype(drop)>(p, drop);
+
+        // lambda with capture won't be recognized as a function pointer
+        // so using a static f-pointer is the only way seems to work
+        static void(*d)(T*) = drop;
+        auto f = [](T* p)
+        {
+            d(p);
+            dealloc(p);
+        };
+        return cl::unique_ptr<T>(p, f);
     }
 
     template <class T, class... Args>
-    std::shared_ptr<T> build_shared(void(*drop)(T*), Args... args)
+    cl::shared_ptr<T> build_shared(void(*drop)(T*), Args... args)
     {
         auto p = build_raw<T>(args...);
-        return std::shared_ptr<T>(p, drop);
+        auto f = [=](T* p)
+        {
+            drop(p);
+            dealloc(p);
+        };
+        return cl::shared_ptr<T>(p, f);
     }
 
 
@@ -181,6 +212,7 @@ namespace cl {
         auto f = [](T* p)
         {
             drop(p);
+            dealloc(p);
         };
         return cl::unique_ptr<T>(p, f);
     }
@@ -191,22 +223,36 @@ namespace cl {
         auto f = [](T* p)
         {
             drop(p);
+            dealloc(p);
         };
-        return std::shared_ptr<T>(p, f);
+        return cl::shared_ptr<T>(p, f);
     }
 
     template <class T>
-    std::unique_ptr<T, void(*)(T*)> build_unique(void(*drop)(T*), T* p)
+    cl::unique_ptr<T> build_unique(void(*drop)(T*), T* p)
     {
         assert(p);
-        return std::unique_ptr<T, decltype(drop)>(p, drop);
+        // lambda with capture won't be recognized as a function pointer
+        // so using a static f-pointer is the only way seems to work
+        static void(*d)(T*) = drop;
+        auto f = [](T* p)
+        {
+            d(p);
+            dealloc(p);
+        };
+        return cl::unique_ptr<T>(p, f);
     }
 
     template <class T>
-    std::shared_ptr<T> build_shared(void(*drop)(T*), T* p)
+    cl::shared_ptr<T> build_shared(void(*drop)(T*), T* p)
     {
         assert(p);
-        return std::shared_ptr<T>(p, drop);
+        auto f = [=](T* p)
+        {
+            drop(p);
+            dealloc(p);
+        };
+        return cl::shared_ptr<T>(p, f);
     }
     
     template <class... Args>
@@ -265,7 +311,6 @@ namespace cl {
         assert(p);
         p->data.~map<std::string, std::unique_ptr<runtime_wrapper_base>>();
         p->mutex.~shared_mutex();
-        cl::dealloc(p);
     }
 
     template <class T>

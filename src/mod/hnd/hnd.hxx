@@ -70,7 +70,6 @@ namespace mod::hnd::modal {
             hnd_header_drop(p->header);
             cl::dealloc(p->data);
         }
-        cl::dealloc(p);
     }
 }
 

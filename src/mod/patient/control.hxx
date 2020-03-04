@@ -55,7 +55,6 @@ namespace mod::patient::control {
         if (p) {
             p->modal.~shared_ptr();
             p->mutex.~shared_mutex();
-            cl::dealloc(p);
         }
     }
 

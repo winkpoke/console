@@ -69,7 +69,6 @@ namespace websocket {
                 s->socket->~WebSocket();
                 cl::dealloc(s->socket);
             }
-            cl::dealloc(s);
         }
     }
 

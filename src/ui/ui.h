@@ -34,12 +34,14 @@ namespace ui
 
     void run()
     {
-        auto app = cl::build_unique<ui::app_t>(ui::drop);
+        auto app = cl::build_shared<ui::app_t>(ui::drop);
         ui::run(app.get());
     }
 
     void drop()
-    {}
+    {
+    
+    }
 }
 #endif // !CONSOLE_UI_IMPLEMENTED
 #endif   // CONSOLE_UI_IMPLEMENTATION

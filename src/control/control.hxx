@@ -146,7 +146,7 @@ namespace control {
         auto p = get_runtime_data();
         if (p) {
             cl::unmount_all(p->objects);
-            drop(p);
+            cl::recycle(p);
         }
     }
 

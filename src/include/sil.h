@@ -81,7 +81,6 @@ namespace sil {
         if (image) {
 
             DP::drop(image->data);
-            cl::dealloc(image);
         }
     }
 

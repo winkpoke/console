@@ -86,7 +86,6 @@ namespace modal {
             cl::dealloc(scan->images);
             cl::dealloc(scan->angles);
         }
-        cl::dealloc(scan);
     }
 
     scan_t::pixel_t* get_image_at(scan_t* scan, int n)

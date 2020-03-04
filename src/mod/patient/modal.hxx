@@ -114,9 +114,8 @@ namespace mod::patient::modal {
     void drop(patient_t* p)
     {
         if (p) {
-            drop(p->portrait);
+            cl::recycle(p->portrait);
             p->~patient_t();
-            cl::dealloc(p);
         }
     }
 

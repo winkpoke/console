@@ -64,11 +64,9 @@ namespace control::fpd {
     void drop(fpd_t* fpd)
     {
         if (fpd) {
-            drop(fpd->scan);
-            fpd->scan = nullptr;
+            cl::recycle(fpd->scan);
         }
         disconnect(fpd);
-        cl::dealloc(fpd);
     }
 
     std::string to_string(fpd_t::status_e status)

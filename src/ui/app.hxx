@@ -1,4 +1,4 @@
-﻿#ifndef CONSOLE_UI_APP_H
+#ifndef CONSOLE_UI_APP_H
 #define CONSOLE_UI_APP_H
 
 #include <mutex>
@@ -178,8 +178,12 @@ namespace ui
     void drop(app_t* app)
     {
         if (app) {
-            drop(app->win);
-            drop(app->objects);
+            if (app->objects) {
+                cl::unmount_all(app->objects);
+            }
+
+            cl::recycle(app->win);
+            cl::recycle(app->objects);
             cl::dealloc(app->image0);
             // drop(app->image0);
         }

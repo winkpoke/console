@@ -70,10 +70,9 @@ namespace control {
     void drop(runtime_data_t* d) 
     {
         // d->fpd is unique_ptr and would be destroyed automatically
-        websocket::drop(d->socket);
-        drop(d->objects);
+        cl::recycle(d->socket);
+        cl::recycle(d->objects);
         d->~runtime_data_t();
-        free(d);
     }
 
     runtime_data_t* runtime_data_t::_this = cl::build_raw<runtime_data_t>();

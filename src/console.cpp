@@ -33,7 +33,7 @@ int main(int, char**)
 #if !defined(NDEBUG)
     SPDLOG_ERROR("memory leaks: ");
     for (auto iter : cl::g_allocation) {
-        SPDLOG_ERROR(" {:p} wit type of {:s} ", (void*)iter.first, iter.second);
+        SPDLOG_ERROR(" {:p} with type of {:s} ", (void*)iter.first, iter.second);
     }
     
 #endif 

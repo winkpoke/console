@@ -61,9 +61,8 @@ namespace mod::patient::ui {
         if (p) {
             p->mutex.~shared_mutex();
             if (p->image) {
-                drop(p->image);
+                cl::recycle(p->image);
             }
-            cl::dealloc(p);
         }
     }
 
@@ -85,7 +84,7 @@ namespace mod::patient::ui {
         dst->age = src->modal->age;
         dst->gender = src->modal->gender;
         if (dst->image) {
-            drop(dst->image);
+            cl::recycle(dst->image);
             dst->image = nullptr;
         }
 
