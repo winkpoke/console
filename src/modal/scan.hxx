@@ -91,7 +91,7 @@ namespace modal {
         if (n >= scan_t::N_IMAGES || n < 0) {
             return NULL;
         }
-        return scan->images + (size_t)scan->width * scan->height * sizeof(scan_t::pixel_t) * n;
+        return scan->images + (size_t)scan->width * scan->height * n;
     }
 }
 #endif // !MODAL_SCAN_IMPLEMENTED

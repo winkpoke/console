@@ -64,6 +64,7 @@ namespace cl {
     T* build_raw(bool(*init)(T*, Args...), void(*drop)(T*), Args... args)
     {
         auto p = (T*)alloc<T>();
+        memset(p, 0, sizeof(T));
         if (!p) {
             return nullptr;
         }

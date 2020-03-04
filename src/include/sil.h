@@ -18,7 +18,6 @@ namespace sil {
         pixel_t* data;
     };
 
-
     template <class T>
     bool init(image_t<T>* image, size_t width, size_t height, u16 channel, T* data)
     {

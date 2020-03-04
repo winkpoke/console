@@ -113,6 +113,8 @@
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\RS-232;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,6 +135,8 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,6 +158,8 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\RS-232;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -179,6 +185,8 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -206,6 +214,7 @@
     <ClCompile Include="src\ThirdParty\RS-232\rs232.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\control\fpd\fpd_dummy.hxx" />
     <ClInclude Include="src\control\fpd\iray.hxx" />
     <ClInclude Include="src\control\hvg\hvg.hxx" />
     <ClInclude Include="src\control\runtime_data.hxx" />

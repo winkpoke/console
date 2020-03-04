@@ -28,6 +28,8 @@ namespace ui {
 
         cl::runtime_object_t* objects;
 
+        ui::image_view<cl::u16>* image0;
+
         // Reconstruction 
         resolution_t resolution;
         float slice_dist;
@@ -133,13 +135,17 @@ namespace ui
         //fprintf_s(fp, "%s", j.c_str());
         //fclose(fp);
 
-        // assert(font1);
-        // auto image = sil::make_shared<unsigned char>(w, h, 4, img);
-        auto image = cl::build_shared<sil::image_t<unsigned char>>(sil::drop, w, h, 4, img);
+        auto image = cl::build_shared<sil::image_t<unsigned char>>(w, h, 4, img);
         init(&renders::g_image_widget[0], 512, 512, image);
         init(&renders::g_image_widget[1], 512, 512, image);
         init(&renders::g_image_widget[2], 512, 512, image);
         init(&renders::g_image_widget[3], 512, 512, image);
+
+        auto data = control::get_runtime_data();
+        auto fpd = cl::get<control::fpd::fpd_t>(data->objects, "fpd");
+        assert(fpd);
+        auto img = cl::build_shared<sil::image_t<cl::u16>>(1024, 1024, 1, modal::get_image_at(fpd->scan, 200));
+        app->image0 = cl::build_raw<ui::image_view<cl::u16>>(512, 512, img);
 
         // key events
         app->win->key_events.push_back([](window_t* win, int key) -> bool {
@@ -166,7 +172,6 @@ namespace ui
         // set style
         set_window_style(app);
 
-
         return true;
     }
 
@@ -175,6 +180,8 @@ namespace ui
         if (app) {
             drop(app->win);
             drop(app->objects);
+            free(app->image0);
+            // drop(app->image0);
         }
     }
 

@@ -16,8 +16,13 @@ namespace ui {
                                             ImGuiWindowFlags_NoTitleBar;
             static bool p_open;
             ImGui::Begin("##Image", &p_open, window_flags);
-
-            render(&g_image_widget[0]);
+            
+            if (app->image0) {
+                render(app->image0);
+            }
+            else {
+                render(&g_image_widget[0]);
+            }
             ImGui::SameLine();
             render(&g_image_widget[1]);
             render(&g_image_widget[2]);

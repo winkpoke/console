@@ -52,3 +52,6 @@
 
 #define CONTROL_HVG_IMPLEMENTATION
 #include "control/hvg/hvg.hxx"
+
+#define FPD_DUMMY_CONTROL_IMPLEMENTATION
+#include "control/fpd/fpd_dummy.hxx"

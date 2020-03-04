@@ -25,8 +25,6 @@ namespace ui {
         GLuint texture;
         size_t width;
         size_t height;
-
-
     };
 
     template <class T>
@@ -43,7 +41,7 @@ namespace ui {
 // Implementation
 namespace ui {
     template <class T>
-    static bool init(image_view<T>* widget, size_t width, size_t height, std::shared_ptr<sil::image_t<T>> image)
+    bool init(image_view<T>* widget, size_t width, size_t height, std::shared_ptr<sil::image_t<T>> image)
     {
         if (!widget) {
             return false;
@@ -57,18 +55,6 @@ namespace ui {
         widget->height = height;
         widget->image = image;
 
-        return true;
-    }
-
-    template <class T>
-    static void drop(image_view<T>* widget)
-    {
-    
-    }
-
-    template <class T>
-    void render(image_view<T>* widget)
-    {
         if (widget->image.get() != NULL) {
             glBindTexture(GL_TEXTURE_2D, widget->texture);
             if (widget->image->channel == 1) {
@@ -92,6 +78,20 @@ namespace ui {
         if (err != GL_NO_ERROR) {
             // error handling
         }
+
+        return true;
+    }
+
+    template <class T>
+    void drop(image_view<T>* widget)
+    {
+    
+    }
+
+    template <class T>
+    void render(image_view<T>* widget)
+    {
+
         ImGui::Image((void*)(intptr_t)widget->texture, ImVec2(widget->width, widget->height)/*, ImVec2(0, 0), ImVec2(0.5, 0.5)*/);
     }
 }

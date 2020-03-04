@@ -47,6 +47,7 @@ namespace control {
 #include "runtime_data.hxx"
 #include "mod/patient/control.hxx"
 #include "mod/patient/patient.h"
+#include "fpd/fpd_dummy.hxx"
 
 namespace control {
     // FPD
@@ -115,8 +116,14 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
+        constexpr cl::usize FPD_WIDTH = 1024;
+        constexpr cl::usize FPD_HEIGHT = 1024;
+        constexpr cl::f64 FPD_X_RESOLUTION = 0.417;
+        constexpr cl::f64 FPD_Y_RESOLUTION = 0.417;
         cl::mount(d->objects, cl::build_shared<hvg::hvg_t>(70.f, 5.f, nullptr), "hvg", "0.0.1");
-        cl::mount(d->objects, cl::build_shared<fpd::fpd_t>(1024, 1024), "fpd", "0.0.1");
+        cl::mount(d->objects, cl::build_shared<fpd::fpd_t>(FPD_WIDTH, FPD_HEIGHT, FPD_X_RESOLUTION, FPD_Y_RESOLUTION), "fpd", "0.0.1");
+
+        cl::mount(d->objects, cl::build_shared<fpd::fpd_dummy_t>(FPD_WIDTH, FPD_HEIGHT, FPD_X_RESOLUTION, FPD_Y_RESOLUTION), "fpd_dummy", "0.0.1");
 
         // patient
         int w1, h1;

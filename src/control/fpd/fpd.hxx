@@ -5,7 +5,7 @@
 #include "spdlog/sinks/stdout_sinks.h"
 
 #include "cl.h"
-#include "def.h"
+#include "sil.h"
 
 #include "iray.hxx"
 
@@ -26,7 +26,7 @@ namespace control::fpd {
         modal::scan_t* scan;
     };
     using status_e = fpd_t::status_e;
-    bool init(fpd_t* fpd, int width, int height);
+    bool init(fpd_t* fpd, cl::usize width, cl::usize height, cl::f64 x_res, cl::f64 y_res);
     void drop(fpd_t* fpd);
 
     std::string to_string(fpd_t::status_e status);
@@ -47,34 +47,16 @@ namespace control::fpd {
     using status_e = fpd_t::status_e;
     const char* fpd_t::status_strs[] = { "unconnected", "connecting", "ready", "acquiring", "error" };
 
-    bool init(fpd_t* fpd, int width, int height)
+    bool init(fpd_t* fpd, cl::usize width, cl::usize height, cl::f64 x_res, cl::f64 y_res)
     {
         if (!fpd) {
             return false;
         }
 
-        fpd->status = fpd_t::status_e::FPD_UNCONNECTED;
-        
+        fpd->status = fpd_t::status_e::FPD_UNCONNECTED;   
         constexpr cl::usize n_images = 360;
-        // const char* raw_data_path = R"(C:\Projects\CBCT\data\headneck_1024x1024\headneck_360_1024.raw)";
-        const char* raw_data_path = R"(C:\Projects\CBCT\data\headneck_1024x1024\raw\headneck_360_1024.raw)";
-        auto raw_data = cl::alloc<modal::scan_t::pixel_t>(width * height * n_images);
-       
-        
-        cl::f64 angles[n_images];
-        for (int i = 1; i <= n_images; ++i) {
-            char file_name[1024];
-            sprintf(file_name, "%s.%03d", raw_data_path, i);
-            FILE* fp = fopen(file_name, "rb");
-            ptrdiff_t shift = width * height * (i - 1);
-            cl::usize n_read = fread(raw_data + shift, sizeof(modal::scan_t::pixel_t), width * height, fp);
-            fclose(fp);
-            angles[i - 1] = static_cast<cl::f64>(i);
-        }
-
-        fpd->scan = cl::build_raw<modal::scan_t>(width, height, 0.471, 0.417, n_images, angles, raw_data);
-        // fpd->scan = cl::build_raw<modal::scan_t>(width, height, 0.417, 0.417, 360);
-        // assert(fpd->scan);
+        fpd->scan = cl::build_raw<modal::scan_t>(width, height, x_res, y_res, n_images);
+        assert(fpd->scan);
 
         return true;
     }

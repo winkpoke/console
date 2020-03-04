@@ -43,6 +43,7 @@ namespace mod::ops::control {
         assert(ops);
         rs2::pipeline& p = ops->pipeline;
         ops->runnable.test_and_set();
+        ops->runnable.clear();
         while (ops->runnable.test_and_set())
         {
             // Block program until frames arrive
