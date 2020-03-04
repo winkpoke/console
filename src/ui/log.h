@@ -47,7 +47,7 @@ namespace ui {
 
     void drop(log_t* log)
     {
-
+        cl::dealloc(log);
     }
 
     void add_log(log_t* log, const char* fmt, ...) IM_FMTARGS(2)

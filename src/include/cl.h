@@ -16,6 +16,9 @@
 #include <mutex>
 #include <shared_mutex>
 
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_sinks.h"
+
 namespace cl {
     // type define 
     typedef int8_t      i8;
@@ -32,24 +35,56 @@ namespace cl {
 
     // data lifetime management
     template <class T>
-    T* alloc()
+    inline T* alloc()
     {
         constexpr usize s = sizeof(T);
-        return (T*)malloc(s);
+        const auto p = (T*)calloc(1, s);
+#if !defined(NDEBUG)
+        if (p) {
+            SPDLOG_DEBUG(u8"allocator: successfully allocated {:d} bytes for {:s} at {:p}", s, typeid(T).name(), (void*)p);
+        }
+        else {
+            SPDLOG_ERROR("allocator: failed to allocate {:d} bytes for {:s} ", s, typeid(T).name());
+        }
+#endif 
+        return p;
     }
 
     template <class T>
-    T* alloc(usize n)
+    inline T* alloc(usize n)
     {
         constexpr size_t s = sizeof(T);
-        return (T*)malloc(s * n);
+        const auto p = (T*)calloc(n, s);
+#if !defined(NDEBUG)
+        if (p) {
+            SPDLOG_DEBUG(u8"allocator: successfully allocated {:d} {:s} with {:d} bytes each at {:p}", n, typeid(T).name(), s, (void*)p);
+        }
+        else {
+            SPDLOG_ERROR("allocator: failed to allocate {:d} {:s} with {:d} bytes each ", n, typeid(T).name(), s);
+        }
+#endif 
+        return p;
+
+    }
+
+    template<class T>
+    void dealloc(T* p)
+    {
+#if !defined(NDEBUG)
+        if (p) {
+            SPDLOG_DEBUG(u8"deallocator: deallocate {:s} at {:p}", typeid(T).name(), (void*)p);
+        }
+        else {
+            SPDLOG_ERROR("deallocator: deallocate a NULL pointer with type of {:s} ", typeid(T).name());
+        }
+#endif 
+        free(p);
     }
 
     template <class T, class... Args>
     T* build_raw(Args... args)
     {
-        auto p = (T*)alloc<T>();
-        memset(p, 0, sizeof(T));
+        const auto p = (T*)alloc<T>();
         if (!p) {
             return nullptr;
         }

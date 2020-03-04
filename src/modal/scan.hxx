@@ -2,6 +2,7 @@
 #define _CONSOLE_SCAN_H_
 
 #include "cl.h"
+#include "sil.h"
 
 namespace modal {
     struct scan_t {
@@ -17,6 +18,8 @@ namespace modal {
         cl::usize index;        // current image index
         cl::f64* angles;        // in degree
         pixel_t* images;
+
+        //std::list<std::pair<cl::f64, sil::image_t<pixel_t>>>
     };
 
     bool init(scan_t* scan, cl::usize width, cl::usize height, cl::f64 x_res, cl::f64 y_res, cl::usize n_images);
@@ -48,8 +51,8 @@ namespace modal {
         scan->x_res = x_res;
         scan->y_res = y_res;
         scan->n_images = n_images;
-        scan->angles = (cl::f64*)calloc(scan->n_images, sizeof(cl::f64));
-        scan->images = (scan_t::pixel_t*)calloc(scan->n_images, scan->width * scan->height * sizeof(scan_t::pixel_t));
+        scan->angles = cl::alloc<cl::f64>(scan->n_images);
+        scan->images = cl::alloc<scan_t::pixel_t>(scan->n_images * scan->width * scan->height);
         if (scan->images == NULL) {
             // error handling
             return false;
@@ -70,7 +73,7 @@ namespace modal {
         scan->x_res = x_res;
         scan->y_res = y_res;
         scan->n_images = n_images;
-        scan->angles = (cl::f64*)calloc(scan->n_images, sizeof(cl::f64));
+        scan->angles = cl::alloc<cl::f64>(scan->n_images);
         memcpy(scan->angles, angles, n_images * sizeof(cl::f64));
         scan->images = raw_data;
 
@@ -80,10 +83,10 @@ namespace modal {
     void drop(scan_t* scan)
     {
         if (scan) {
-            free(scan->images);
-            free(scan->angles);
+            cl::dealloc(scan->images);
+            cl::dealloc(scan->angles);
         }
-        free(scan);
+        cl::dealloc(scan);
     }
 
     scan_t::pixel_t* get_image_at(scan_t* scan, int n)

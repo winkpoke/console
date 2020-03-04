@@ -68,9 +68,9 @@ namespace mod::hnd::modal {
         assert(p);
         if (p) {
             hnd_header_drop(p->header);
-            free(p->data);
+            cl::dealloc(p->data);
         }
-        free(p);
+        cl::dealloc(p);
     }
 }
 

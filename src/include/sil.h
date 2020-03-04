@@ -9,8 +9,24 @@
 namespace sil {
     using namespace std;
     using namespace cl;
-
-    template <class pixel_t>
+    
+    struct drop_policy {
+        struct strong {
+            template <class T>
+            static inline void drop(T* p)
+            {
+                cl::dealloc(p);
+            }
+        };
+        struct weak {
+            template <class T>
+            static inline void drop(T* p)
+            {
+            }
+        };
+    };
+    
+    template <class pixel_t, class MS = sil::drop_policy::strong>
     struct image_t {
         u16 channel;
         cl::usize height;
@@ -35,7 +51,7 @@ namespace sil {
         image->width = width;
 
         if (data == nullptr) {
-            image->data = (T*)malloc(sizeof(T) * width * height * channel);
+            image->data = cl::alloc<T>(width * height * channel);
         }
         else {
             image->data = data;
@@ -44,19 +60,34 @@ namespace sil {
         return true;
     }
 
-    template <class T>
-    void drop(image_t<T>* image)
+    template <class T, class DP>
+    bool init(image_t<T, sil::drop_policy::weak>* image, image_t<T, DP> another)
+    {
+        assert(!image || !another);
+        if (image == NULL || another == NULL) {
+            return false;
+        }
+        image->channel = another->channel;
+
+        image->height = another->height;
+        image->width = another->width;
+
+        assert(!another->data);
+        image->data = another->data;
+    }
+
+    template <class T, class DP>
+    void drop(image_t<T, DP>* image)
     {
         if (image) {
-            if (image->data) {
-                free(image->data);
-            }
-            free(image);
+
+            DP::drop(image->data);
+            cl::dealloc(image);
         }
     }
 
-    template <class T>
-    image_t<T>* clone(image_t<T>* image)
+    template <class T, class DP>
+    image_t<T>* clone(image_t<T, DP>* image)
     {
         image_t<T>* p = cl::build_raw<image_t<T>>(image->width, image->height, image->channel, (T*)nullptr);
         size_t s = sizeof(T) * image->width * image->height * image->channel;

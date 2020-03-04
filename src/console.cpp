@@ -1,5 +1,5 @@
-﻿#include "cl.h"
-#include "console.h"
+﻿#include "console.h"
+#include "cl.h"
 
 void experiments();
 

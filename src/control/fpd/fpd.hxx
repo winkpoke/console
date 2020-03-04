@@ -68,7 +68,7 @@ namespace control::fpd {
             fpd->scan = nullptr;
         }
         disconnect(fpd);
-        free(fpd);
+        cl::dealloc(fpd);
     }
 
     std::string to_string(fpd_t::status_e status)

@@ -49,8 +49,8 @@ namespace control::fpd {
 
         cl::f64 angles[n_images];
 
-        // openMP does not support two phase name lookup and neet to turn it off /Zc:twoPhase-
-        // #pragma omp parallel for
+        // openMP does not support two phase name lookup and neet to turn it off /Zc:twoPhase -
+        //#pragma omp parallel for
         for (int i = 1; i <= n_images; ++i) {
             char file_name[1024];
             sprintf(file_name, "%s.%03d", raw_data_path, i);

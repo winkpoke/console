@@ -116,7 +116,7 @@ namespace mod::patient::modal {
         if (p) {
             drop(p->portrait);
             p->~patient_t();
-            free(p);
+            cl::dealloc(p);
         }
     }
 

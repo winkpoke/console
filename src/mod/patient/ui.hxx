@@ -63,7 +63,7 @@ namespace mod::patient::ui {
             if (p->image) {
                 drop(p->image);
             }
-            free(p);
+            cl::dealloc(p);
         }
     }
 

@@ -193,7 +193,7 @@ namespace ui {
                 glfwDestroyWindow(win->wnd);
                 glfwTerminate();
             }
-            free(win);
+            cl::dealloc(win);
         }
     }
 

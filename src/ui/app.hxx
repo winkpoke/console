@@ -180,7 +180,7 @@ namespace ui
         if (app) {
             drop(app->win);
             drop(app->objects);
-            free(app->image0);
+            cl::dealloc(app->image0);
             // drop(app->image0);
         }
     }
