@@ -14,7 +14,7 @@ extern "C" {
 
     uint32_t addition(uint32_t a, uint32_t b);
 
-    uint8_t* encode(uint8_t* img,
+    uint8_t* encode(const uint8_t* img,
         uintptr_t width,
         uintptr_t height,
         uintptr_t channel,

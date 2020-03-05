@@ -88,6 +88,12 @@ namespace modal {
         }
     }
 
+    cl::usize len(scan_t* scan)
+    {
+        assert(scan);
+        return scan->index + 1;
+    }
+
     scan_t::pixel_t* get_image_at(scan_t* scan, int n)
     {
         if (n >= scan_t::N_IMAGES || n < 0) {

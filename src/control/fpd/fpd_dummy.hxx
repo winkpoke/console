@@ -37,6 +37,7 @@ namespace control::fpd {
         auto t0 = steady_clock::now();
 
         dummy->fpd = cl::build_raw<fpd_t>(width, height, x_res, y_res);
+        cl::recycle(dummy->fpd->scan);
 
         auto t1 = steady_clock::now();
         SPDLOG_TRACE("Dummy FPD: memory allocation in {:d} ms", duration_cast<milliseconds>(t1 - t0).count());

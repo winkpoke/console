@@ -115,7 +115,7 @@ namespace mod::patient::modal {
     {
         if (p) {
             cl::recycle(p->portrait);
-            p->~patient_t();
+            //p->~patient_t();
         }
     }
 

@@ -89,7 +89,7 @@ namespace mod::patient::ui {
         }
 
         if (src->modal->portrait) {
-            dst->image = cl::build_raw<::ui::image_view<cl::u8>>(50, 73, std::shared_ptr<sil::image_t<cl::u8>>(src->modal->portrait));
+            dst->image = cl::build_raw<::ui::image_view<cl::u8>>(50, 73, sil::clone(src->modal->portrait));
         }
     }
 

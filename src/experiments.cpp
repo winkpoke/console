@@ -14,11 +14,11 @@ extern "C" {
 
     cl::usize image_u16_get_width(image_u16_t* image)
     {
-        return sil::width(image);
+        return sil::get_width(image);
     }
     cl::usize image_u16_get_height(image_u16_t* image)
     {
-        return sil::height(image);
+        return sil::get_height(image);
     }
 }
 
@@ -31,8 +31,6 @@ void experiments()
     //printf("%ls\n", L"ห๛รว");
 
     std::cout << "addition: " << addition(100, 100) << std::endl;
-    spdlog::set_level(spdlog::level::trace); // Set global log level to debug
-    SPDLOG_INFO("CBCT Console starting ...");
 
     const char* raw_file_name = R"(C:\Projects\CBCT\data\headneck_1024x1024\raw\headneck_360_1024.raw.001)";
     FILE* fp = fopen(raw_file_name, "r");

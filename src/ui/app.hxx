@@ -29,6 +29,7 @@ namespace ui {
         cl::runtime_object_t* objects;
 
         ui::image_view<cl::u16>* image0;
+        ui::image_view<cl::u8>* image1;
 
         // Reconstruction 
         resolution_t resolution;
@@ -61,6 +62,7 @@ namespace ui {
 #include "ui/log.h"
 #include "modal/modal.h"
 #include "control/control.hxx"
+#include "image.h"
 
 #include "renders/render_image.hxx"
 #include "renders/render_maintenance.hxx"
@@ -85,6 +87,7 @@ namespace ui
 
     bool init(app_t* app)
     {
+        SPDLOG_TRACE("Staring initialization ...");
         assert(app);
 
         app->objects = cl::build_raw<cl::runtime_object_t>();
@@ -135,16 +138,18 @@ namespace ui
         //fprintf_s(fp, "%s", j.c_str());
         //fclose(fp);
 
-        auto image = cl::build_shared<sil::image_t<unsigned char>>(w, h, 4, img);
-        init(&renders::g_image_widget[0], 512, 512, image);
-        init(&renders::g_image_widget[1], 512, 512, image);
-        init(&renders::g_image_widget[2], 512, 512, image);
-        init(&renders::g_image_widget[3], 512, 512, image);
+        auto image = cl::build_raw<sil::image_t<cl::u8>>(w, h, 4, img);
+        app->image1 = cl::build_raw<ui::image_view<cl::u8>>(512, 512, image);
 
         auto data = control::get_runtime_data();
         auto fpd = cl::get<control::fpd::fpd_t>(data->objects, "fpd");
         assert(fpd);
-        auto img = cl::build_shared<sil::image_t<cl::u16>>(1024, 1024, 1, modal::get_image_at(fpd->scan, 200));
+
+        auto p = modal::get_image_at(fpd->scan, 200);
+        const cl::usize len = 1024 * 1024;
+        auto pnew = cl::alloc<cl::u16>(len);
+        memcpy(pnew, p, len * sizeof(cl::u16));
+        auto img = cl::build_raw<sil::image_t<cl::u16>>(1024, 1024, 1, pnew);
         app->image0 = cl::build_raw<ui::image_view<cl::u16>>(512, 512, img);
 
         // key events
@@ -172,6 +177,7 @@ namespace ui
         // set style
         set_window_style(app);
 
+        SPDLOG_TRACE("End of initialization ...");
         return true;
     }
 
@@ -184,8 +190,8 @@ namespace ui
 
             cl::recycle(app->win);
             cl::recycle(app->objects);
-            cl::dealloc(app->image0);
-            // drop(app->image0);
+            cl::recycle(app->image0);
+            cl::recycle(app->image1);
         }
     }
 

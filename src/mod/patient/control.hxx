@@ -33,7 +33,7 @@ namespace mod::patient::control {
     {
         assert(p);
         assert(modal);
-        new(&p->modal)cl::shared_ptr<modal::patient_t>(modal);
+        new(&p->modal)cl::shared_ptr<modal::patient_t>(cl::build_shared<modal::patient_t>(modal::drop, modal));
         new(&p->mutex)std::shared_mutex;
         p->dirty = false;
         return true;

@@ -34,6 +34,9 @@ namespace cl {
     typedef float       f32;
     typedef double      f64;
 
+
+
+
     // data lifetime management
 #if !defined(NDEBUG)
     static std::map<void*, std::string> g_allocation;
@@ -89,6 +92,11 @@ namespace cl {
         free(p);
     }
 
+    static inline void drop(void*)
+    {
+    
+    }
+
     template <class T>
     void recycle(T* p)
     {
@@ -132,6 +140,13 @@ namespace cl {
     template <class T>
     using shared_ptr = std::shared_ptr<T>;
 
+
+    template <class T>
+    using box = unique_ptr<T>;
+
+    template <class T>
+    using rc = shared_ptr<T>;
+
     template <class T, class... Args>
     cl::unique_ptr<T> build_unique(Args... args)
     {
@@ -154,13 +169,6 @@ namespace cl {
             dealloc(p);
         };
         return cl::shared_ptr<T>(p, f);
-    }
-
-    template <class T, class U>
-    void func1(T f0, U f1)
-    {
-        f0(f1);
-        dealloc(f1);
     }
 
     template <class T, class... Args>
@@ -356,6 +364,151 @@ namespace cl {
             }
         }
         return nullptr;
+    }
+
+    struct mem_strategy_t {};
+    struct mem_rc_t : mem_strategy_t {};
+    struct mem_own_t: mem_strategy_t {};
+    struct mem_ref_t: mem_strategy_t {};
+
+    constexpr mem_rc_t mem_rc;
+    constexpr mem_own_t mem_own;
+    constexpr mem_ref_t mem_ref;
+
+    template <class T>
+    struct mem_t {
+        usize count;
+        usize size;
+        T* ptr;
+        mem_strategy_t strategy;
+
+        mem_t() = delete;
+    };
+
+
+    //template <class T>
+    //bool init(mem_t<T>* p, mem_strategy_t s, usize size, T* data)
+    //{
+    //    assert(p);
+    //    p->strategy = s;
+    //    p->size = size;
+    //    p->ptr = data;
+    //    p->count = 1;
+    //    return true;
+    //}
+
+    //template <class T>
+    //void drop(mem_t<T>* p)
+    //{
+    //    if (p) {
+    //        drop(p, p->strategy);
+    //    }
+    //}
+
+
+
+    template <class T>
+    struct rc_t {
+        usize count;
+        usize size;
+        T* ptr;
+
+        rc_t() = delete;
+    };
+
+    template <class T>
+    bool init(rc_t<T>* p, usize size, T* data)
+    {
+
+        assert(p);
+        p->size = size;
+        p->ptr = data;
+        p->count = 1;
+        return true;
+    }
+
+    template <class T>
+    void drop(rc_t<T>* p)
+    {
+        if (p) {
+            if (--p->count == 0) {
+                dealloc(p->ptr);
+            }
+        }
+    }
+
+    template <class T>
+    void dealloc(rc_t<T>* p)
+    {
+        if (p) {
+            if (p->count == 0) {
+                free(p);
+            }
+        }
+    }
+
+    template <class T>
+    void add_ref(rc_t<T>* p)
+    {
+        if (p) {
+            p->count++;
+        }
+    }
+
+    template <class T>
+    rc_t<T>* clone(rc_t<T>* p)
+    {
+        if (!p) {
+            return nullptr;
+        }
+        const auto size = p->size;
+        T* data = alloc<T>(size);
+        if (!data) {
+            return nullptr;
+        }
+        memcpy(data, p->ptr, size);
+        rc_t<T>* pnew = cl::build_raw<rc_t<T>>(size, data);
+        if (!pnew) {
+            return nullptr;
+        }
+        return pnew;
+    }
+
+    template <class T>
+    struct ref_t {
+        T* ptr;
+    };
+
+    template <class T>
+    bool init(ref_t<T>* p, T* data)
+    {
+
+        assert(p);
+        p->ptr = data;
+        return true;
+    }
+
+    template <class T>
+    bool init(ref_t<T>* p, usize size, T* data)
+    {
+
+        assert(p);
+        p->ptr = data;
+        return true;
+    }
+
+    template <class T>
+    void drop(ref_t<T>* p)
+    {
+
+    }
+
+    template <class T>
+    void dealloc(ref_t<T>* p)
+    {
+        if (p) {
+            free(p);
+        }
     }
 }
 

@@ -6,7 +6,7 @@
 
 namespace ui {
     namespace renders {
-        ui::image_view<unsigned char> g_image_widget[4];
+        //ui::image_view<unsigned char> g_image_widget;
 
         bool render_image_window(struct app_t* app)
         {
@@ -21,13 +21,13 @@ namespace ui {
                 render(app->image0);
             }
             else {
-                render(&g_image_widget[0]);
+                render(app->image1);
             }
             ImGui::SameLine();
-            render(&g_image_widget[1]);
-            render(&g_image_widget[2]);
+            render(app->image1);
+            render(app->image1);
             ImGui::SameLine();
-            render(&g_image_widget[3]);
+            render(app->image1);
             ImGui::End();
             return true;
         }

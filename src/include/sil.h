@@ -10,23 +10,7 @@ namespace sil {
     using namespace std;
     using namespace cl;
     
-    struct drop_policy {
-        struct strong {
-            template <class T>
-            static inline void drop(T* p)
-            {
-                cl::dealloc(p);
-            }
-        };
-        struct weak {
-            template <class T>
-            static inline void drop(T* p)
-            {
-            }
-        };
-    };
-    
-    template <class pixel_t, class MS = sil::drop_policy::strong>
+    template <class pixel_t>
     struct image_t {
         u16 channel;
         cl::usize height;
@@ -34,8 +18,8 @@ namespace sil {
         pixel_t* data;
     };
 
-    template <class T, class DP>
-    bool init(image_t<T, DP>* image, size_t width, size_t height, u16 channel, T* data)
+    template <class T>
+    bool init(image_t<T>* image, size_t width, size_t height, u16 channel, T* data)
     {
         if (image == NULL) {
             return false;
@@ -49,69 +33,68 @@ namespace sil {
         image->height = height;
         image->width = width;
 
+        T* d = data;
         if (data == nullptr) {
-            image->data = cl::alloc<T>(width * height * channel);
+            d = cl::alloc<T>(width * height * channel);
+            if (!d) {
+                return false;
+            }
         }
-        else {
-            image->data = data;
-        }
+        image->data = data;
 
         return true;
     }
 
-    template <class T, class DP>
-    bool init(image_t<T, sil::drop_policy::weak>* image, image_t<T, DP> another)
-    {
-        assert(!image || !another);
-        if (image == NULL || another == NULL) {
-            return false;
-        }
-        image->channel = another->channel;
 
-        image->height = another->height;
-        image->width = another->width;
-
-        assert(!another->data);
-        image->data = another->data;
-    }
-
-    template <class T, class DP>
-    void drop(image_t<T, DP>* image)
+    template <class T>
+    void drop(image_t<T>* image)
     {
         if (image) {
-
-            DP::drop(image->data);
+            cl::dealloc(image->data);
         }
-    }
-
-    template <class T, class DP>
-    image_t<T>* clone(image_t<T, DP>* image)
-    {
-        image_t<T>* p = cl::build_raw<image_t<T>>(image->width, image->height, image->channel, (T*)nullptr);
-        size_t s = sizeof(T) * image->width * image->height * image->channel;
-        memcpy(p->data, image->data, s);
-        return p;
     }
 
     template <class T>
-    cl::usize width(image_t<T>* p)
+    image_t<T>* clone(image_t<T>* image)
+    {
+        if (!image) {
+            return nullptr;
+        }
+        const cl::usize len = image->width * image->height * image->channel;
+        T* image_data = cl::alloc<T>(len);
+        if (!image_data) {
+            return nullptr;
+        }
+        memcpy(image_data, image->data, len * sizeof(T));
+        return cl::build_raw<image_t<T>>(image->width, image->height, image->channel, image_data);
+    }
+
+    template <class T>
+    cl::usize get_width(image_t<T>* p)
     {
         assert(p);
         return p->width;
     }
 
     template <class T>
-    cl::usize height(image_t<T>* p)
+    cl::usize get_height(image_t<T>* p)
     {
         assert(p);
         return p->height;
     }
 
     template <class T>
-    cl::usize channel(image_t<T>* p)
+    cl::usize get_channel(image_t<T>* p)
     {
         assert(p);
         return p->channel;
+    }
+
+    template <class T>
+    const T* get_data(image_t<T>* p)
+    {
+        assert(p);
+        return p->data;
     }
 }
 

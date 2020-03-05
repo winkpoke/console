@@ -7,33 +7,21 @@
 
 
 namespace ui {
-    //template <class T>
-    //struct mono_image_window {
-    //    std::shared_ptr<sil::image_t<T>> image;
-    //    GLuint texture;
-    //};
-
-    //template <class T>
-    //struct rgba_image_window {
-    //    std::shared_ptr<sil::image_t<T>> image;
-    //    GLuint texture;
-    //};
-
     template <class T>
     struct image_view {
-        std::shared_ptr<sil::image_t<T>> image;
+        sil::image_t<T>* image;
         GLuint texture;
         size_t width;
         size_t height;
     };
 
     template <class T>
-    bool init(image_view<T>* widget, size_t width, size_t height, std::shared_ptr<sil::image_t<T>> image);
+    bool init(image_view<T>* widget, size_t width, size_t height, sil::image_t<T>* image);
 
     template <class T>
     void drop(image_view<T>* widget);
 
-    template <class T>
+    template <class T, class I >
     void render(image_view<T>* widget);
 
 }  // namespace ui  
@@ -41,7 +29,7 @@ namespace ui {
 // Implementation
 namespace ui {
     template <class T>
-    bool init(image_view<T>* widget, size_t width, size_t height, std::shared_ptr<sil::image_t<T>> image)
+    bool init(image_view<T>* widget, size_t width, size_t height, sil::image_t<T>* image)
     {
         if (!widget) {
             return false;
@@ -55,16 +43,20 @@ namespace ui {
         widget->height = height;
         widget->image = image;
 
-        if (widget->image.get() != NULL) {
+        const cl::usize image_width = sil::get_width(image);
+        const cl::usize image_height = sil::get_height(image);
+        const T* image_data = sil::get_data(image);
+
+        if (widget->image != NULL) {
             glBindTexture(GL_TEXTURE_2D, widget->texture);
             if (widget->image->channel == 1) {
                 if (strcmp(typeid(T).name(), "unsigned short") == 0) {
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, widget->image->width, widget->image->height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, widget->image->data);
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, image_width, image_height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, image_data);
                 }
             }
             else if (widget->image->channel == 4) {
                 if (strcmp(typeid(T).name(), "unsigned char") == 0) {
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widget->image->width, widget->image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, widget->image->data);
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
                 }
             }
             else {
@@ -85,13 +77,15 @@ namespace ui {
     template <class T>
     void drop(image_view<T>* widget)
     {
-    
+        if (widget) {
+            cl::recycle(widget->image);
+        }
     }
 
     template <class T>
     void render(image_view<T>* widget)
     {
-
+        assert(widget);
         ImGui::Image((void*)(intptr_t)widget->texture, ImVec2(widget->width, widget->height)/*, ImVec2(0, 0), ImVec2(0.5, 0.5)*/);
     }
 }
