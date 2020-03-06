@@ -510,6 +510,60 @@ namespace cl {
             free(p);
         }
     }
+
+    struct timer_t {
+        std::thread thread;
+        std::atomic_bool is_cancel;
+    };
+
+    bool init(timer_t* t)
+    {
+        assert(t);
+        new(&t->thread)std::thread;
+        new(&t->is_cancel)std::atomic_bool;
+        t->is_cancel = false;
+        return true;
+    }
+
+
+    timer_t* set_timeout(std::function<void(void)> f, cl::usize millisecs)
+    {
+        timer_t* t = cl::build_raw<timer_t>();
+        auto func = [=]() {
+            std::this_thread::sleep_for(std::chrono::milliseconds(millisecs));
+            if (!t->is_cancel) {
+                f();
+            }
+        };
+        t->thread = move(std::thread(func));
+        return t;
+    }
+
+    void drop(timer_t* t)
+    {
+        t->is_cancel = true;
+        t->thread.join();
+        t->thread.~thread();
+        t->is_cancel.~atomic<bool>();
+    }
+
+    void clear_timeout(timer_t* t)
+    {
+        cl::recycle(t);
+    }
+
+    timer_t* set_interval(std::function<void(void)> f, cl::usize millisecs)
+    {
+        timer_t* t = cl::build_raw<timer_t>();
+        auto func = [=]() {
+            while (!t->is_cancel) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(millisecs));
+                f();
+            }
+        };
+        t->thread = move(std::thread(func));
+        return t;
+    }
 }
 
 namespace cl { namespace math {
