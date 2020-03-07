@@ -20,14 +20,18 @@ namespace ui {
             if (app->image0) {
                 render(app->image0);
             }
-            else {
+
+            ImGui::SameLine();
+            if (app->image1) {
                 render(app->image1);
             }
+            if (app->image2) {
+                render(app->image2);
+            }
             ImGui::SameLine();
-            render(app->image1);
-            render(app->image1);
-            ImGui::SameLine();
-            render(app->image1);
+            if (app->image3) {
+                render(app->image3);
+            }
             ImGui::End();
             return true;
         }

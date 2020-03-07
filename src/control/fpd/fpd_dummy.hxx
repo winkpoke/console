@@ -11,13 +11,16 @@
 namespace control::fpd {
     struct fpd_dummy_t {
         fpd_t* fpd;
-        //cl::u16* image_buf;
+        cl::timer_t* timer;
+        std::function<void(void)> callback;
     };
 
     using status_e = fpd_t::status_e;
 
     bool init(fpd_dummy_t* dummy, cl::usize width, cl::usize height, cl::f64 x_res, cl::f64 y_res);
     void drop(fpd_dummy_t* dummy);
+
+    bool connect(fpd_dummy_t* dummy);
 }
 #endif //!_FPD_DUMMY_CONTROL_INCLUDE_H_
 
@@ -33,11 +36,9 @@ namespace control::fpd {
         assert(dummy);
 
         using namespace std::chrono;
-
         auto t0 = steady_clock::now();
 
         dummy->fpd = cl::build_raw<fpd_t>(width, height, x_res, y_res);
-        cl::recycle(dummy->fpd->scan);
 
         auto t1 = steady_clock::now();
         SPDLOG_TRACE("Dummy FPD: memory allocation in {:d} ms", duration_cast<milliseconds>(t1 - t0).count());
@@ -65,8 +66,34 @@ namespace control::fpd {
         }
         auto t3 = steady_clock::now();
         SPDLOG_TRACE("Dummy FPD: read in 360 images in {:d} ms", duration_cast<milliseconds>(t3 - t2).count());
+
+        // replace the sacn with loaded data
+        cl::recycle(dummy->fpd->scan);
         dummy->fpd->scan = cl::build_raw<modal::scan_t>(width, height, x_res, y_res, n_images, angles, raw_data);
 
+        // set index to -1 when init
+        dummy->fpd->scan->index = -1;
+
+        // initialize the callback function
+        new(&dummy->callback)std::function<void(void)>;
+        dummy->callback = [=]() {
+            modal::scan_t& scan = *dummy->fpd->scan;
+            if (scan.index < 359) {
+                scan.index++;
+            }
+        };
+
+        return true;
+    }
+
+    bool connect(fpd_dummy_t* dummy)
+    {
+        using status_e = fpd_t::status_e;
+        assert(dummy);
+
+        dummy->fpd->status = status_e::FPD_CONNECTING;
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+        dummy->fpd->status = status_e::FPD_READY;
         return true;
     }
 
@@ -74,6 +101,7 @@ namespace control::fpd {
     {
         if (dummy) {
             cl::recycle(dummy->fpd);
+            dummy->callback.~function<void(void)>();
             //cl::dealloc(dummy->image_buf);
         }
     }

@@ -93,7 +93,7 @@ namespace ui {
                 exposure_button_flag &= ~ImGuiButtonFlags_Disabled;
             }
             if (ImGui::ButtonEx("Exposure", ImVec2(150, 50), exposure_button_flag)) {
-                //control::exposure();
+                control::exposure();
             }
 
             ImGui::NewLine();

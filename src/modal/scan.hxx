@@ -14,10 +14,11 @@ namespace modal {
         cl::usize height;
         cl::f64 x_res;          // pixel resolution along X direction
         cl::f64 y_res;          // pixel resolution along Y direction
-        cl::usize n_images;
-        cl::usize index;        // current image index
+        //cl::usize n_images;
+        cl::i64 index;        // current image index
         cl::f64* angles;        // in degree
         pixel_t* images;
+        cl::i64 capacity;
 
         //std::list<std::pair<cl::f64, sil::image_t<pixel_t>>>
     };
@@ -27,10 +28,8 @@ namespace modal {
               const cl::f64* angles, scan_t::pixel_t* raw_data);
     void drop(scan_t* scan);
 
-    scan_t::pixel_t* n_image(scan_t* scan, int n);
-
-    void drop(scan_t* scan);
-
+    cl::usize len(scan_t* scan);
+    bool empty(scan_t* scan);
     scan_t::pixel_t* get_image_at(scan_t* scan, int n);
 }
 
@@ -41,7 +40,7 @@ namespace modal {
 #ifndef MODAL_SCAN_IMPLEMENTED
 #define MODAL_SCAN_IMPLEMENTED
 namespace modal {
-    bool init(scan_t* scan, cl::usize width, cl::usize height, cl::f64 x_res, cl::f64 y_res, cl::usize n_images)
+    bool init(scan_t* scan, cl::usize width, cl::usize height, cl::f64 x_res, cl::f64 y_res, cl::usize capacity)
     {
         assert(scan);
 
@@ -50,9 +49,9 @@ namespace modal {
         scan->height = height;
         scan->x_res = x_res;
         scan->y_res = y_res;
-        scan->n_images = n_images;
-        scan->angles = cl::alloc<cl::f64>(scan->n_images);
-        scan->images = cl::alloc<scan_t::pixel_t>(scan->n_images * scan->width * scan->height);
+        scan->capacity = capacity;
+        scan->angles = cl::alloc<cl::f64>(scan->capacity);
+        scan->images = cl::alloc<scan_t::pixel_t>(scan->capacity * scan->width * scan->height);
         if (scan->images == NULL) {
             // error handling
             return false;
@@ -60,21 +59,21 @@ namespace modal {
         return true;
     }
 
-    bool init(scan_t* scan, cl::usize width, cl::usize height, cl::f64 x_res, cl::f64 y_res, cl::usize n_images, 
+    bool init(scan_t* scan, cl::usize width, cl::usize height, cl::f64 x_res, cl::f64 y_res, cl::usize size, 
               const cl::f64* angles, scan_t::pixel_t* raw_data)
     {
         assert(scan);
         assert(angles);
         assert(raw_data);
 
-        scan->index = n_images;
+        scan->index = size - 1;
         scan->width = width;
         scan->height = height;
         scan->x_res = x_res;
         scan->y_res = y_res;
-        scan->n_images = n_images;
-        scan->angles = cl::alloc<cl::f64>(scan->n_images);
-        memcpy(scan->angles, angles, n_images * sizeof(cl::f64));
+        scan->capacity = size;
+        scan->angles = cl::alloc<cl::f64>(scan->capacity);
+        memcpy(scan->angles, angles, size * sizeof(cl::f64));
         scan->images = raw_data;
 
         return true;
@@ -88,10 +87,22 @@ namespace modal {
         }
     }
 
+    cl::usize capacity(scan_t* scan)
+    {
+        assert(scan);
+        return scan->capacity;
+    }
+
     cl::usize len(scan_t* scan)
     {
         assert(scan);
         return scan->index + 1;
+    }
+
+    bool empty(scan_t* scan)
+    {
+        assert(scan);
+        return scan->index == -1;
     }
 
     scan_t::pixel_t* get_image_at(scan_t* scan, int n)

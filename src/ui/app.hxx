@@ -28,8 +28,12 @@ namespace ui {
 
         cl::runtime_object_t* objects;
 
+        cl::i64 index;
         ui::image_view<cl::u16>* image0;
-        ui::image_view<cl::u8>* image1;
+        ui::image_view<cl::u16>* image1;
+        ui::image_view<cl::u16>* image2;
+        ui::image_view<cl::u16>* image3;
+        ui::image_view<cl::u8>* image_demo;
 
         // Reconstruction 
         resolution_t resolution;
@@ -101,8 +105,8 @@ namespace ui
         //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
         // Setup Dear ImGui style
-        ImGui::StyleColorsDark();
-        //ImGui::StyleColorsClassic();
+        //ImGui::StyleColorsDark();
+        ImGui::StyleColorsClassic();
 
         //io.Fonts->GetGlyphRangesChineseFull());// 
         auto font0 = io.Fonts->AddFontDefault();
@@ -139,18 +143,13 @@ namespace ui
         //fclose(fp);
 
         auto image = cl::build_raw<sil::image_t<cl::u8>>(w, h, 4, img);
-        app->image1 = cl::build_raw<ui::image_view<cl::u8>>(512, 512, image);
+        app->image_demo = cl::build_raw<ui::image_view<cl::u8>>(512, 512, image);
 
         auto data = control::get_runtime_data();
         auto fpd = cl::get<control::fpd::fpd_t>(data->objects, "fpd");
         assert(fpd);
 
-        auto p = modal::get_image_at(fpd->scan, 200);
-        const cl::usize len = 1024 * 1024;
-        auto pnew = cl::alloc<cl::u16>(len);
-        memcpy(pnew, p, len * sizeof(cl::u16));
-        auto img = cl::build_raw<sil::image_t<cl::u16>>(1024, 1024, 1, pnew);
-        app->image0 = cl::build_raw<ui::image_view<cl::u16>>(512, 512, img);
+        app->index = -1;
 
         // key events
         app->win->key_events.push_back([](window_t* win, int key) -> bool {
@@ -192,6 +191,9 @@ namespace ui
             cl::recycle(app->objects);
             cl::recycle(app->image0);
             cl::recycle(app->image1);
+            cl::recycle(app->image2);
+            cl::recycle(app->image3);
+            cl::recycle(app->image_demo);
         }
     }
 
@@ -216,6 +218,34 @@ namespace ui
         app->cbct_mode = data->cbct_mode;
         app->resolution = data->resolution;
         app->slice_dist = data->slice_dist;
+
+        auto dummy_fpd = cl::get<control::fpd::fpd_dummy_t>(data->objects, "fpd_dummy");
+        assert(dummy_fpd);
+        const cl::usize index = dummy_fpd->fpd->scan->index;
+        if (app->index != index) {
+            auto old_image = app->image0;
+            assert(index < 360 && index >= 0);
+            auto p = modal::get_image_at(dummy_fpd->fpd->scan, index);
+            const cl::usize len = 1024 * 1024;
+            auto pnew = cl::alloc<cl::u16>(len);
+            memcpy(pnew, p, len * sizeof(cl::u16));
+            auto img = cl::build_raw<sil::image_t<cl::u16>>(1024, 1024, 1, pnew);
+            app->image0 = cl::build_raw<ui::image_view<cl::u16>>(512, 512, img);
+            switch (index) {
+            case 90:
+                app->image1 = old_image;
+                break;
+            case 180:
+                app->image2 = old_image;
+                break;
+            case 270:
+                app->image3 = old_image;
+                break;
+            default:
+                cl::recycle(old_image);
+            }
+            app->index = index;
+        }
     }
 
     void update(control::runtime_data_t* data, app_t* app)

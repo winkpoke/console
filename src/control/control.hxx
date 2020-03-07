@@ -56,7 +56,8 @@ namespace control {
     {
         runtime_data_t* d = get_runtime_data();
         assert(d);
-        std::shared_ptr<control::fpd::fpd_t> p = cl::get<control::fpd::fpd_t>(d->objects, "fpd");
+        //std::shared_ptr<control::fpd::fpd_t> p = cl::get<control::fpd::fpd_t>(d->objects, "fpd");
+        auto p = cl::get<control::fpd::fpd_dummy_t>(d->objects, "fpd_dummy");
         fpd::connect(p.get());
     }
 
@@ -98,17 +99,19 @@ namespace control {
 
     bool is_exposure_ready()
     {
-        runtime_data_t* d = get_runtime_data();
-        assert(d);
+        //runtime_data_t* d = get_runtime_data();
+        //assert(d);
 
-        auto fpd = cl::get<fpd::fpd_t>(d->objects, "fpd");
-        assert(fpd);
+        //auto fpd = cl::get<fpd::fpd_t>(d->objects, "fpd");
+        //assert(fpd);
 
-        auto hvg = cl::get<hvg::hvg_t>(d->objects, "hvg");
-        assert(hvg);
+        //auto hvg = cl::get<hvg::hvg_t>(d->objects, "hvg");
+        //assert(hvg);
 
-        return hvg->status == hvg::status_e::HVG_READY && 
-               fpd->status == fpd::status_e::FPD_READY;
+        //return hvg->status == hvg::status_e::HVG_READY && 
+        //       fpd->status == fpd::status_e::FPD_READY;
+
+        return true;
     }
 
     bool init()
@@ -168,6 +171,23 @@ namespace control {
             }
         );
         websocket::send(s, "<HELLO");
+    }
+
+    void exposure()
+    {
+        runtime_data_t* d = get_runtime_data();
+        assert(d);
+
+        auto fpd = cl::get<control::fpd::fpd_dummy_t>(d->objects, "fpd_dummy");
+        fpd->timer = cl::set_interval(fpd->callback, 166);
+        // the exposure takes 60s and stop the timer then
+        auto stopper = [](cl::timer_t* t) {
+            std::this_thread::sleep_for(std::chrono::seconds(60));
+            cl::clear_timeout(t);
+        };
+
+        std::thread t(stopper, fpd->timer);
+        t.detach();
     }
 }
 #endif // !CONSOLE_CONTROL_IMPLEMENTED

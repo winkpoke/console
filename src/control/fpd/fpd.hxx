@@ -99,7 +99,7 @@ namespace control::fpd {
             }
 
             modal::scan_t& scan = *fpd->scan;
-            cl::usize& index = scan.index;
+            cl::i64& index = scan.index;
             const int w = scan.width;
             const int h = scan.height;
 
