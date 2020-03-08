@@ -385,28 +385,6 @@ namespace cl {
         mem_t() = delete;
     };
 
-
-    //template <class T>
-    //bool init(mem_t<T>* p, mem_strategy_t s, usize size, T* data)
-    //{
-    //    assert(p);
-    //    p->strategy = s;
-    //    p->size = size;
-    //    p->ptr = data;
-    //    p->count = 1;
-    //    return true;
-    //}
-
-    //template <class T>
-    //void drop(mem_t<T>* p)
-    //{
-    //    if (p) {
-    //        drop(p, p->strategy);
-    //    }
-    //}
-
-
-
     template <class T>
     struct rc_t {
         usize count;
@@ -541,10 +519,12 @@ namespace cl {
 
     static inline void drop(timer_t* t)
     {
-        t->is_cancel = true;
-        t->thread.join();
-        t->thread.~thread();
-        t->is_cancel.~atomic<bool>();
+        if (t) {
+            t->is_cancel = true;
+            t->thread.join();
+            t->thread.~thread();
+            t->is_cancel.~atomic<bool>();
+        }
     }
 
     static inline void clear_timeout(timer_t* t)

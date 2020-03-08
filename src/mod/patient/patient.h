@@ -7,5 +7,4 @@ namespace mod::patient {
     const static char* mod_name = "patient";
     const static char* mod_version = "0.0.1";
     const static mod_deps_t mod_deps = { };
-
 }

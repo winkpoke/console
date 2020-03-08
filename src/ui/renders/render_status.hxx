@@ -88,10 +88,11 @@ namespace ui {
             ImGui::SameLine(50);
             ImGui::Button("Setup Patient", ImVec2(150, 50));
             ImGui::SameLine();
-            static ImGuiButtonFlags exposure_button_flag = ImGuiButtonFlags_Disabled;
-            if (control::is_exposure_ready()) {
-                exposure_button_flag &= ~ImGuiButtonFlags_Disabled;
+            ImGuiButtonFlags exposure_button_flag = ImGuiButtonFlags_None; // = ImGuiButtonFlags_Disabled;
+            if (!control::is_exposure_ready()) {
+                exposure_button_flag = ImGuiButtonFlags_Disabled;
             }
+
             if (ImGui::ButtonEx("Exposure", ImVec2(150, 50), exposure_button_flag)) {
                 control::exposure();
             }

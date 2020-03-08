@@ -111,7 +111,15 @@ namespace control {
         //return hvg->status == hvg::status_e::HVG_READY && 
         //       fpd->status == fpd::status_e::FPD_READY;
 
-        return true;
+        
+        runtime_data_t* d = get_runtime_data();
+        assert(d);
+
+        auto fpd_dummy = cl::get<fpd::fpd_dummy_t>(d->objects, "fpd_dummy");
+        assert(fpd_dummy);
+
+        const bool is_ready = fpd_dummy->fpd->status == fpd::status_e::FPD_READY;
+        return is_ready;
     }
 
     bool init()
@@ -179,14 +187,19 @@ namespace control {
         assert(d);
 
         auto fpd = cl::get<control::fpd::fpd_dummy_t>(d->objects, "fpd_dummy");
+        fpd->fpd->status = fpd::status_e::FPD_ACQUIRE;
         fpd->timer = cl::set_interval(fpd->callback, 166);
         // the exposure takes 60s and stop the timer then
-        auto stopper = [](cl::timer_t* t) {
+        auto stopper = [](cl::timer_t** t, cl::shared_ptr<fpd::fpd_dummy_t> dummy) {
             std::this_thread::sleep_for(std::chrono::seconds(60));
-            cl::clear_timeout(t);
+            cl::clear_timeout(*t);
+            *t = nullptr;
+            assert(dummy);
+            dummy->fpd->status = fpd::status_e::FPD_READY;
+            rewind(dummy->fpd->scan);
         };
 
-        std::thread t(stopper, fpd->timer);
+        std::thread t(stopper, &fpd->timer, fpd);
         t.detach();
     }
 }

@@ -21,14 +21,19 @@ namespace control::fpd {
             FPD_ERROR
         };
         const static char* status_strs[];
-        
+
         status_e status;
         modal::scan_t* scan;
     };
+
     using status_e = fpd_t::status_e;
+    
+    /*std::map<status_e, const char*> status = { {status_e::FPD_UNCONNECTED, "unconnected"} };*/
+
     bool init(fpd_t* fpd, cl::usize width, cl::usize height, cl::f64 x_res, cl::f64 y_res);
     void drop(fpd_t* fpd);
 
+    fpd_t::status_e get_status(fpd_t* fpd);
     std::string to_string(fpd_t::status_e status);
 
     bool connect(fpd_t* fpd);
@@ -67,6 +72,12 @@ namespace control::fpd {
             cl::recycle(fpd->scan);
         }
         disconnect(fpd);
+    }
+    
+    fpd_t::status_e get_status(fpd_t* fpd)
+    {
+        assert(fpd);
+        return fpd->status;
     }
 
     std::string to_string(fpd_t::status_e status)

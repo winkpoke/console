@@ -107,9 +107,12 @@ namespace control::fpd {
     void drop(fpd_dummy_t* dummy)
     {
         if (dummy) {
+            // timer need to be destroyed first
+            cl::clear_interval(dummy->timer);
+            dummy->timer = nullptr;
+
             cl::recycle(dummy->fpd);
             dummy->callback.~function<void(void)>();
-            //cl::dealloc(dummy->image_buf);
         }
     }
 }
