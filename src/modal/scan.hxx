@@ -28,9 +28,12 @@ namespace modal {
               const cl::f64* angles, scan_t::pixel_t* raw_data);
     void drop(scan_t* scan);
 
+    cl::usize capacity(scan_t* scan);
     cl::usize len(scan_t* scan);
     bool empty(scan_t* scan);
-    scan_t::pixel_t* get_image_at(scan_t* scan, int n);
+    void rewind(scan_t* scan);
+    scan_t::pixel_t* get_data_at(scan_t* scan, int n);
+    cl::i64 push_data(scan_t* scan, scan_t::pixel_t* data);
 }
 
 #endif // !_CONSOLE_SCAN_H_
@@ -105,12 +108,35 @@ namespace modal {
         return scan->index == -1;
     }
 
-    scan_t::pixel_t* get_image_at(scan_t* scan, int n)
+    void rewind(scan_t* scan)
     {
-        if (n >= scan_t::N_IMAGES || n < 0) {
+        assert(scan);
+        scan->index = -1;
+    }
+
+    scan_t::pixel_t* get_data_at(scan_t* scan, int n)
+    {
+        assert(scan);
+        if (n >= capacity(scan) || n < 0) {
             return NULL;
         }
         return scan->images + (size_t)scan->width * scan->height * n;
+    }
+    
+    cl::i64 push_data(scan_t* scan, scan_t::pixel_t* data)
+    {
+        assert(scan);
+        if (scan->index + 1 >= scan->capacity) {
+            return -1;
+        }
+        auto ptr = get_data_at(scan, scan->index + 1);
+        if (ptr == nullptr) {
+            return -1;
+        }
+
+        scan->index++;
+        memcpy((void*)ptr, (void*)data, scan->width * scan->height * sizeof(scan_t::pixel_t));
+        return scan->index;
     }
 }
 #endif // !MODAL_SCAN_IMPLEMENTED

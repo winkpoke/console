@@ -30,9 +30,9 @@ namespace ui {
 
         cl::i64 index;
         ui::image_view<cl::u16>* image0;
+        ui::image_view<cl::u16>* image3;
         ui::image_view<cl::u16>* image1;
         ui::image_view<cl::u16>* image2;
-        ui::image_view<cl::u16>* image3;
         ui::image_view<cl::u8>* image_demo;
 
         // Reconstruction 
@@ -189,10 +189,10 @@ namespace ui
 
             cl::recycle(app->win);
             cl::recycle(app->objects);
-            cl::recycle(app->image0);
-            cl::recycle(app->image1);
-            cl::recycle(app->image2);
-            cl::recycle(app->image3);
+            recycle(app->image0);
+            recycle(app->image1);
+            recycle(app->image2);
+            recycle(app->image3);
             cl::recycle(app->image_demo);
         }
     }
@@ -209,9 +209,13 @@ namespace ui
         auto patient = cl::get<mod::patient::control::patient_t>(data->objects, "patient");
         assert(patient);
 
+        auto dummy_fpd = cl::get<control::fpd::fpd_dummy_t>(data->objects, "fpd_dummy");
+        assert(dummy_fpd);
+
         mod::patient::ui::update_ui_data(app->objects, data->objects);
 
-        app->fpd_status = fpd->status;
+        //app->fpd_status = fpd->status;
+        app->fpd_status = dummy_fpd->fpd->status;
         app->hvg_status = hvg->status;
         app->kv = hvg->kv;
         app->mAs = hvg->mAs;
@@ -219,30 +223,33 @@ namespace ui
         app->resolution = data->resolution;
         app->slice_dist = data->slice_dist;
 
-        auto dummy_fpd = cl::get<control::fpd::fpd_dummy_t>(data->objects, "fpd_dummy");
-        assert(dummy_fpd);
-        const cl::usize index = dummy_fpd->fpd->scan->index;
+        const cl::usize index = len(dummy_fpd->fpd->scan);
         if (app->index != index) {
             auto old_image = app->image0;
             assert(index < 360 && index >= 0);
-            auto p = modal::get_image_at(dummy_fpd->fpd->scan, index);
+            auto p = modal::get_data_at(dummy_fpd->fpd->scan, index);
             const cl::usize len = 1024 * 1024;
-            auto pnew = cl::alloc<cl::u16>(len);
+            static auto pnew = cl::alloc<cl::u16>(len);
             memcpy(pnew, p, len * sizeof(cl::u16));
-            auto img = cl::build_raw<sil::image_t<cl::u16>>(1024, 1024, 1, pnew);
-            app->image0 = cl::build_raw<ui::image_view<cl::u16>>(512, 512, img);
+            static auto img = cl::build_raw<sil::image_t<cl::u16>>(1024, 1024, 1, pnew);
+            if (!app->image0) {
+                app->image0 = cl::build_raw<ui::image_view<cl::u16>>(512, 512, img);
+            }
+            else {
+                init(app->image0, 512, 512, img);
+            }
             switch (index) {
             case 90:
-                app->image1 = old_image;
+                app->image1 = clone(old_image);
                 break;
             case 180:
-                app->image2 = old_image;
+                app->image2 = clone(old_image);
                 break;
             case 270:
-                app->image3 = old_image;
+                app->image3 = clone(old_image);
                 break;
-            default:
-                cl::recycle(old_image);
+            //default:
+            //    cl::dealloc(old_image);
             }
             app->index = index;
         }

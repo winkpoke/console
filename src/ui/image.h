@@ -21,8 +21,11 @@ namespace ui {
     template <class T>
     void drop(image_view<T>* widget);
 
-    template <class T, class I >
+    template <class T>
     void render(image_view<T>* widget);
+
+    template <class T>
+    image_view<T>* clone(image_view<T>* widget);
 
 }  // namespace ui  
 
@@ -87,6 +90,29 @@ namespace ui {
     {
         assert(widget);
         ImGui::Image((void*)(intptr_t)widget->texture, ImVec2(widget->width, widget->height)/*, ImVec2(0, 0), ImVec2(0.5, 0.5)*/);
+    }
+
+    template <class T>
+    image_view<T>* clone(image_view<T>* widget)
+    {
+        assert(widget);
+        
+        const auto image = widget->image;
+        const auto width = widget->width;
+        const auto height = widget->height;
+        
+        auto ptr = cl::alloc<image_view<T>>();
+        if (!ptr) {
+            return nullptr;
+        }
+        auto img = sil::clone(image);
+        if (!ptr) {
+            return nullptr;
+        }
+        if (!init(ptr, width, height, img)) {
+            return nullptr;
+        }
+        return ptr;
     }
 }
 
