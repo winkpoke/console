@@ -240,12 +240,21 @@ namespace ui
             }
             switch (index) {
             case 90:
+                if (app->image1) {
+                    recycle(app->image1);
+                }
                 app->image1 = clone(old_image);
                 break;
             case 180:
+                if (app->image2) {
+                    recycle(app->image2);
+                }
                 app->image2 = clone(old_image);
                 break;
             case 270:
+                if (app->image3) {
+                    recycle(app->image3);
+                }
                 app->image3 = clone(old_image);
                 break;
             //default:
