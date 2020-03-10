@@ -5,12 +5,13 @@
 #include "spdlog/sinks/stdout_sinks.h"
 
 
-#include "mod/hvg/control/hvg.hxx"
+//#include "mod/hvg/control/hvg.hxx"
+#include "mod/hvg/hvg.h"
 #include "mod/fpd/control/fpd.hxx"
 #include "runtime_data.hxx"
 
 #include "modal/modal.h"
-#include "mod/ops/ops.h"
+//#include "mod/ops/ops.h"
 
 namespace control {
     using namespace spdlog;

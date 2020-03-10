@@ -75,9 +75,6 @@
     <ClCompile Include="src\mod\patient\patient.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="src\mod\ops\ops.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="src\mod\hnd\hnd.cpp">
       <Filter>source</Filter>
     </ClCompile>
@@ -278,9 +275,6 @@
     <ClInclude Include="src\mod\patient\ui.hxx">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\mod\ops\ops.h">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\include\hnd.h">
       <Filter>header</Filter>
     </ClInclude>
@@ -303,6 +297,9 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="src\mod\hvg\control\siemens.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mod\hvg\hvg.h">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

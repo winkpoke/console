@@ -3,8 +3,6 @@
 
 #include <memory>
 
-//#include <librealsense2/rs.hpp>
-
 #include "def.h"
 #include "control/websocket.hxx"
 #include "scan.hxx"
