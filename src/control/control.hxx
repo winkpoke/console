@@ -5,7 +5,7 @@
 #include "spdlog/sinks/stdout_sinks.h"
 
 
-#include "hvg/hvg.hxx"
+#include "mod/hvg/control/hvg.hxx"
 #include "mod/fpd/control/fpd.hxx"
 #include "runtime_data.hxx"
 
@@ -70,10 +70,10 @@ namespace control {
 
         const int port = 3;
         const int baud = 19200;
-        auto hvg = cl::get<hvg::hvg_t>(d->objects, "hvg");
+        auto hvg = cl::get<mod::hvg::control::hvg_t>(d->objects, "hvg");
         assert(hvg);
 
-        hvg::connect(hvg.get(), port, baud, "8N2");
+        mod::hvg::control::connect(hvg.get(), port, baud, "8N2");
     }
 
     void setup_patient()
@@ -90,10 +90,10 @@ namespace control {
         auto fpd = cl::get<mod::fpd::control::fpd_t>(d->objects, "fpd");
         assert(fpd);
 
-        auto hvg = cl::get<hvg::hvg_t>(d->objects, "hvg");
+        auto hvg = cl::get<mod::hvg::control::hvg_t>(d->objects, "hvg");
         assert(hvg);
 
-        return hvg->status == hvg::status_e::HVG_READY && 
+        return hvg->status == mod::hvg::control::status_e::HVG_READY &&
                fpd->status == mod::fpd::control::status_e::FPD_READY;
     }
 
@@ -131,7 +131,7 @@ namespace control {
         constexpr cl::usize FPD_HEIGHT = 1024;
         constexpr cl::f64 FPD_X_RESOLUTION = 0.417;
         constexpr cl::f64 FPD_Y_RESOLUTION = 0.417;
-        cl::mount(d->objects, cl::build_shared<hvg::hvg_t>(70.f, 5.f, nullptr), "hvg", "0.0.1");
+        cl::mount(d->objects, cl::build_shared<mod::hvg::control::hvg_t>(70.f, 5.f, nullptr), "hvg", "0.0.1");
         cl::mount(d->objects, cl::build_shared<mod::fpd::control::fpd_t>(FPD_WIDTH, FPD_HEIGHT, FPD_X_RESOLUTION, FPD_Y_RESOLUTION), "fpd", "0.0.1");
 
         cl::mount(d->objects, cl::build_shared<mod::fpd::control::fpd_dummy_t>(FPD_WIDTH, FPD_HEIGHT, FPD_X_RESOLUTION, FPD_Y_RESOLUTION), "fpd_dummy", "0.0.1");

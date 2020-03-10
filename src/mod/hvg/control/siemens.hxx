@@ -10,7 +10,7 @@
 //#include "spdlog/spdlog.h"
 //#include "spdlog/sinks/stdout_sinks.h"
 
-namespace control::hvg {
+namespace mod::hvg::control {
     const int SUCCESS = 0;
     const int FAILURE = -1;
     //enum error_t {
@@ -58,19 +58,8 @@ namespace control::hvg {
         } id;
         const static char* desc[];
         static id_t last_error;
-    } error;
-    error_t::id_t error_t::last_error = error_t::ERR_NONE;
-    const char* error_t::desc[] = {
-        "no error",                       // ERR_NONE
-        "HVG status is not ready",        // ERR_STATUS
-        "cannot open COM port",           // ERR_COM_OPEN
-        "cannot close COM port",          // ERR_COM_CLOSE
-        "illegal COM status",             // ERR_COM_STATUS
-        "COM context cannot be NULL",     // ERR_COM_CONTEXT_NULL
-        "cannot parse status code",       // ERR_CMD_STATUS_PARSE
-        "command execution timeout",      // ERR_CMD_TIMEOUT
     };
-
+    
     // error handing:
     // error class shall have following fields:
     // 1.  enum id_t id
@@ -90,19 +79,19 @@ namespace control::hvg {
     }
 
     template <class E>
-    const char* error_str(typename E::id_t e)
+    static inline const char* error_str(typename E::id_t e)
     {
         return E::desc[e];
     }
 
     template <class E>
-    const char* last_error_str()
+    static inline const char* last_error_str()
     {
         return error_str<E>(last_error<E>());
     }
 
-    const char* COMMMAND_STOPS = "\r\n";
-    const size_t BUF_SIZE = 4096;
+    static const char* COMMMAND_STOPS = "\r\n";
+    constexpr size_t BUF_SIZE = 4096;
 
     struct context_t {
         enum status_t {
@@ -150,7 +139,23 @@ namespace control::hvg {
 #ifndef HVG_SIEMENS_IMPLEMENTED
 #define HVG_SIEMENS_IMPLEMENTED
 
-namespace control::hvg {
+#include "cl.h"
+
+namespace mod::hvg::control {
+
+    error_t::id_t error_t::last_error = error_t::ERR_NONE;
+    const char* error_t::desc[] = {
+    "no error",                       // ERR_NONE
+    "HVG status is not ready",        // ERR_STATUS
+    "cannot open COM port",           // ERR_COM_OPEN
+    "cannot close COM port",          // ERR_COM_CLOSE
+    "illegal COM status",             // ERR_COM_STATUS
+    "COM context cannot be NULL",     // ERR_COM_CONTEXT_NULL
+    "cannot parse status code",       // ERR_CMD_STATUS_PARSE
+    "command execution timeout",      // ERR_CMD_TIMEOUT
+    };
+
+    static error_t error;
 
     context_t* open(int port, int baud, const char* mode)
     {
@@ -175,11 +180,11 @@ namespace control::hvg {
     {
         if (context != NULL) {
             cl::dealloc(context);
-            return hvg::SUCCESS;
+            return SUCCESS;
         }
         else {
             set_error<error_t>(error_t::ERR_COM_CONTEXT_NULL);
-            return hvg::FAILURE;
+            return FAILURE;
         }
     }
 
@@ -187,12 +192,12 @@ namespace control::hvg {
     {
         if (context == NULL) {
             set_error<error_t>(error_t::ERR_COM_CONTEXT_NULL);
-            return hvg::FAILURE;
+            return FAILURE;
         }
 
         // TODO: check command is valid
 
-        const char* stops = hvg::COMMMAND_STOPS;
+        const char* stops = COMMMAND_STOPS;
         static char send_buf[4096];
         const int port = context->port;
         context_t::status_t& status = context->status;
@@ -203,7 +208,7 @@ namespace control::hvg {
 
             // hvg::g_error = ERR_COM_STATUS;
             set_error<error_t>(error_t::ERR_COM_STATUS);
-            return hvg::FAILURE;
+            return FAILURE;
         }
 
         // always flush TX buffer before sending command
@@ -216,7 +221,7 @@ namespace control::hvg {
         status = context_t::SENT;
         status = context_t::PENDING;
 
-        return hvg::SUCCESS;
+        return SUCCESS;
     }
 
     int recv(context_t* context, char* msg, int timeout)
@@ -224,10 +229,10 @@ namespace control::hvg {
         if (context == NULL) {
             // hvg::g_error = ERR_COM_CONTEXT_NULL;
             set_error<error_t>(error_t::ERR_COM_CONTEXT_NULL);
-            return hvg::FAILURE;
+            return FAILURE;
         }
 
-        const char* stops = hvg::COMMMAND_STOPS;
+        const char* stops = COMMMAND_STOPS;
         static char send_buf[4096];
         const int port = context->port;
         context_t::status_t& status = context->status;
@@ -237,7 +242,7 @@ namespace control::hvg {
         if (status != context_t::PENDING) { 
             // hvg::g_error = ERR_COM_STATUS;
             set_error<error_t>(error_t::ERR_COM_STATUS);
-            return hvg::FAILURE;
+            return FAILURE;
         }
 
         if (msg == NULL) {
@@ -285,12 +290,12 @@ namespace control::hvg {
         if (context == NULL) {
             //hvg::g_error = ERR_COM_CONTEXT_NULL;
             set_error<error_t>(error_t::ERR_COM_CONTEXT_NULL);
-            return hvg::FAILURE;
+            return FAILURE;
         }
 
         // TODO: check command is valid
 
-        const char* stops = hvg::COMMMAND_STOPS;
+        const char* stops = COMMMAND_STOPS;
         static char send_buf[4096];
         const int port = context->port;
         context_t::status_t& status = context->status;
@@ -300,7 +305,7 @@ namespace control::hvg {
         if (status != context_t::PENDING) { // && status != context_t::TIMEOUT) {
             // hvg::g_error = ERR_COM_STATUS;
             set_error<error_t>(error_t::ERR_COM_STATUS);
-            return hvg::FAILURE;
+            return FAILURE;
         }
 
         // always flush RX/TX buffer before sending command
@@ -378,12 +383,12 @@ namespace control::hvg {
         if (context == NULL) {
             // hvg::g_error = ERR_COM_CONTEXT_NULL;
             set_error<error_t>(error_t::ERR_COM_CONTEXT_NULL);
-            return hvg::FAILURE;
+            return FAILURE;
         }
 
         // TODO: check command is valid
 
-        const char* stops = hvg::COMMMAND_STOPS;
+        const char* stops = COMMMAND_STOPS;
         static char send_buf[4096];
         const int port = context->port;
         context_t::status_t& status = context->status;
@@ -393,7 +398,7 @@ namespace control::hvg {
         if (status != context_t::PENDING) { // && status != context_t::TIMEOUT) {
             // hvg::g_error = ERR_COM_STATUS;
             set_error<error_t>(error_t::ERR_COM_STATUS);
-            return hvg::FAILURE;
+            return FAILURE;
         }
 
         // always flush RX/TX buffer before sending command
@@ -486,7 +491,7 @@ namespace control::hvg {
         {
             // hvg::g_error = ERR_COM_OPEN;
             set_error<error_t>(error_t::ERR_COM_OPEN);
-            return hvg::FAILURE;
+            return FAILURE;
         }
         return port;
     }

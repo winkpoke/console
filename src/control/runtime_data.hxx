@@ -11,7 +11,7 @@
 
 #include "control/websocket.hxx"
 #include "mod/fpd/control/fpd.hxx"
-#include "hvg/hvg.hxx"
+#include "mod/hvg/control/hvg.hxx"
 
 
 namespace hvg { struct context_t; }

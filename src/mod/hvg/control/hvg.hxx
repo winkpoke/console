@@ -6,7 +6,7 @@
 
 #include "siemens.hxx"
 
-namespace control::hvg {
+namespace mod::hvg::control {
     struct hvg_t {
         enum class status_e {
             HVG_UNCONNECTED,
@@ -57,9 +57,9 @@ namespace control::hvg {
 #include "spdlog/sinks/stdout_sinks.h"
 
 
-namespace control::hvg {
+namespace mod::hvg::control {
     
-    const char* status_strs[] = { "unconnected", "connecting", "ready", "exposure", "error" };
+    static const char* status_strs[] = { "unconnected", "connecting", "ready", "exposure", "error" };
 
     using status_e = hvg_t::status_e;
 
@@ -83,7 +83,7 @@ namespace control::hvg {
     void drop(hvg_t* hvg)
     {
         if (hvg) {
-            if (hvg::close(hvg->context) == FAILURE) {
+            if (close(hvg->context) == FAILURE) {
                 SPDLOG_ERROR("{}", last_error_str<error_t>());
             }
             close(hvg->context);
@@ -226,11 +226,11 @@ namespace control::hvg {
         }
         else if (strncmp(msg, ">SBY", 4) == 0) {
             SPDLOG_DEBUG("standby ...");
-            return hvg::callback_return_t::BREAK;
+            return mod::hvg::control::callback_return_t::BREAK;
         }
         else {
             SPDLOG_DEBUG(msg);
-            return hvg::callback_return_t::CONTINUE;
+            return mod::hvg::control::callback_return_t::CONTINUE;
         }
     }
 
@@ -238,9 +238,9 @@ namespace control::hvg {
     {
         char msg[1024];
         int condition = 0;
-        int n = hvg::send(hvg->context, "<SXP 0 0 0", NULL, &condition, 5000);
+        int n = mod::hvg::control::send(hvg->context, "<SXP 0 0 0", NULL, &condition, 5000);
         hvg->status = status_e::HVG_EXPOSURE;
-        n = hvg::send(hvg->context, "<SXP 1 0 1", exposure_callback);
+        n = mod::hvg::control::send(hvg->context, "<SXP 1 0 1", exposure_callback);
     }
 }
 

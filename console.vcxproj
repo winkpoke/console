@@ -202,6 +202,7 @@
     <ClCompile Include="src\experiments.cpp" />
     <ClCompile Include="src\mod\fpd\fpd.cpp" />
     <ClCompile Include="src\mod\hnd\hnd.cpp" />
+    <ClCompile Include="src\mod\hvg\hvg.cpp" />
     <ClCompile Include="src\mod\ops\ops.cpp" />
     <ClCompile Include="src\mod\patient\patient.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.cpp" />
@@ -217,7 +218,7 @@
   <ItemGroup>
     <ClInclude Include="src\mod\fpd\control\fpd_dummy.hxx" />
     <ClInclude Include="src\mod\fpd\control\iray.hxx" />
-    <ClInclude Include="src\control\hvg\hvg.hxx" />
+    <ClInclude Include="src\mod\hvg\control\hvg.hxx" />
     <ClInclude Include="src\control\runtime_data.hxx" />
     <ClInclude Include="src\include\base64.hxx" />
     <ClInclude Include="src\include\cl.h" />
@@ -227,7 +228,7 @@
     <ClInclude Include="src\include\hnd.h" />
     <ClInclude Include="src\include\nlohmann\json.hpp" />
     <ClInclude Include="src\modal\modal.h" />
-    <ClInclude Include="src\control\hvg\siemens.hxx" />
+    <ClInclude Include="src\mod\hvg\control\siemens.hxx" />
     <ClInclude Include="src\include\spdlog\async.h" />
     <ClInclude Include="src\include\spdlog\async_logger-inl.h" />
     <ClInclude Include="src\include\spdlog\async_logger.h" />

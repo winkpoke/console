@@ -87,6 +87,9 @@
     <ClCompile Include="src\mod\fpd\fpd.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="src\mod\hvg\hvg.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ThirdParty\imgui\imconfig.h">
@@ -260,12 +263,6 @@
     <ClInclude Include="src\control\runtime_data.hxx">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\control\hvg\siemens.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="src\control\hvg\hvg.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\control\control.hxx">
       <Filter>source\modal</Filter>
     </ClInclude>
@@ -300,6 +297,12 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="src\mod\fpd\ui.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mod\hvg\control\hvg.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mod\hvg\control\siemens.hxx">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

@@ -30,7 +30,7 @@ namespace ui {
         {
             auto runtime = control::get_runtime_data();
             assert(runtime);
-            auto hvg = cl::get<control::hvg::hvg_t>(runtime->objects, "hvg");
+            auto hvg = cl::get<mod::hvg::control::hvg_t>(runtime->objects, "hvg");
             assert(hvg);
 
             static bool show_demo_window = false;
@@ -49,7 +49,7 @@ namespace ui {
             ImGui::AlignTextToFramePadding();
             ImGui::Text("HVG status  ... ");
             ImGui::SameLine();
-            ImGui::Text(control::hvg::to_string(app->hvg_status).c_str());
+            ImGui::Text(mod::hvg::control::to_string(app->hvg_status).c_str());
 
             ImGui::SameLine();
             if (ImGui::Button("Connect")) {
@@ -79,7 +79,7 @@ namespace ui {
                 }
                 ImGui::SameLine(0, 10); ImGui::Text("kV");
                 ImGui::SameLine(); HelpMarker("50.0 ~ 100.0 kV");
-                control::hvg::set_kv(hvg.get(), app->kv);
+                mod::hvg::control::set_kv(hvg.get(), app->kv);
             }
 
             {
@@ -96,7 +96,7 @@ namespace ui {
                 }
                 ImGui::SameLine(0, 10); ImGui::Text("mAs"); 
                 ImGui::SameLine(); HelpMarker("mAs Slider 0 ~ 10 mAs");
-                control::hvg::set_mAs(hvg.get(), app->mAs);
+                mod::hvg::control::set_mAs(hvg.get(), app->mAs);
             }
 
             ImGui::SetNextItemWidth(338);

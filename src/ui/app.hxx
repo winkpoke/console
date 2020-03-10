@@ -12,7 +12,7 @@
 #include "control/runtime_data.hxx"
 #include "ui/image.h"
 #include "mod/fpd/control/fpd.hxx"
-#include "control/hvg/hvg.hxx"
+#include "mod/hvg/control/hvg.hxx"
 
 
 namespace ui {
@@ -21,7 +21,7 @@ namespace ui {
 
     struct app_t {
         mod::fpd::control::status_e fpd_status;
-        control::hvg::status_e hvg_status;
+        mod::hvg::control::status_e hvg_status;
         float kv;
         float mAs;
         cbct_mode_t cbct_mode;
@@ -203,7 +203,7 @@ namespace ui
         
         auto fpd = cl::get<mod::fpd::control::fpd_t>(data->objects, "fpd");
         assert(fpd);
-        auto hvg = cl::get<control::hvg::hvg_t>(data->objects, "hvg");
+        auto hvg = cl::get<mod::hvg::control::hvg_t>(data->objects, "hvg");
         assert(hvg);
 
         auto patient = cl::get<mod::patient::control::patient_t>(data->objects, "patient");
