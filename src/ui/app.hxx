@@ -11,7 +11,7 @@
 #include "modal/modal.h"
 #include "control/runtime_data.hxx"
 #include "ui/image.h"
-#include "control/fpd/fpd.hxx"
+#include "mod/fpd/control/fpd.hxx"
 #include "control/hvg/hvg.hxx"
 
 
@@ -20,7 +20,7 @@ namespace ui {
     static unsigned char* img = stbi_load("resources\\images\\img.jpg", &w, &h, NULL, 4);
 
     struct app_t {
-        control::fpd::status_e fpd_status;
+        mod::fpd::control::status_e fpd_status;
         control::hvg::status_e hvg_status;
         float kv;
         float mAs;
@@ -146,7 +146,7 @@ namespace ui
         app->image_demo = cl::build_raw<ui::image_view<cl::u8>>(512, 512, image);
 
         auto data = control::get_runtime_data();
-        auto fpd = cl::get<control::fpd::fpd_t>(data->objects, "fpd");
+        auto fpd = cl::get<mod::fpd::control::fpd_t>(data->objects, "fpd");
         assert(fpd);
 
         app->index = -1;
@@ -201,7 +201,7 @@ namespace ui
     {
         std::shared_lock lk(data->mutex);
         
-        auto fpd = cl::get<control::fpd::fpd_t>(data->objects, "fpd");
+        auto fpd = cl::get<mod::fpd::control::fpd_t>(data->objects, "fpd");
         assert(fpd);
         auto hvg = cl::get<control::hvg::hvg_t>(data->objects, "hvg");
         assert(hvg);
@@ -209,7 +209,7 @@ namespace ui
         auto patient = cl::get<mod::patient::control::patient_t>(data->objects, "patient");
         assert(patient);
 
-        auto dummy_fpd = cl::get<control::fpd::fpd_dummy_t>(data->objects, "fpd_dummy");
+        auto dummy_fpd = cl::get<mod::fpd::control::fpd_dummy_t>(data->objects, "fpd_dummy");
         assert(dummy_fpd);
 
         mod::patient::ui::update_ui_data(app->objects, data->objects);
@@ -238,23 +238,18 @@ namespace ui
             else {
                 init(app->image0, 512, 512, img);
             }
+
             switch (index) {
             case 90:
-                if (app->image1) {
-                    recycle(app->image1);
-                }
+                recycle(app->image1);
                 app->image1 = clone(old_image);
                 break;
             case 180:
-                if (app->image2) {
-                    recycle(app->image2);
-                }
+                recycle(app->image2);
                 app->image2 = clone(old_image);
                 break;
             case 270:
-                if (app->image3) {
-                    recycle(app->image3);
-                }
+                recycle(app->image3);
                 app->image3 = clone(old_image);
                 break;
             //default:
@@ -266,18 +261,14 @@ namespace ui
 
     void update(control::runtime_data_t* data, app_t* app)
     {
-        std::unique_lock(data->mutex);
+        //std::unique_lock(data->mutex);
 
-        auto fpd = cl::get<control::fpd::fpd_t>(data->objects, "fpd");
-        assert(fpd);
+        //auto fpd = cl::get<control::fpd::fpd_t>(data->objects, "fpd");
+        //assert(fpd);
 
-        auto hvg = cl::get<control::hvg::hvg_t>(data->objects, "hvg");
-        assert(hvg);
+        //auto hvg = cl::get<control::hvg::hvg_t>(data->objects, "hvg");
+        //assert(hvg);
 
-        fpd->status = app->fpd_status;
-        hvg->status = app->hvg_status;
-        hvg->kv = app->kv;
-        hvg->mAs = app->mAs;
         data->cbct_mode = app->cbct_mode;
         data->resolution = app->resolution;
         data->slice_dist = app->slice_dist;

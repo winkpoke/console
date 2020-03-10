@@ -6,7 +6,7 @@
 
 
 #include "hvg/hvg.hxx"
-#include "fpd/fpd.hxx"
+#include "mod/fpd/control/fpd.hxx"
 #include "runtime_data.hxx"
 
 #include "modal/modal.h"
@@ -47,7 +47,7 @@ namespace control {
 #include "runtime_data.hxx"
 #include "mod/patient/control.hxx"
 #include "mod/patient/patient.h"
-#include "fpd/fpd_dummy.hxx"
+#include "mod/fpd/control/fpd_dummy.hxx"
 
 namespace control {
     // FPD
@@ -57,8 +57,8 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
         //std::shared_ptr<control::fpd::fpd_t> p = cl::get<control::fpd::fpd_t>(d->objects, "fpd");
-        auto p = cl::get<control::fpd::fpd_dummy_t>(d->objects, "fpd_dummy");
-        fpd::connect(p.get());
+        auto p = cl::get<mod::fpd::control::fpd_dummy_t>(d->objects, "fpd_dummy");
+        mod::fpd::control::connect(p.get());
     }
 
     // HVG
@@ -87,14 +87,14 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        auto fpd = cl::get<fpd::fpd_t>(d->objects, "fpd");
+        auto fpd = cl::get<mod::fpd::control::fpd_t>(d->objects, "fpd");
         assert(fpd);
 
         auto hvg = cl::get<hvg::hvg_t>(d->objects, "hvg");
         assert(hvg);
 
         return hvg->status == hvg::status_e::HVG_READY && 
-               fpd->status == fpd::status_e::FPD_READY;
+               fpd->status == mod::fpd::control::status_e::FPD_READY;
     }
 
     bool is_exposure_ready()
@@ -115,10 +115,10 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        auto fpd_dummy = cl::get<fpd::fpd_dummy_t>(d->objects, "fpd_dummy");
+        auto fpd_dummy = cl::get<mod::fpd::control::fpd_dummy_t>(d->objects, "fpd_dummy");
         assert(fpd_dummy);
 
-        const bool is_ready = fpd_dummy->fpd->status == fpd::status_e::FPD_READY;
+        const bool is_ready = fpd_dummy->fpd->status == mod::fpd::control::status_e::FPD_READY;
         return is_ready;
     }
 
@@ -132,9 +132,9 @@ namespace control {
         constexpr cl::f64 FPD_X_RESOLUTION = 0.417;
         constexpr cl::f64 FPD_Y_RESOLUTION = 0.417;
         cl::mount(d->objects, cl::build_shared<hvg::hvg_t>(70.f, 5.f, nullptr), "hvg", "0.0.1");
-        cl::mount(d->objects, cl::build_shared<fpd::fpd_t>(FPD_WIDTH, FPD_HEIGHT, FPD_X_RESOLUTION, FPD_Y_RESOLUTION), "fpd", "0.0.1");
+        cl::mount(d->objects, cl::build_shared<mod::fpd::control::fpd_t>(FPD_WIDTH, FPD_HEIGHT, FPD_X_RESOLUTION, FPD_Y_RESOLUTION), "fpd", "0.0.1");
 
-        cl::mount(d->objects, cl::build_shared<fpd::fpd_dummy_t>(FPD_WIDTH, FPD_HEIGHT, FPD_X_RESOLUTION, FPD_Y_RESOLUTION), "fpd_dummy", "0.0.1");
+        cl::mount(d->objects, cl::build_shared<mod::fpd::control::fpd_dummy_t>(FPD_WIDTH, FPD_HEIGHT, FPD_X_RESOLUTION, FPD_Y_RESOLUTION), "fpd_dummy", "0.0.1");
 
         // patient
         int w1, h1;
@@ -148,7 +148,7 @@ namespace control {
         cl::mount(d->objects, cl::build_shared<mod::ops::control::ops_t>(), mod::ops::mod_name, mod::ops::mod_version);
 
         auto ops = cl::get<mod::ops::control::ops_t>(d->objects, mod::ops::mod_name);
-        mod::ops::control::start(ops.get());
+        //mod::ops::control::start(ops.get());
         return true;
     }
 
@@ -186,16 +186,16 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        auto fpd = cl::get<control::fpd::fpd_dummy_t>(d->objects, "fpd_dummy");
-        fpd->fpd->status = fpd::status_e::FPD_ACQUIRE;
+        auto fpd = cl::get<mod::fpd::control::fpd_dummy_t>(d->objects, "fpd_dummy");
+        fpd->fpd->status = mod::fpd::control::status_e::FPD_ACQUIRE;
         fpd->timer = cl::set_interval(fpd->callback, 166);
         // the exposure takes 60s and stop the timer then
-        auto stopper = [](cl::timer_t** t, cl::shared_ptr<fpd::fpd_dummy_t> dummy) {
+        auto stopper = [](cl::timer_t** t, cl::shared_ptr<mod::fpd::control::fpd_dummy_t> dummy) {
             std::this_thread::sleep_for(std::chrono::seconds(60));
             cl::clear_timeout(*t);
             *t = nullptr;
             assert(dummy);
-            dummy->fpd->status = fpd::status_e::FPD_READY;
+            dummy->fpd->status = mod::fpd::control::status_e::FPD_READY;
             rewind(dummy->fpd->scan);
         };
 

@@ -30,6 +30,10 @@ namespace control::hvg {
 
     std::string to_string(status_e status);
 
+    void set_kv(hvg_t* hvg, float kv);
+    void set_mAs(hvg_t* hvg, float mAs);
+    void set_status(hvg_t* hvg, status_e status);
+
     bool hand_shake(hvg_t* hvg, int retry = 2);
 
     bool set_exposure_parm(hvg_t* hvg, float kv, float mAs, char focus, float fate, float fps, int retry = 2);
@@ -84,6 +88,24 @@ namespace control::hvg {
             }
             close(hvg->context);
         }
+    }
+
+    void set_kv(hvg_t* hvg, float kv)
+    {
+        assert(hvg);
+        hvg->kv = kv;
+    }
+
+    void set_mAs(hvg_t* hvg, float mAs)
+    {
+        assert(hvg);
+        hvg->mAs = mAs;
+    }
+
+    void set_status(hvg_t* hvg, status_e status)
+    {
+        assert(hvg);
+        hvg->status = status;
     }
 
     bool hand_shake(hvg_t* hvg, int retry)

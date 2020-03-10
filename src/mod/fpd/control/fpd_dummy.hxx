@@ -8,7 +8,7 @@
 
 #include "fpd.hxx"
 
-namespace control::fpd {
+namespace mod::fpd::control {
     struct fpd_dummy_t {
         fpd_t* fpd;
         cl::timer_t* timer;
@@ -31,7 +31,7 @@ namespace control::fpd {
 
 //#include <omp.h>
 
-namespace control::fpd {
+namespace mod::fpd::control {
 
     static void read_raw_data(fpd_dummy_t* dummy)
     {

@@ -84,6 +84,9 @@
     <ClCompile Include="src\experiments.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="src\mod\fpd\fpd.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ThirdParty\imgui\imconfig.h">
@@ -257,12 +260,6 @@
     <ClInclude Include="src\control\runtime_data.hxx">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\control\fpd\fpd.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="src\control\fpd\iray.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\control\hvg\siemens.hxx">
       <Filter>header</Filter>
     </ClInclude>
@@ -293,7 +290,16 @@
     <ClInclude Include="src\mod\hnd\hnd.hxx">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\control\fpd\fpd_dummy.hxx">
+    <ClInclude Include="src\mod\fpd\control\fpd.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mod\fpd\control\fpd_dummy.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mod\fpd\control\iray.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mod\fpd\ui.hxx">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

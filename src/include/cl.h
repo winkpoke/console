@@ -86,7 +86,7 @@ namespace cl {
             SPDLOG_DEBUG(u8"deallocator: deallocate {:s} at {:p}", typeid(T).name(), (void*)p);
         }
         else {
-            SPDLOG_ERROR("deallocator: deallocate a NULL pointer with type of {:s} ", typeid(T).name());
+            SPDLOG_WARN("deallocator: deallocate a NULL pointer with type of {:s} ", typeid(T).name());
         }
 #endif 
         free(p);
@@ -103,6 +103,7 @@ namespace cl {
         drop(p);
         dealloc(p);
     }
+
 
     template <class T, class... Args>
     T* build_raw(Args... args)

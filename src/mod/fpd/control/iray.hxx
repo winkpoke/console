@@ -1,11 +1,14 @@
 #ifndef _FLAT_PANEL_IRAY_INCLUDE_H_
 #define _FLAT_PANEL_IRAY_INCLUDE_H_
 
+#include "cl.h"
+
 #include "DisplayProgressbar.h"
 #include "Detector.h"
 #include "IRayImage.h"
 
-namespace control::fpd {
+
+namespace mod::fpd::control {
     struct iray_t {
         using on_image_f = std::function<void(int width, int height, int byte_per_pixel, void* data)>;
         struct mode_t {
@@ -75,7 +78,7 @@ namespace control::fpd {
 #include "Detector.h"
 #include "IRayImage.h"
 
-namespace control::fpd {
+namespace mod::fpd::control {
     using namespace spdlog;
 
     int Initializte();
@@ -148,7 +151,7 @@ namespace control::fpd {
         gs_pDetInstance->GetAttr(Attr_UROM_ZoomMode, attr);
         mode.Zoom = attr.nVal;
         gs_pDetInstance->GetAttr(Attr_UROM_SequenceIntervalTime, attr);
-        mode.Freq = (attr.nVal == 0) ? 0 : 1000.0 / attr.nVal;
+        mode.Freq = attr.nVal == 0 ? 0 : (float)1000.0 / attr.nVal;
         return mode;
     }
 

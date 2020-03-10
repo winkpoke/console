@@ -10,7 +10,7 @@
 #include "modal/scan.hxx"
 
 #include "control/websocket.hxx"
-#include "fpd/fpd.hxx"
+#include "mod/fpd/control/fpd.hxx"
 #include "hvg/hvg.hxx"
 
 

@@ -10,10 +10,6 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_sinks.h"
 
-
-#define FLAT_PANEL_IRAY_IMPLEMENTATION
-#include "control/fpd/iray.hxx"
-
 #define BASE64_IMPLEMENTATION
 #include "base64.hxx"
 
@@ -22,9 +18,6 @@
 
 #define MODAL_SCAN_IMPLEMENTATION
 #include "modal/scan.hxx"
-
-#define CONTROL_FPD_IMPLEMENTATION
-#include "control/fpd/fpd.hxx"
 
 #define WEBSOCKET_IMPLEMENTATION
 #include "control/websocket.hxx"
@@ -52,6 +45,3 @@
 
 #define CONTROL_HVG_IMPLEMENTATION
 #include "control/hvg/hvg.hxx"
-
-#define FPD_DUMMY_CONTROL_IMPLEMENTATION
-#include "control/fpd/fpd_dummy.hxx"

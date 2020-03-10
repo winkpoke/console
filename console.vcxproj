@@ -200,6 +200,7 @@
   <ItemGroup>
     <ClCompile Include="src\console.cpp" />
     <ClCompile Include="src\experiments.cpp" />
+    <ClCompile Include="src\mod\fpd\fpd.cpp" />
     <ClCompile Include="src\mod\hnd\hnd.cpp" />
     <ClCompile Include="src\mod\ops\ops.cpp" />
     <ClCompile Include="src\mod\patient\patient.cpp" />
@@ -214,15 +215,15 @@
     <ClCompile Include="src\ThirdParty\RS-232\rs232.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\control\fpd\fpd_dummy.hxx" />
-    <ClInclude Include="src\control\fpd\iray.hxx" />
+    <ClInclude Include="src\mod\fpd\control\fpd_dummy.hxx" />
+    <ClInclude Include="src\mod\fpd\control\iray.hxx" />
     <ClInclude Include="src\control\hvg\hvg.hxx" />
     <ClInclude Include="src\control\runtime_data.hxx" />
     <ClInclude Include="src\include\base64.hxx" />
     <ClInclude Include="src\include\cl.h" />
     <ClInclude Include="src\console.h" />
     <ClInclude Include="src\include\def.h" />
-    <ClInclude Include="src\control\fpd\fpd.hxx" />
+    <ClInclude Include="src\mod\fpd\control\fpd.hxx" />
     <ClInclude Include="src\include\hnd.h" />
     <ClInclude Include="src\include\nlohmann\json.hpp" />
     <ClInclude Include="src\modal\modal.h" />
@@ -243,6 +244,7 @@
     <ClInclude Include="src\include\sil.h" />
     <ClInclude Include="src\include\stb_image.h" />
     <ClInclude Include="src\include\stb_image_resize.h" />
+    <ClInclude Include="src\mod\fpd\ui.hxx" />
     <ClInclude Include="src\mod\hnd\hnd.hxx" />
     <ClInclude Include="src\mod\ops\ops.h" />
     <ClInclude Include="src\mod\patient\control.hxx" />
