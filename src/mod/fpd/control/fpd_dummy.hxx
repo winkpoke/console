@@ -30,6 +30,7 @@ namespace mod::fpd::control {
 #define FPD_DUMMY_CONTROL_IMPLEMENTED
 
 //#include <omp.h>
+#include <fstream>
 
 namespace mod::fpd::control {
 
@@ -42,12 +43,17 @@ namespace mod::fpd::control {
 
         using namespace std::chrono;
         auto t0 = steady_clock::now();
+        
+        const char* data_path = "data_path.txt";
+        std::fstream s(data_path, std::fstream::in);
+        std::string raw_data_path;
+        s >> raw_data_path;
 
-        const char* raw_data_path = R"(C:\Projects\CBCT\data\headneck_1024x1024\raw\headneck_360_1024.raw)";
+        //const char* raw_data_path = R"(C:\Projects\CBCT\data\headneck_1024x1024\raw\headneck_360_1024.raw)";
         constexpr cl::usize n_images = 360;
         for (int i = 1; i <= n_images; ++i) {
             char file_name[1024];
-            sprintf(file_name, "%s.%03d", raw_data_path, i);
+            sprintf(file_name, "%s.%03d", raw_data_path.c_str(), i);
             FILE* fp = fopen(file_name, "rb");
             cl::usize n_read = fread(get_data_at(dummy->fpd->scan, i - 1), sizeof(modal::scan_t::pixel_t), width * height, fp);
             if (n_read != width * height)
