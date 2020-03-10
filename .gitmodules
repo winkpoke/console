@@ -2,3 +2,5 @@
 	url = https://gitlab.com/Teuniz/RS-232
 [submodule "src/ThirdParty/spdlog"]
 	url = https://github.com/gabime/spdlog
+[submodule "src/ThirdParty/imgui"]
+	url = https://github.com/ocornut/imgui
