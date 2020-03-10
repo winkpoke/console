@@ -133,7 +133,7 @@ namespace control {
         // patient
         int w1, h1;
         unsigned char* img1 = stbi_load("resources\\images\\patient.png", &w1, &h1, NULL, 4);
-        auto p = cl::build_raw<mod::patient::modal::patient_t>(u8"ÕÅÈı", u8"9527", 65, mod::patient::modal::gender_e::MALE, u8"H&N", u8"ÖØÇìº£¼ªÑÇ");
+        auto p = cl::build_raw<mod::patient::modal::patient_t>(u8"ï¿½ï¿½ï¿½ï¿½", u8"9527", 65, mod::patient::modal::gender_e::MALE, u8"H&N", u8"ï¿½ï¿½ï¿½ìº£ï¿½ï¿½ï¿½ï¿½");
         p->portrait = cl::build_raw<sil::image_t<cl::u8>>(w1, h1, 4, img1);
         auto patient = cl::build_shared<mod::patient::control::patient_t>(p);
         cl::mount(d->objects, patient, mod::patient::mod_name, mod::patient::mod_version);

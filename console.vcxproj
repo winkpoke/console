@@ -61,21 +61,25 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="teuniz.rs-232.props" />
     <Import Project="gabime.spdlog.props" />
+    <Import Project="intel.realsense.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="teuniz.rs-232.props" />
     <Import Project="gabime.spdlog.props" />
+    <Import Project="intel.realsense.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="teuniz.rs-232.props" />
     <Import Project="gabime.spdlog.props" />
+    <Import Project="intel.realsense.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="teuniz.rs-232.props" />
     <Import Project="gabime.spdlog.props" />
+    <Import Project="intel.realsense.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -200,6 +204,7 @@
     <ClCompile Include="src\mod\fpd\fpd.cpp" />
     <ClCompile Include="src\mod\hnd\hnd.cpp" />
     <ClCompile Include="src\mod\hvg\hvg.cpp" />
+    <ClCompile Include="src\mod\ops\ops.cpp" />
     <ClCompile Include="src\mod\patient\patient.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.cpp" />
@@ -248,6 +253,7 @@
     <ClInclude Include="src\mod\fpd\ui.hxx" />
     <ClInclude Include="src\mod\hnd\hnd.hxx" />
     <ClInclude Include="src\mod\hvg\hvg.h" />
+    <ClInclude Include="src\mod\ops\ops.h" />
     <ClInclude Include="src\mod\patient\control.hxx" />
     <ClInclude Include="src\mod\patient\modal.hxx" />
     <ClInclude Include="src\modal\scan.h" />
