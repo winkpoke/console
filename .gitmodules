@@ -1,6 +1,9 @@
 [submodule "src/ThirdParty/RS-232"]
+        path = src/ThirdParty/RS-232
 	url = https://gitlab.com/Teuniz/RS-232
 [submodule "src/ThirdParty/spdlog"]
+        path = src/ThirdParty/spdlog
 	url = https://github.com/gabime/spdlog
 [submodule "src/ThirdParty/imgui"]
+        path = src/ThirdParty/imgui
 	url = https://github.com/ocornut/imgui
