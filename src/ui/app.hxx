@@ -222,8 +222,8 @@ namespace ui
         app->resolution = data->resolution;
         app->slice_dist = data->slice_dist;
 
-        const cl::usize index = len(dummy_fpd->fpd->scan) - 1;
-        if (app->index != index) {
+        const cl::i64 index = (cl::i64)len(dummy_fpd->fpd->scan) - 1;
+        if (app->index != index && index >= 0) {
             auto old_image = app->image0;
             assert(index < 360 && index >= 0);
             auto p = modal::get_data_at(dummy_fpd->fpd->scan, index);
