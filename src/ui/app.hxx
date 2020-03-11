@@ -222,7 +222,7 @@ namespace ui
         app->resolution = data->resolution;
         app->slice_dist = data->slice_dist;
 
-        const cl::usize index = len(dummy_fpd->fpd->scan);
+        const cl::usize index = len(dummy_fpd->fpd->scan) - 1;
         if (app->index != index) {
             auto old_image = app->image0;
             assert(index < 360 && index >= 0);
