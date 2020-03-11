@@ -2,5 +2,7 @@ build
 .vs
 .log
 resources/iRay/work_dir/Mercu1717V/Detector.Log
-data_path.txt
+
 *.log
+
+data_path.txt
