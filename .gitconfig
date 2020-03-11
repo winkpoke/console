@@ -1,3 +1,5 @@
+[core]
+    filemode = false
 [merge]
     tool = vscode
 [mergetool "vscode"]
