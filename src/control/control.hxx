@@ -4,15 +4,6 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_sinks.h"
 
-
-//#include "mod/hvg/control/hvg.hxx"
-#include "mod/hvg/hvg.h"
-#include "mod/fpd/control/fpd.hxx"
-#include "runtime_data.hxx"
-
-#include "modal/modal.h"
-//#include "mod/ops/ops.h"
-
 namespace control {
     using namespace spdlog;
 
@@ -48,7 +39,9 @@ namespace control {
 #include "runtime_data.hxx"
 #include "mod/patient/control.hxx"
 #include "mod/patient/patient.h"
-#include "mod/fpd/control/fpd_dummy.hxx"
+#include "mod/hvg/hvg.h"
+#include "mod/fpd/fpd.h"
+#include "runtime_data.hxx"
 
 namespace control {
     // FPD

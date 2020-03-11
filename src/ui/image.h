@@ -1,8 +1,9 @@
 #ifndef _UI_IMAGE_H_
 #define _UI_IMAGE_H_
+
 #include <memory>
 #include <GLFW/glfw3.h>
-
+#include "imgui.h"
 #include "sil.h"
 
 

@@ -1,7 +1,6 @@
 #ifndef _PATIENT_UI_INCLUDE_H_
 #define _PATIENT_UI_INCLUDE_H_
 
-#include "imgui.h"
 #include "cl.h"
 #include "ui/image.h"
 #include "control.hxx"
@@ -40,6 +39,7 @@ namespace mod::patient::ui{
 #ifndef PATIENT_UI_IMPLEMENTED
 #define PATIENT_UI_IMPLEMENTED
 
+#include "imgui.h"
 #include "patient.h"
 
 namespace mod::patient::ui {

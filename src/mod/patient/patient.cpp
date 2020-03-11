@@ -1,6 +1,3 @@
-#include "patient.h"
-
-
 #define MODAL_PATIENT_IMPLEMENTATION
 #include "modal.hxx"
 

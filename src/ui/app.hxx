@@ -165,7 +165,6 @@ namespace ui
         app->win->renders.push_back([=](window_t*) {
             renders::render_status_window(app);
             renders::render_image_window(app);
-            //renders::render_patient_info_window(app);
             renders::render_maintenance_window(app);
             //win->renders.push_back(&ui::process_camera_data);
             auto patient = cl::get<mod::patient::ui::patient_t>(app->objects, "patient");

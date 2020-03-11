@@ -196,6 +196,7 @@
   <ItemGroup>
     <ClCompile Include="src\console.cpp" />
     <ClCompile Include="src\experiments.cpp" />
+    <ClCompile Include="src\mod\cbct\cbct.cpp" />
     <ClCompile Include="src\mod\fpd\fpd.cpp" />
     <ClCompile Include="src\mod\hnd\hnd.cpp" />
     <ClCompile Include="src\mod\hvg\hvg.cpp" />
@@ -211,8 +212,12 @@
     <ClCompile Include="src\ThirdParty\RS-232\rs232.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\mod\cbct\cbct.h" />
+    <ClInclude Include="src\mod\cbct\console.hxx" />
+    <ClInclude Include="src\mod\cbct\control.hxx" />
     <ClInclude Include="src\mod\fpd\control\fpd_dummy.hxx" />
     <ClInclude Include="src\mod\fpd\control\iray.hxx" />
+    <ClInclude Include="src\mod\fpd\fpd.h" />
     <ClInclude Include="src\mod\hvg\control\hvg.hxx" />
     <ClInclude Include="src\control\runtime_data.hxx" />
     <ClInclude Include="src\include\base64.hxx" />

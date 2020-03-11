@@ -87,6 +87,9 @@
     <ClCompile Include="src\mod\hvg\hvg.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="src\mod\cbct\cbct.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ThirdParty\imgui\imconfig.h">
@@ -300,6 +303,18 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="src\mod\hvg\hvg.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mod\fpd\fpd.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mod\cbct\cbct.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mod\cbct\console.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mod\cbct\control.hxx">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>
