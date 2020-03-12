@@ -82,6 +82,7 @@ namespace ui {
     void drop(image_view<T>* widget)
     {
         if (widget) {
+            glDeleteTextures(1, &widget->texture);
             cl::recycle(widget->image);
         }
     }
