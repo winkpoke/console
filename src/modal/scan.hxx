@@ -28,9 +28,9 @@ namespace modal {
               const cl::f64* angles, scan_t::pixel_t* raw_data);
     void drop(scan_t* scan);
 
-    cl::usize capacity(scan_t* scan);
-    cl::usize len(scan_t* scan);
-    bool empty(scan_t* scan);
+    cl::usize capacity(const scan_t* scan);
+    cl::usize len(const scan_t* scan);
+    bool is_empty(const scan_t* scan);
     void rewind(scan_t* scan);
     scan_t::pixel_t* get_data_at(scan_t* scan, int n);
     cl::i64 push_data(scan_t* scan, scan_t::pixel_t* data, cl::f64 angle);
@@ -90,13 +90,13 @@ namespace modal {
         }
     }
 
-    cl::usize capacity(scan_t* scan)
+    cl::usize capacity(const scan_t* scan)
     {
         assert(scan);
         return scan->capacity;
     }
 
-    cl::usize len(scan_t* scan)
+    cl::usize len(const scan_t* scan)
     {
         assert(scan);
         if (scan->index < 0) {
@@ -107,7 +107,7 @@ namespace modal {
         }
     }
 
-    bool empty(scan_t* scan)
+    bool is_empty(const scan_t* scan)
     {
         assert(scan);
         return scan->index == -1;

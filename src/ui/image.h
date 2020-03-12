@@ -2,8 +2,10 @@
 #define _UI_IMAGE_H_
 
 #include <memory>
-#include <GLFW/glfw3.h>
+
 #include "imgui.h"
+//#include <GLFW/glfw3.h>
+#include <GL/gl.h>
 #include "sil.h"
 
 

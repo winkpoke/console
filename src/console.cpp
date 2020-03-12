@@ -16,9 +16,9 @@ int main(int, char**)
 
     //// CBCT init
     control::init();
-    std::thread connect_to_fpd(control::connect_to_fpd);
+    // std::thread connect_to_fpd(control::connect_to_fpd);
     //std::thread connect_to_hvg(modal::connect_to_hvg);
-    std::thread connect_to_upstream_server(control::connect_to_upstream_server);
+    //std::thread connect_to_upstream_server(control::connect_to_upstream_server);
 
     std::thread ui_run([]() {
         if (ui::init()) {
@@ -27,9 +27,9 @@ int main(int, char**)
         }});
 
     ui_run.join();
-    connect_to_fpd.join();
+    // connect_to_fpd.join();
     // connect_to_hvg.join();
-    connect_to_upstream_server.join();
+    //connect_to_upstream_server.join();
 
     control::drop();
     // modal::drop();

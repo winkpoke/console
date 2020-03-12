@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _SIL_LIB_INCLUDE_H_
+#define _SIL_LIB_INCLUDE_H_
 
 // Simple Image Library
 
@@ -97,4 +98,6 @@ namespace sil {
         return p->data;
     }
 }
+
+#endif //!_SIL_LIB_INCLUDE_H_
 

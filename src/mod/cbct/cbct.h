@@ -3,6 +3,9 @@
 #include <vector>
 #include <utility>
 
+#include "control.hxx"
+//#include "ui.hxx"
+
 namespace mod::cbct {
     using mod_deps_t = std::vector<std::pair<const char*, const char*>>;
     const static char* mod_name = "cbct";

@@ -311,10 +311,10 @@
     <ClInclude Include="src\mod\cbct\cbct.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\mod\cbct\console.hxx">
+    <ClInclude Include="src\mod\cbct\control.hxx">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\mod\cbct\control.hxx">
+    <ClInclude Include="src\mod\cbct\ui.hxx">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

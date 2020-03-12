@@ -31,8 +31,11 @@ namespace mod::hvg::control {
     std::string to_string(status_e status);
 
     void set_kv(hvg_t* hvg, float kv);
+    float get_kv(hvg_t* hvg);
     void set_mAs(hvg_t* hvg, float mAs);
+    float get_mAs(hvg_t* hvg);
     void set_status(hvg_t* hvg, status_e status);
+    status_e get_status(hvg_t* hvg);
 
     bool hand_shake(hvg_t* hvg, int retry = 2);
 
@@ -90,16 +93,34 @@ namespace mod::hvg::control {
         }
     }
 
+    float get_kv(hvg_t* hvg)
+    {
+        assert(hvg);
+        return hvg->kv;
+    }
+
     void set_kv(hvg_t* hvg, float kv)
     {
         assert(hvg);
         hvg->kv = kv;
     }
 
+    float get_mAs(hvg_t* hvg)
+    {
+        assert(hvg);
+        return hvg->mAs;
+    }
+
     void set_mAs(hvg_t* hvg, float mAs)
     {
         assert(hvg);
         hvg->mAs = mAs;
+    }
+
+    status_e get_status(hvg_t* hvg)
+    {
+        assert(hvg);
+        return hvg->status;
     }
 
     void set_status(hvg_t* hvg, status_e status)

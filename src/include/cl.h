@@ -367,6 +367,18 @@ namespace cl {
         return nullptr;
     }
 
+    template <class T, class... Args>
+    T dispatch(std::function<T(Args...)> f, Args... args)
+    {
+        return f(args...);
+    }
+
+     template <class T, class... Args>
+     T dispatch(T(*f)(Args...), Args... args)
+     {
+         return f(args...);
+     }
+
     struct mem_strategy_t {};
     struct mem_rc_t : mem_strategy_t {};
     struct mem_own_t: mem_strategy_t {};

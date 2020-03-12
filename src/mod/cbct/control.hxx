@@ -23,37 +23,36 @@ namespace mod::cbct::control {
         _768X768
     };
 
-    template <class fpd_t = fpd::control::fpd_t, 
-              class hvg_t = hvg::control::hvg_t, 
-              class websocket_t = websocket::websocket_t>
-    struct cbct_t {
-        cl::shared_ptr<fpd_t>       fpd;
-        cl::shared_ptr<hvg_t>       hvg;
-        cl::shared_ptr<websocket_t> socket;
-        cbct_mode_t                 mode;
-        resolution_t                resolution;
-        cl::f64                     slice_dist;
+    template <class F = fpd::control::fpd_t, 
+              class H = hvg::control::hvg_t, 
+              class W = websocket::websocket_t>
+    struct cbct_impl_t {
+        cl::shared_ptr<F>       fpd;
+        cl::shared_ptr<H>       hvg;
+        cl::shared_ptr<W>       socket;
+        cbct_mode_t             mode;
+        resolution_t            resolution;
+        cl::f32                 slice_dist;
     };
 
+    using cbct_t = cbct_impl_t<fpd::control::fpd_dummy_t>;
+
     template<class F, class H, class W>
-    bool init(cbct_t<F, H, W>* p, cl::shared_ptr<F> fpd, cl::shared_ptr<H>* hvg)
+    bool init(cbct_impl_t<F, H, W>* p, cl::shared_ptr<F> fpd, cl::shared_ptr<H> hvg)
     {
         assert(p);
-        new(&p->fpd)shared_ptr<F>;
-        new(&p->hvg)shared_ptr<H>;
-        new(&p->socket)shared_ptr<W>;
+        new(&p->fpd)shared_ptr<F>(fpd);
+        new(&p->hvg)shared_ptr<H>(hvg);
+        new(&p->socket)shared_ptr<W>(cl::build_shared<W>("ws://172.17.214.17:3000/ws"));
 
         p->mode = cbct_mode_t::CUSTOM;
         p->resolution = resolution_t::_512X512;
         p->slice_dist = 2.5f;
-
-        // websocket
-        p->socket = cl::build_shared<W>("ws://172.17.214.17:3000/ws");
         return true;
     }
 
     template <class F, class H, class W>
-    bool drop(cbct_t<F, H, W>* p)
+    void drop(cbct_impl_t<F, H, W>* p)
     {
         if (p) {
             p->fpd.~shared_ptr();
@@ -63,7 +62,7 @@ namespace mod::cbct::control {
     }
 
     template <class F, class H, class W>
-    void connect_to_fpd(cbct_t<F, H, W>* p)
+    void connect_to_fpd(cbct_impl_t<F, H, W>* p)
     {
         assert(p);
         assert(p->fpd);
@@ -72,7 +71,7 @@ namespace mod::cbct::control {
     }
 
     template <class F, class H, class W>
-    void connect_to_hvg(cbct_t<F, H, W>* p)
+    void connect_to_hvg(cbct_impl_t<F, H, W>* p)
     {
         assert(p);
         assert(p->fpd);
@@ -85,22 +84,54 @@ namespace mod::cbct::control {
     }
 
     template <class F, class H, class W>
-    void connect_to_upstream_server(cbct_t<F, H, W>* p)
+    void connect_to_upstream_server(cbct_impl_t<F, H, W>* p)
     {
         assert(p);
         assert(p->socket);
         SPDLOG_INFO("Connecting to server: ", p->socket->url);
-        if (!websocket::connect(p->socket)) {
+        if (!websocket::connect(p->socket.get())) {
             SPDLOG_ERROR("Fail to connect to the server.");
             return;
         }
         SPDLOG_INFO("Successully connected to the server.");
         SPDLOG_INFO("Handshake with server...");
-        websocket::on_recv_text(p->socket, [](const char* msg) {
+        websocket::on_recv_text(p->socket.get(), [](const char* msg) {
             SPDLOG_INFO("Message recieved: {}", msg);
             }
         );
-        websocket::send(p->socket, "<HELLO");
+        websocket::send(p->socket.get(), "<HELLO");
+    }
+
+    template <class H, class W>
+    void exposure(cbct_impl_t<mod::fpd::control::fpd_dummy_t, H, W>* p)
+    {
+        assert(p);
+        assert(p->fpd);
+        assert(p->hvg);
+
+        mod::fpd::control::set_status(p->fpd.get(), mod::fpd::control::status_e::FPD_ACQUIRE);
+        p->fpd->timer = cl::set_interval(p->fpd->callback, 166);
+        // the exposure takes 60s and stop the timer then
+        auto stopper = [](cl::timer_t** t, cl::shared_ptr<mod::fpd::control::fpd_dummy_t> dummy) {
+            std::this_thread::sleep_for(std::chrono::seconds(60));
+            cl::clear_timeout(*t);
+            *t = nullptr;
+            assert(dummy);
+            dummy->fpd->status = mod::fpd::control::status_e::FPD_READY;
+            rewind(dummy->fpd->scan);
+        };
+
+        std::thread t(stopper, &p->fpd->timer, p->fpd);
+        t.detach();
+    }
+
+    template <class F, class H, class W>
+    bool is_exposure_ready(cbct_impl_t<F, H, W>* p)
+    {
+        assert(p);
+        assert(p->fpd && p->hvg);
+
+        return fpd::control::get_status(p->fpd.get()) == fpd::control::status_e::FPD_READY;
     }
 }
 

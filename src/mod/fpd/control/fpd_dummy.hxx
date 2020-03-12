@@ -22,6 +22,12 @@ namespace mod::fpd::control {
 
     bool connect(fpd_dummy_t* dummy);
     bool disconnect(fpd_dummy_t* dummy);
+
+    fpd_t::status_e get_status(fpd_dummy_t* fpd);
+    void set_status(fpd_dummy_t* fpd, status_e status);
+
+    modal::scan_t* get_scan(fpd_dummy_t* fpd);
+
 }
 #endif //!_FPD_DUMMY_CONTROL_INCLUDE_H_
 
@@ -120,6 +126,26 @@ namespace mod::fpd::control {
             cl::recycle(dummy->fpd);
             dummy->callback.~function<void(void)>();
         }
+    }
+
+    fpd_t::status_e get_status(fpd_dummy_t* dummy)
+    {
+        assert(dummy);
+        assert(dummy->fpd);
+        return dummy->fpd->status;
+    }
+
+    void set_status(fpd_dummy_t* dummy, status_e status)
+    {
+        assert(dummy);
+        assert(dummy->fpd);
+        dummy->fpd->status = status;
+    }
+
+    modal::scan_t* get_scan(fpd_dummy_t* dummy)
+    {
+        assert(dummy && dummy->fpd);
+        return dummy->fpd->scan;
     }
 }
 

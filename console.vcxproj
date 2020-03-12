@@ -213,8 +213,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\mod\cbct\cbct.h" />
-    <ClInclude Include="src\mod\cbct\console.hxx" />
     <ClInclude Include="src\mod\cbct\control.hxx" />
+    <ClInclude Include="src\mod\cbct\ui.hxx" />
     <ClInclude Include="src\mod\fpd\control\fpd_dummy.hxx" />
     <ClInclude Include="src\mod\fpd\control\iray.hxx" />
     <ClInclude Include="src\mod\fpd\fpd.h" />

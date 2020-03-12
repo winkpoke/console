@@ -24,13 +24,13 @@ namespace mod::patient::ui{
     void drop(patient_t* p);
 
     bool is_dirty(patient_t* p);
-
-    void update(ui::patient_t* dst, mod::patient::control::patient_t* src);
-    void update_ui_data(ui::patient_t* dst, mod::patient::control::patient_t* src);
-    void update_ui_data(cl::runtime_object_t* dst, cl::runtime_object_t* src);
-    void update_control_data(mod::patient::control::patient_t* dst, mod::patient::ui::patient_t* src);
-
+    void update(cl::runtime_object_t* dst, cl::runtime_object_t* src);
     bool render(ui::patient_t* p);
+
+    static void update(ui::patient_t* dst, mod::patient::control::patient_t* src);
+    static void update_ui_data(ui::patient_t* dst, mod::patient::control::patient_t* src);
+    static void update_ui_data(cl::runtime_object_t* dst, cl::runtime_object_t* src);
+
 }
 
 #endif // !_PATIENT_UI_INCLUDE_H_
@@ -117,9 +117,9 @@ namespace mod::patient::ui {
         update_ui_data(ui.get(), control.get());
     }
 
-    void update_control_data(control::patient_t* dst, ui::patient_t* src)
+    void update(cl::runtime_object_t* dst, cl::runtime_object_t* src)
     {
-
+        update_ui_data(dst, src);
     }
 
     bool render(ui::patient_t* p)

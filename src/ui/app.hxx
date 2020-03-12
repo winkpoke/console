@@ -4,10 +4,9 @@
 #include <mutex>
 #include <shared_mutex>
 
-#include "stb_image.h"
+//#include "stb_image.h"
 
-#include "def.h"
-#include "mod/patient/ui.hxx"
+//#include "def.h"
 #include "modal/modal.h"
 #include "control/runtime_data.hxx"
 #include "ui/image.h"
@@ -17,27 +16,27 @@
 
 namespace ui {
     static int w, h;
-    static unsigned char* img = stbi_load("resources\\images\\img.jpg", &w, &h, NULL, 4);
+    //static unsigned char* img = stbi_load("resources\\images\\img.jpg", &w, &h, NULL, 4);
 
     struct app_t {
-        mod::fpd::control::status_e fpd_status;
-        mod::hvg::control::status_e hvg_status;
-        float kv;
-        float mAs;
-        cbct_mode_t cbct_mode;
+        //mod::fpd::control::status_e fpd_status;
+        //mod::hvg::control::status_e hvg_status;
+        //float kv;
+        //float mAs;
+        //cbct_mode_t cbct_mode;
 
         cl::runtime_object_t* objects;
 
-        cl::i64 index;
-        ui::image_view<cl::u16>* image0;
-        ui::image_view<cl::u16>* image3;
-        ui::image_view<cl::u16>* image1;
-        ui::image_view<cl::u16>* image2;
-        ui::image_view<cl::u8>* image_demo;
+        //cl::i64 index;
+        //ui::image_view<cl::u16>* image0;
+        //ui::image_view<cl::u16>* image3;
+        //ui::image_view<cl::u16>* image1;
+        //ui::image_view<cl::u16>* image2;
+        //ui::image_view<cl::u8>* image_demo;
 
         // Reconstruction 
-        resolution_t resolution;
-        float slice_dist;
+        //resolution_t resolution;
+        //float slice_dist;
 
         // Window
         struct window_t* win;
@@ -71,6 +70,9 @@ namespace ui {
 #include "renders/render_image.hxx"
 #include "renders/render_maintenance.hxx"
 #include "renders/render_status.hxx"
+
+#include "mod/cbct/ui.hxx"
+#include "mod/patient/ui.hxx"
 
 namespace ui
 {
@@ -134,6 +136,14 @@ namespace ui
         auto obj = cl::get<mod::patient::control::patient_t>(control_runtime->objects, "patient");
         auto patient = cl::build_shared<mod::patient::ui::patient_t>(obj.get());
         cl::mount(app->objects, patient, "patient", "0.0.1");
+
+        auto cbct_control = cl::get<mod::cbct::control::cbct_t>(control_runtime->objects, "cbct");
+        using cbct_ui_t = mod::cbct::ui::cbct_t;
+        using cbct_control_t = mod::cbct::control::cbct_t;
+
+        auto cbct_ui = cl::build_shared<mod::cbct::ui::cbct_t>(cbct_control.get());
+        cl::mount(app->objects, cbct_ui, "cbct", "0.0.1");
+
         //auto j = modal::to_json(p);
         //modal::from_json(app->patient, j);
 
@@ -142,14 +152,14 @@ namespace ui
         //fprintf_s(fp, "%s", j.c_str());
         //fclose(fp);
 
-        auto image = cl::build_raw<sil::image_t<cl::u8>>(w, h, 4, img);
-        app->image_demo = cl::build_raw<ui::image_view<cl::u8>>(512, 512, image);
+        //auto image = cl::build_raw<sil::image_t<cl::u8>>(w, h, 4, img);
+        //app->image_demo = cl::build_raw<ui::image_view<cl::u8>>(512, 512, image);
 
         auto data = control::get_runtime_data();
-        auto fpd = cl::get<mod::fpd::control::fpd_t>(data->objects, "fpd");
-        assert(fpd);
+        //auto fpd = cl::get<mod::fpd::control::fpd_t>(data->objects, "fpd");
+        //assert(fpd);
 
-        app->index = -1;
+        //app->index = -1;
 
         // key events
         app->win->key_events.push_back([](window_t* win, int key) -> bool {
@@ -163,12 +173,14 @@ namespace ui
 
         // renders
         app->win->renders.push_back([=](window_t*) {
-            renders::render_status_window(app);
-            renders::render_image_window(app);
+            //renders::render_status_window(app);
+            //renders::render_image_window(app);
             renders::render_maintenance_window(app);
-            //win->renders.push_back(&ui::process_camera_data);
             auto patient = cl::get<mod::patient::ui::patient_t>(app->objects, "patient");
             mod::patient::ui::render(patient.get());
+
+            auto cbct = cl::get<mod::cbct::ui::cbct_t>(app->objects, "cbct");
+            mod::cbct::ui::render(cbct.get());
             return true;
             });
 
@@ -188,11 +200,11 @@ namespace ui
 
             cl::recycle(app->win);
             cl::recycle(app->objects);
-            recycle(app->image0);
-            recycle(app->image1);
-            recycle(app->image2);
-            recycle(app->image3);
-            cl::recycle(app->image_demo);
+            //recycle(app->image0);
+            //recycle(app->image1);
+            //recycle(app->image2);
+            //recycle(app->image3);
+            //cl::recycle(app->image_demo);
         }
     }
 
@@ -200,8 +212,8 @@ namespace ui
     {
         std::shared_lock lk(data->mutex);
         
-        auto fpd = cl::get<mod::fpd::control::fpd_t>(data->objects, "fpd");
-        assert(fpd);
+        //auto fpd = cl::get<mod::fpd::control::fpd_t>(data->objects, "fpd");
+        //assert(fpd);
         auto hvg = cl::get<mod::hvg::control::hvg_t>(data->objects, "hvg");
         assert(hvg);
 
@@ -211,51 +223,52 @@ namespace ui
         auto dummy_fpd = cl::get<mod::fpd::control::fpd_dummy_t>(data->objects, "fpd_dummy");
         assert(dummy_fpd);
 
-        mod::patient::ui::update_ui_data(app->objects, data->objects);
+        mod::patient::ui::update(app->objects, data->objects);
+        mod::cbct::ui::update(app->objects, data->objects);
 
         //app->fpd_status = fpd->status;
-        app->fpd_status = dummy_fpd->fpd->status;
-        app->hvg_status = hvg->status;
-        app->kv = hvg->kv;
-        app->mAs = hvg->mAs;
-        app->cbct_mode = data->cbct_mode;
-        app->resolution = data->resolution;
-        app->slice_dist = data->slice_dist;
+        //app->fpd_status = dummy_fpd->fpd->status;
+        //app->hvg_status = hvg->status;
+        //app->kv = hvg->kv;
+        //app->mAs = hvg->mAs;
+        //app->cbct_mode = data->cbct_mode;
+        //app->resolution = data->resolution;
+        //app->slice_dist = data->slice_dist;
 
-        const cl::i64 index = (cl::i64)len(dummy_fpd->fpd->scan) - 1;
-        if (app->index != index && index >= 0) {
-            auto old_image = app->image0;
-            assert(index < 360 && index >= 0);
-            auto p = modal::get_data_at(dummy_fpd->fpd->scan, index);
-            const cl::usize len = 1024 * 1024;
-            static auto pnew = cl::alloc<cl::u16>(len);
-            memcpy(pnew, p, len * sizeof(cl::u16));
-            static auto img = cl::build_raw<sil::image_t<cl::u16>>(1024, 1024, 1, pnew);
-            if (!app->image0) {
-                app->image0 = cl::build_raw<ui::image_view<cl::u16>>(512, 512, img);
-            }
-            else {
-                init(app->image0, 512, 512, img);
-            }
+        //const cl::i64 index = (cl::i64)len(dummy_fpd->fpd->scan) - 1;
+        //if (app->index != index && index >= 0) {
+        //    auto old_image = app->image0;
+        //    assert(index < 360 && index >= 0);
+        //    auto p = modal::get_data_at(dummy_fpd->fpd->scan, index);
+        //    const cl::usize len = 1024 * 1024;
+        //    static auto pnew = cl::alloc<cl::u16>(len);
+        //    memcpy(pnew, p, len * sizeof(cl::u16));
+        //    static auto img = cl::build_raw<sil::image_t<cl::u16>>(1024, 1024, 1, pnew);
+        //    if (!app->image0) {
+        //        app->image0 = cl::build_raw<ui::image_view<cl::u16>>(512, 512, img);
+        //    }
+        //    else {
+        //        init(app->image0, 512, 512, img);
+        //    }
 
-            switch (index) {
-            case 90:
-                recycle(app->image1);
-                app->image1 = clone(old_image);
-                break;
-            case 180:
-                recycle(app->image2);
-                app->image2 = clone(old_image);
-                break;
-            case 270:
-                recycle(app->image3);
-                app->image3 = clone(old_image);
-                break;
-            //default:
-            //    cl::dealloc(old_image);
-            }
-            app->index = index;
-        }
+        //    switch (index) {
+        //    case 90:
+        //        recycle(app->image1);
+        //        app->image1 = clone(old_image);
+        //        break;
+        //    case 180:
+        //        recycle(app->image2);
+        //        app->image2 = clone(old_image);
+        //        break;
+        //    case 270:
+        //        recycle(app->image3);
+        //        app->image3 = clone(old_image);
+        //        break;
+        //    //default:
+        //    //    cl::dealloc(old_image);
+        //    }
+        //    app->index = index;
+        //}
     }
 
     void update(control::runtime_data_t* data, app_t* app)
@@ -268,9 +281,9 @@ namespace ui
         //auto hvg = cl::get<control::hvg::hvg_t>(data->objects, "hvg");
         //assert(hvg);
 
-        data->cbct_mode = app->cbct_mode;
-        data->resolution = app->resolution;
-        data->slice_dist = app->slice_dist;
+        //data->cbct_mode = app->cbct_mode;
+        //data->resolution = app->resolution;
+        //data->slice_dist = app->slice_dist;
     }
 
     void run(app_t* app)

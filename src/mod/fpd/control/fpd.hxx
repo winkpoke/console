@@ -34,6 +34,7 @@ namespace mod::fpd::control {
     void drop(fpd_t* fpd);
 
     fpd_t::status_e get_status(fpd_t* fpd);
+    void set_status(fpd_t* fpd, status_e status);
     std::string to_string(fpd_t::status_e status);
 
     bool connect(fpd_t* fpd);
@@ -78,6 +79,11 @@ namespace mod::fpd::control {
     {
         assert(fpd);
         return fpd->status;
+    }
+    void set_status(fpd_t* fpd, status_e status)
+    {
+        assert(fpd);
+        fpd->status = status;
     }
 
     std::string to_string(fpd_t::status_e status)
