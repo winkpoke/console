@@ -103,7 +103,7 @@ namespace modal {
             return 0;
         }
         else {
-            static_cast<cl::usize>(scan->index + 1);
+            return static_cast<cl::usize>(scan->index + 1);
         }
     }
 
