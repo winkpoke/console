@@ -6,27 +6,6 @@
 
 namespace control {
     using namespace spdlog;
-
-    // FPD
-    //void drop_fpd();
-    
-    // HVG
-    //void connect_to_hvg();
-    //void drop_hvg();
-
-    //void setup_patient();
-
-    // status check
-    //bool is_ready_setup_patient();
-    //bool is_exposure_ready();
-
-    // connect to upstream server via websocket
-    //void connect_to_upstream_server();
-
-    // accessors
-    // modal::app_stat_t* get_data();
-
-    // functions
     bool init();
     void drop();
 }
@@ -47,36 +26,6 @@ namespace control {
 namespace control {
     // FPD
 
-    //void connect_to_fpd()
-    //{
-    //    runtime_data_t* d = get_runtime_data();
-    //    assert(d);
-    //    //std::shared_ptr<control::fpd::fpd_t> p = cl::get<control::fpd::fpd_t>(d->objects, "fpd");
-    //    auto p = cl::get<mod::fpd::control::fpd_dummy_t>(d->objects, "fpd_dummy");
-    //    mod::fpd::control::connect(p.get());
-    //}
-
-    //// HVG
-
-    //void connect_to_hvg()
-    //{
-    //    runtime_data_t* d = get_runtime_data();
-    //    assert(d);
-
-    //    const int port = 3;
-    //    const int baud = 19200;
-    //    auto hvg = cl::get<mod::hvg::control::hvg_t>(d->objects, "hvg");
-    //    assert(hvg);
-
-    //    mod::hvg::control::connect(hvg.get(), port, baud, "8N2");
-    //}
-
-    //void setup_patient()
-    //{
-
-    //}
-
-
     bool is_ready_setup_patient()
     {
         runtime_data_t* d = get_runtime_data();
@@ -92,30 +41,6 @@ namespace control {
                fpd->status == mod::fpd::control::status_e::FPD_READY;
     }
 
-    bool is_exposure_ready()
-    {
-        //runtime_data_t* d = get_runtime_data();
-        //assert(d);
-
-        //auto fpd = cl::get<fpd::fpd_t>(d->objects, "fpd");
-        //assert(fpd);
-
-        //auto hvg = cl::get<hvg::hvg_t>(d->objects, "hvg");
-        //assert(hvg);
-
-        //return hvg->status == hvg::status_e::HVG_READY && 
-        //       fpd->status == fpd::status_e::FPD_READY;
-
-        
-        runtime_data_t* d = get_runtime_data();
-        assert(d);
-
-        auto fpd_dummy = cl::get<mod::fpd::control::fpd_dummy_t>(d->objects, "fpd_dummy");
-        assert(fpd_dummy);
-
-        const bool is_ready = fpd_dummy->fpd->status == mod::fpd::control::status_e::FPD_READY;
-        return is_ready;
-    }
 
     bool init()
     {
@@ -181,51 +106,6 @@ namespace control {
             cl::recycle(p);
         }
     }
-
-    //void connect_to_upstream_server()
-    //{
-    //    runtime_data_t* d = get_runtime_data();
-    //    assert(d);
-
-    //    websocket::websocket_t* s = d->socket;
-    //    SPDLOG_INFO("Connecting to server: ", s->url);
-    //    if (!websocket::connect(s)) {
-    //        SPDLOG_ERROR("Fail to connect to the server.");
-    //        return;
-    //    }
-    //    SPDLOG_INFO("Successully connected to the server.");
-    //    SPDLOG_INFO("Handshake with server...");
-    //    websocket::on_recv_text(s, [](const char* msg) {
-    //        SPDLOG_INFO("Message recieved: {}", msg);
-    //        }
-    //    );
-    //    websocket::send(s, "<HELLO");
-    //}
-
-    //void exposure()
-    //{
-    //    runtime_data_t* d = get_runtime_data();
-    //    assert(d);
-
-    //    auto cbct = cl::get<mod::cbct::control::cbct_t<mod::fpd::control::fpd_dummy_t>>(d->objects, "cbct");
-    //    mod::cbct::control::exposure(cbct.get());
-
-    //    //auto fpd = cl::get<mod::fpd::control::fpd_dummy_t>(d->objects, "fpd_dummy");
-    //    //fpd->fpd->status = mod::fpd::control::status_e::FPD_ACQUIRE;
-    //    //fpd->timer = cl::set_interval(fpd->callback, 166);
-    //    //// the exposure takes 60s and stop the timer then
-    //    //auto stopper = [](cl::timer_t** t, cl::shared_ptr<mod::fpd::control::fpd_dummy_t> dummy) {
-    //    //    std::this_thread::sleep_for(std::chrono::seconds(60));
-    //    //    cl::clear_timeout(*t);
-    //    //    *t = nullptr;
-    //    //    assert(dummy);
-    //    //    dummy->fpd->status = mod::fpd::control::status_e::FPD_READY;
-    //    //    rewind(dummy->fpd->scan);
-    //    //};
-
-    //    //std::thread t(stopper, &fpd->timer, fpd);
-    //    //t.detach();
-    //}
 }
 #endif // !CONSOLE_CONTROL_IMPLEMENTED
 

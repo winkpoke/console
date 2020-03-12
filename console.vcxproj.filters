@@ -233,13 +233,7 @@
     <ClInclude Include="src\modal\scan.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\renders\render_status.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui\renders\render_maintenance.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\renders\render_image.hxx">
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\app.hxx">
