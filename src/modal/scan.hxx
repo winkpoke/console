@@ -99,7 +99,12 @@ namespace modal {
     cl::usize len(scan_t* scan)
     {
         assert(scan);
-        return static_cast<cl::usize>(scan->index + 1);
+        if (scan->index < 0) {
+            return 0;
+        }
+        else {
+            static_cast<cl::usize>(scan->index + 1);
+        }
     }
 
     bool empty(scan_t* scan)

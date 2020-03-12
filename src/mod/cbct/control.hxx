@@ -34,15 +34,6 @@ namespace mod::cbct::control {
         resolution_t                resolution;
         cl::f64                     slice_dist;
     };
-}
-
-#endif //!_CBCT_CONTROL_INCLUDE_H_
-
-#ifdef CBCT_CONTROL_IMPLEMENTATION
-#ifndef CBCT_CONTROL_IMPLEMENTED
-#define CBCT_CONTROL_IMPLEMENTED
-
-namespace mod::cbct::control {
 
     template<class F, class H, class W>
     bool init(cbct_t<F, H, W>* p, cl::shared_ptr<F> fpd, cl::shared_ptr<H>* hvg)
@@ -70,6 +61,58 @@ namespace mod::cbct::control {
             p->socket.~shared_ptr();
         }
     }
+
+    template <class F, class H, class W>
+    void connect_to_fpd(cbct_t<F, H, W>* p)
+    {
+        assert(p);
+        assert(p->fpd);
+
+        mod::fpd::control::connect(p->fpd.get());
+    }
+
+    template <class F, class H, class W>
+    void connect_to_hvg(cbct_t<F, H, W>* p)
+    {
+        assert(p);
+        assert(p->fpd);
+
+        const int port = 3;
+        const int baud = 19200;
+        const char* mode = "8N2";
+
+        mod::hvg::control::connect(p->hvg.get(), port, baud, mode);
+    }
+
+    template <class F, class H, class W>
+    void connect_to_upstream_server(cbct_t<F, H, W>* p)
+    {
+        assert(p);
+        assert(p->socket);
+        SPDLOG_INFO("Connecting to server: ", p->socket->url);
+        if (!websocket::connect(p->socket)) {
+            SPDLOG_ERROR("Fail to connect to the server.");
+            return;
+        }
+        SPDLOG_INFO("Successully connected to the server.");
+        SPDLOG_INFO("Handshake with server...");
+        websocket::on_recv_text(p->socket, [](const char* msg) {
+            SPDLOG_INFO("Message recieved: {}", msg);
+            }
+        );
+        websocket::send(p->socket, "<HELLO");
+    }
+}
+
+#endif //!_CBCT_CONTROL_INCLUDE_H_
+
+#ifdef CBCT_CONTROL_IMPLEMENTATION
+#ifndef CBCT_CONTROL_IMPLEMENTED
+#define CBCT_CONTROL_IMPLEMENTED
+
+namespace mod::cbct::control {
+
+
 }
 
 #endif // !CBCT_CONTROL_IMPLEMENTATION
