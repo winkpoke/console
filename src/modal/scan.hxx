@@ -33,7 +33,7 @@ namespace modal {
     bool empty(scan_t* scan);
     void rewind(scan_t* scan);
     scan_t::pixel_t* get_data_at(scan_t* scan, int n);
-    cl::i64 push_data(scan_t* scan, scan_t::pixel_t* data);
+    cl::i64 push_data(scan_t* scan, scan_t::pixel_t* data, cl::f64 angle);
 }
 
 #endif // !_CONSOLE_SCAN_H_
@@ -128,7 +128,7 @@ namespace modal {
         return scan->images + (size_t)scan->width * scan->height * n;
     }
     
-    cl::i64 push_data(scan_t* scan, scan_t::pixel_t* data)
+    cl::i64 push_data(scan_t* scan, scan_t::pixel_t* data, cl::f64 angle)
     {
         assert(scan);
         if (scan->index + 1 >= scan->capacity) {
@@ -141,6 +141,9 @@ namespace modal {
 
         scan->index++;
         memcpy((void*)ptr, (void*)data, scan->width * scan->height * sizeof(scan_t::pixel_t));
+
+        scan->angles[scan->index] = angle;
+
         return scan->index;
     }
 }
