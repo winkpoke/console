@@ -145,7 +145,6 @@ namespace ui
         app->win->key_events.push_back([](window_t* win, int key) -> bool {
             if (ImGui::IsKeyReleased(key) && key == 0x12B) {
                 static bool toggle_fullscreen = true;
-                SPDLOG_DEBUG("fullscreen: {:b}", toggle_fullscreen);
                 set_fullscreen(win, toggle_fullscreen);
                 toggle_fullscreen = !toggle_fullscreen;
             }

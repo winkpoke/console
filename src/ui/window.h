@@ -214,12 +214,10 @@ namespace ui {
                 break;
             }
         }
-
     }
 
     void process_event(window_t* win)
     {
-        glfwPollEvents();
         ImGuiIO& io = ImGui::GetIO(); (void)io;
         for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) {
             on_key_event(win, i);
@@ -255,6 +253,7 @@ namespace ui {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(win->wnd);
+        glfwPollEvents();
     }
 
     //void 
