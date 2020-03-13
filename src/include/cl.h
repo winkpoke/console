@@ -352,7 +352,7 @@ namespace cl {
     }
 
     template <class T>
-    cl::shared_ptr<T> get(runtime_object_t* d, std::string str)
+    auto get(runtime_object_t* d, std::string str) -> cl::shared_ptr<T>
     {
         assert(d);
         std::shared_lock(d->mutex);

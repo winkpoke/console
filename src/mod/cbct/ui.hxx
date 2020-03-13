@@ -188,13 +188,11 @@ namespace mod::cbct::ui {
         static bool* p_open;
         ImGui::Begin("##Status", p_open, window_flags);                          // Create a window called "Hello, world!" and append into it.
 
-        ImGui::Text("FPD status  ... ");
-        ImGui::SameLine();
+        ImGui::Text("FPD status  ... "); ImGui::SameLine();
         ImGui::Text(mod::fpd::control::to_string(cbct->fpd_status).c_str());
 
         ImGui::AlignTextToFramePadding();
-        ImGui::Text("HVG status  ... ");
-        ImGui::SameLine();
+        ImGui::Text("HVG status  ... "); ImGui::SameLine();
         ImGui::Text(mod::hvg::control::to_string(cbct->hvg_status).c_str());
 
         //ImGui::SameLine();
@@ -203,15 +201,16 @@ namespace mod::cbct::ui {
         //}
 
         ImGui::Separator();
-        ImGui::NewLine();
-        ImGui::NewLine();
+        ImGui::NewLine(); ImGui::NewLine();
         ImGui::Text("CBCT Parameters:");
         ImGui::AlignTextToFramePadding();
 
         auto draw_slider = [](const char* label, cl::f32* v, cl::f32 step, cl::f32 low, cl::f32 upper, 
-                              cl::u32 w, cl::u32 s0, cl::u32 s1, const char* format, const char* unit, const char* tip) 
+                              cl::u32 w, cl::u32 s0, cl::u32 s1, const char* format, const char* unit, 
+                              const char* tip, bool show = true) 
         {
             ImGui::SetNextItemWidth(w);
+            ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !show);
             ImGui::SliderFloat(label, v, low, upper, format);
             ImGui::SameLine(0, s0);
             char temp[256];
@@ -229,16 +228,24 @@ namespace mod::cbct::ui {
                 }
             }
             ImGui::SameLine(0, s1); ImGui::Text(unit);
-            ImGui::SameLine(); HelpMarker(tip);
+            ImGui::SameLine(); 
+            ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false); 
+            HelpMarker(tip);
         };
 
+        bool show = true;
+        if (!control::is_exposure_ready(cbct_control.get())) {
+            show = false;
+        }
         // kV slider
-        draw_slider("##kV", &cbct->kv, 0.1, 50.0, 100.0, 270, 5, 10, "%.1f", "kV", "50.0 ~ 100.0 kV");
-        hvg::control::set_kv(hvg.get(), cbct->kv);
+        //ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+        draw_slider("##kV", &cbct->kv, 0.1, 50.0, 100.0, 270, 5, 10, "%.1f", "kV", "50.0 ~ 100.0 kV", show);
+        cl::dispatch(hvg::control::set_kv, hvg.get(), cbct->kv);
+        //ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 
         // mAs slicer
-        draw_slider("##mAs", &cbct->mAs, 0.1, 50.0, 100.0, 270, 5, 10, "%.1f", "kV", "0 ~ 10.0 mAs");
-        hvg::control::set_mAs(hvg.get(), cbct->mAs);
+        draw_slider("##mAs", &cbct->mAs, 0.1, 50.0, 100.0, 270, 5, 10, "%.1f", "kV", "0 ~ 10.0 mAs", show);
+        cl::dispatch(hvg::control::set_mAs, hvg.get(), cbct->mAs);
 
         ImGui::SetNextItemWidth(338);
         ImGui::Combo("CBCT Mode", (int*)&cbct->cbct_mode,
@@ -249,11 +256,9 @@ namespace mod::cbct::ui {
         static int traj_item_current = 0; // If the selection isn't within 0..count, Combo won't display a preview
         ImGui::SetNextItemWidth(338);
         ImGui::Combo("Trajectory", &traj_item_current, traj_items, IM_ARRAYSIZE(traj_items));
-        ImGui::NewLine();
-        ImGui::NewLine();
+        ImGui::NewLine(); ImGui::NewLine();
         ImGui::Separator();
-        ImGui::NewLine();
-        ImGui::NewLine();
+        ImGui::NewLine(); ImGui::NewLine();
         ImGui::Text("Reconstruction:");
 
         ImGui::SetNextItemWidth(338);
@@ -261,15 +266,11 @@ namespace mod::cbct::ui {
             resolution_list, IM_ARRAYSIZE(resolution_list));
 
         // Slice distance slider
-        draw_slider("##slicedist", &cbct_control->slice_dist, 0.5, 1.0, 5.0, 270, 5, 10, "%.1f", "Slice distance (mm)", "");
+        draw_slider("##slicedist", &cbct_control->slice_dist, 0.5, 1.0, 5.0, 270, 5, 10, "%.1f", "Slice distance (mm)", "", show);
 
-        ImGui::NewLine();
-        ImGui::NewLine();
+        ImGui::NewLine(); ImGui::NewLine();
         ImGui::Separator();
-        ImGui::NewLine();
-        ImGui::NewLine();
-
-        //ImGui::Text("Control:");
+        ImGui::NewLine(); ImGui::NewLine();
         ImGui::SameLine(50);
         ImGui::Button("Setup Patient", ImVec2(150, 50));
         ImGui::SameLine();
@@ -282,12 +283,8 @@ namespace mod::cbct::ui {
             cl::dispatch<void>(control::exposure, cbct_control.get());
         }
 
-        ImGui::NewLine();
-        ImGui::NewLine();
-        ImGui::NewLine();
-        ImGui::NewLine();
-        ImGui::NewLine();
-        ImGui::NewLine();
+        ImGui::NewLine(); ImGui::NewLine(); ImGui::NewLine(); ImGui::NewLine();
+        ImGui::NewLine(); ImGui::NewLine();
         ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 
         //ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

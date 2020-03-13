@@ -195,26 +195,11 @@ namespace ui
         auto patient = cl::get<mod::patient::control::patient_t>(data->objects, "patient");
         assert(patient);
 
-        auto dummy_fpd = cl::get<mod::fpd::control::fpd_dummy_t>(data->objects, "fpd_dummy");
-        assert(dummy_fpd);
+        //auto dummy_fpd = cl::get<mod::fpd::control::fpd_dummy_t>(data->objects, "fpd_dummy");
+        //assert(dummy_fpd);
 
         mod::patient::ui::update(app->objects, data->objects);
         mod::cbct::ui::update(app->objects, data->objects);
-    }
-
-    void update(control::runtime_data_t* data, app_t* app)
-    {
-        //std::unique_lock(data->mutex);
-
-        //auto fpd = cl::get<control::fpd::fpd_t>(data->objects, "fpd");
-        //assert(fpd);
-
-        //auto hvg = cl::get<control::hvg::hvg_t>(data->objects, "hvg");
-        //assert(hvg);
-
-        //data->cbct_mode = app->cbct_mode;
-        //data->resolution = app->resolution;
-        //data->slice_dist = app->slice_dist;
     }
 
     void run(app_t* app)
@@ -231,7 +216,7 @@ namespace ui
             process_event(app->win);
             draw(app->win);
 
-            update(control::get_runtime_data(), app);
+            //update(control::get_runtime_data(), app);
         }
     }
 }
