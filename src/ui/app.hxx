@@ -89,6 +89,7 @@ namespace ui
         // Setup Dear ImGui style
         //ImGui::StyleColorsDark();
         ImGui::StyleColorsClassic();
+        //ImGui::StyleColorsLight();
 
         //io.Fonts->GetGlyphRangesChineseFull());// 
         auto font0 = io.Fonts->AddFontDefault();
@@ -117,7 +118,7 @@ namespace ui
         auto patient = cl::build_shared<mod::patient::ui::patient_t>(obj.get());
         cl::mount(app->objects, patient, "patient", "0.0.1");
 
-        auto cbct_control = cl::get<mod::cbct::control::cbct_t>(control_runtime->objects, "cbct");
+        auto cbct_control = cl::get<mod::cbct::control::cbct_dummy_t>(control_runtime->objects, "cbct");
         using cbct_ui_t = mod::cbct::ui::cbct_t;
         using cbct_control_t = mod::cbct::control::cbct_t;
 
@@ -139,12 +140,12 @@ namespace ui
         //auto fpd = cl::get<mod::fpd::control::fpd_t>(data->objects, "fpd");
         //assert(fpd);
 
-        //app->index = -1;
 
         // key events
         app->win->key_events.push_back([](window_t* win, int key) -> bool {
-            if (ImGui::IsKeyPressed(key) && key == 0x12B) {
+            if (ImGui::IsKeyReleased(key) && key == 0x12B) {
                 static bool toggle_fullscreen = true;
+                SPDLOG_DEBUG("fullscreen: {:b}", toggle_fullscreen);
                 set_fullscreen(win, toggle_fullscreen);
                 toggle_fullscreen = !toggle_fullscreen;
             }
@@ -153,14 +154,13 @@ namespace ui
 
         // renders
         app->win->renders.push_back([=](window_t*) {
-            //renders::render_status_window(app);
-            //renders::render_image_window(app);
-            renders::render_maintenance_window(app);
             auto patient = cl::get<mod::patient::ui::patient_t>(app->objects, "patient");
             mod::patient::ui::render(patient.get());
 
             auto cbct = cl::get<mod::cbct::ui::cbct_t>(app->objects, "cbct");
             mod::cbct::ui::render(cbct.get());
+
+            renders::render_maintenance_window(app);
             return true;
             });
 
@@ -186,18 +186,6 @@ namespace ui
     void update(app_t* app, control::runtime_data_t* data)
     {
         std::shared_lock lk(data->mutex);
-        
-        //auto fpd = cl::get<mod::fpd::control::fpd_t>(data->objects, "fpd");
-        //assert(fpd);
-        auto hvg = cl::get<mod::hvg::control::hvg_t>(data->objects, "hvg");
-        assert(hvg);
-
-        auto patient = cl::get<mod::patient::control::patient_t>(data->objects, "patient");
-        assert(patient);
-
-        //auto dummy_fpd = cl::get<mod::fpd::control::fpd_dummy_t>(data->objects, "fpd_dummy");
-        //assert(dummy_fpd);
-
         mod::patient::ui::update(app->objects, data->objects);
         mod::cbct::ui::update(app->objects, data->objects);
     }
@@ -205,18 +193,12 @@ namespace ui
     void run(app_t* app)
     {
         // Main loop
-        while (!is_close(app->win))
-        {
+        while (!is_close(app->win)) {
             new_frame(app->win);
-
             update(app, control::get_runtime_data());
-
             render(app->win);
-
             process_event(app->win);
             draw(app->win);
-
-            //update(control::get_runtime_data(), app);
         }
     }
 }

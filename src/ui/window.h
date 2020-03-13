@@ -34,8 +34,6 @@ namespace ui {
     using namespace std;
 
     struct window_t {
-        //typedef bool (*render_fun_t)(window_t*);
-
         using render_fun = std::function<bool(window_t*)>;
         using key_event_fun = std::function<bool(window_t*, int k)>;
         

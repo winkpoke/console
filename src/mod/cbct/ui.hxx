@@ -23,13 +23,13 @@ namespace mod::cbct::ui {
         float slice_dist;
     };
 
-    bool init(cbct_t* cbct, control::cbct_t* cbct_control);
+    bool init(cbct_t* cbct, control::cbct_dummy_t* cbct_control);
 
     void drop(ui::cbct_t* cbct);
 
     bool render(ui::cbct_t* cbct);
 
-    void update(ui::cbct_t* dst, control::cbct_t* src);
+    void update(ui::cbct_t* dst, control::cbct_dummy_t* src);
     void update(cl::runtime_object_t* dst, cl::runtime_object_t* src);
 }
 
@@ -50,7 +50,7 @@ namespace mod::cbct::ui {
 #include "control/runtime_data.hxx"
 
 namespace mod::cbct::ui {
-    bool init(cbct_t* cbct, control::cbct_t* cbct_control)
+    bool init(cbct_t* cbct, control::cbct_dummy_t* cbct_control)
     {
         assert(cbct && cbct_control);
 
@@ -68,7 +68,7 @@ namespace mod::cbct::ui {
         }
     }
 
-    void update(ui::cbct_t* dst, control::cbct_t* src)
+    void update(ui::cbct_t* dst, control::cbct_dummy_t* src)
     {
         assert(dst && src);
         dst->fpd_status = fpd::control::get_status(src->fpd.get());
@@ -121,7 +121,7 @@ namespace mod::cbct::ui {
         auto ui = cl::get<ui::cbct_t>(dst, "cbct");
         assert(ui);
 
-        auto control = cl::get<control::cbct_t>(src, "cbct");
+        auto control = cl::get<control::cbct_dummy_t>(src, "cbct");
         assert(control);
 
         update(ui.get(), control.get());
@@ -176,7 +176,7 @@ namespace mod::cbct::ui {
         auto hvg = cl::get<mod::hvg::control::hvg_t>(runtime->objects, "hvg");
         assert(hvg);
 
-        auto cbct_control = cl::get<cbct::control::cbct_t>(runtime->objects, "cbct");
+        auto cbct_control = cl::get<cbct::control::cbct_dummy_t>(runtime->objects, "cbct");
         assert(cbct_control);
 
         static bool show_demo_window = false;
@@ -251,7 +251,6 @@ namespace mod::cbct::ui {
         ImGui::Combo("CBCT Mode", (int*)&cbct->cbct_mode,
             cbct_mode_list, IM_ARRAYSIZE(cbct_mode_list));
 
-        //const char* traj_items[] = { "Full", "Half" };
         const char* traj_items[] = { "Full" };
         static int traj_item_current = 0; // If the selection isn't within 0..count, Combo won't display a preview
         ImGui::SetNextItemWidth(338);

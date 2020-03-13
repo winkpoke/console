@@ -62,7 +62,7 @@ namespace control {
         cl::mount(d->objects, dummy_fpd, "fpd_dummy", "0.0.1");
 
         // CBCT 
-        auto cbct = cl::build_shared<mod::cbct::control::cbct_t>(dummy_fpd, hvg);
+        auto cbct = cl::build_shared<mod::cbct::control::cbct_dummy_t>(dummy_fpd, hvg);
         cl::mount(d->objects, cbct, "cbct", "0.0.1");
 
         // patient

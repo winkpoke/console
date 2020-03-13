@@ -35,7 +35,8 @@ namespace mod::cbct::control {
         cl::f32                 slice_dist;
     };
 
-    using cbct_t = cbct_impl_t<fpd::control::fpd_dummy_t>;
+    using cbct_t = cbct_impl_t<>;
+    using cbct_dummy_t = cbct_impl_t<fpd::control::fpd_dummy_t>;
 
     template<class F, class H, class W>
     bool init(cbct_impl_t<F, H, W>* p, cl::shared_ptr<F> fpd, cl::shared_ptr<H> hvg)
