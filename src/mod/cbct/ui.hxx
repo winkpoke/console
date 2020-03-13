@@ -250,6 +250,7 @@ namespace mod::cbct::ui {
         ImGui::SetNextItemWidth(338);
         ImGui::Combo("CBCT Mode", (int*)&cbct->cbct_mode,
             cbct_mode_list, IM_ARRAYSIZE(cbct_mode_list));
+        control::set_mode(cbct_control.get(), cbct->cbct_mode);
 
         const char* traj_items[] = { "Full" };
         static int traj_item_current = 0; // If the selection isn't within 0..count, Combo won't display a preview
@@ -263,6 +264,7 @@ namespace mod::cbct::ui {
         ImGui::SetNextItemWidth(338);
         ImGui::Combo("Reconstruction Volume", (int*)&cbct->resolution,
             resolution_list, IM_ARRAYSIZE(resolution_list));
+        control::set_resolution(cbct_control.get(), cbct->resolution);
 
         // Slice distance slider
         draw_slider("##slicedist", &cbct_control->slice_dist, 0.5, 1.0, 5.0, 270, 5, 10, "%.1f", "Slice distance (mm)", "", show);

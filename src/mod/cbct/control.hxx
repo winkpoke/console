@@ -63,6 +63,20 @@ namespace mod::cbct::control {
     }
 
     template <class F, class H, class W>
+    void set_mode(cbct_impl_t<F, H, W>*p, cbct_mode_t mod)
+    {
+        assert(p);
+        p->mode = mod;
+    }
+
+    template <class F, class H, class W>
+    void set_resolution(cbct_impl_t<F, H, W>* p, resolution_t resolution)
+    {
+        assert(p);
+        p->resolution = resolution;
+    }
+
+    template <class F, class H, class W>
     void connect_to_fpd(cbct_impl_t<F, H, W>* p)
     {
         assert(p);
