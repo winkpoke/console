@@ -22,6 +22,8 @@ namespace mod::cbct::control {
         _512X512,
         _768X768
     };
+    static const char* cbct_mode_list[] = { "Head", "Lung", "Abdominal", "Custom" };
+    static const char* resolution_list[] = { "128x128", "256x256", "384x384", "512x512", "768x768" };
 
     template <class F = fpd::control::fpd_t, 
               class H = hvg::control::hvg_t, 
@@ -105,7 +107,7 @@ namespace mod::cbct::control {
         assert(p->socket);
         SPDLOG_INFO("Connecting to server: ", p->socket->url);
         if (!websocket::connect(p->socket.get())) {
-            SPDLOG_ERROR("Fail to connect to the server.");
+            SPDLOG_WARN("Fail to connect to the server.");
             return;
         }
         SPDLOG_INFO("Successully connected to the server.");
