@@ -206,7 +206,7 @@ namespace mod::cbct::ui {
         ImGui::AlignTextToFramePadding();
 
         auto draw_slider = [](const char* label, cl::f32* v, cl::f32 step, cl::f32 low, cl::f32 upper, 
-                              cl::u32 w, cl::u32 s0, cl::u32 s1, const char* format, const char* unit, 
+                              cl::f32 w, cl::f32 s0, cl::f32 s1, const char* format, const char* unit, 
                               const char* tip, bool show = true) 
         {
             ImGui::SetNextItemWidth(w);
@@ -242,15 +242,15 @@ namespace mod::cbct::ui {
         draw_slider("##kV", &cbct->kv, 0.1, 50.0, 100.0, 270, 5, 10, "%.1f", "kV", "50.0 ~ 100.0 kV", show);
         cl::dispatch(hvg::control::set_kv, hvg.get(), cbct->kv);
         //ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
-
+        
         // mAs slicer
-        draw_slider("##mAs", &cbct->mAs, 0.1, 50.0, 100.0, 270, 5, 10, "%.1f", "kV", "0 ~ 10.0 mAs", show);
+        draw_slider("##mAs", &cbct->mAs, 0.1, 50.0, 100.0, 270, 5, 10, "%.1f", "mAs", "0 ~ 10.0 mAs", show);
         cl::dispatch(hvg::control::set_mAs, hvg.get(), cbct->mAs);
 
         ImGui::SetNextItemWidth(338);
         ImGui::Combo("CBCT Mode", (int*)&cbct->cbct_mode,
-            cbct_mode_list, IM_ARRAYSIZE(cbct_mode_list));
-        control::set_mode(cbct_control.get(), cbct->cbct_mode);
+            control::cbct_mode_list, IM_ARRAYSIZE(control::cbct_mode_list));
+        cl::dispatch<void>(control::set_mode, cbct_control.get(), cbct->cbct_mode);
 
         const char* traj_items[] = { "Full" };
         static int traj_item_current = 0; // If the selection isn't within 0..count, Combo won't display a preview
@@ -263,11 +263,11 @@ namespace mod::cbct::ui {
 
         ImGui::SetNextItemWidth(338);
         ImGui::Combo("Reconstruction Volume", (int*)&cbct->resolution,
-            resolution_list, IM_ARRAYSIZE(resolution_list));
-        control::set_resolution(cbct_control.get(), cbct->resolution);
+            control::resolution_list, IM_ARRAYSIZE(control::resolution_list));
+        cl::dispatch<void>(control::set_resolution, cbct_control.get(), cbct->resolution);
 
         // Slice distance slider
-        draw_slider("##slicedist", &cbct_control->slice_dist, 0.5, 1.0, 5.0, 270, 5, 10, "%.1f", "Slice distance (mm)", "", show);
+        draw_slider("##slicedist", &cbct_control->slice_dist, 0.5, 1.0, 5.0, 270, 5, 10, "%.1f", "Slice distance (mm)", "", true);
 
         ImGui::NewLine(); ImGui::NewLine();
         ImGui::Separator();

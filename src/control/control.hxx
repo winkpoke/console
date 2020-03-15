@@ -26,20 +26,20 @@ namespace control {
 namespace control {
     // FPD
 
-    bool is_ready_setup_patient()
-    {
-        runtime_data_t* d = get_runtime_data();
-        assert(d);
+    //bool is_ready_setup_patient()
+    //{
+    //    runtime_data_t* d = get_runtime_data();
+    //    assert(d);
 
-        auto fpd = cl::get<mod::fpd::control::fpd_t>(d->objects, "fpd");
-        assert(fpd);
+    //    auto fpd = cl::get<mod::fpd::control::fpd_t>(d->objects, "fpd");
+    //    assert(fpd);
 
-        auto hvg = cl::get<mod::hvg::control::hvg_t>(d->objects, "hvg");
-        assert(hvg);
+    //    auto hvg = cl::get<mod::hvg::control::hvg_t>(d->objects, "hvg");
+    //    assert(hvg);
 
-        return hvg->status == mod::hvg::control::status_e::HVG_READY &&
-               fpd->status == mod::fpd::control::status_e::FPD_READY;
-    }
+    //    return hvg->status == mod::hvg::control::status_e::HVG_READY &&
+    //           fpd->status == mod::fpd::control::status_e::FPD_READY;
+    //}
 
 
     bool init()

@@ -31,7 +31,7 @@ namespace mod::hnd::modal {
         constexpr cl::usize s = sizeof(T);
         static_assert(s == 2 || s == 4, 
             "only be able to handle images with 16/32 bits pixel data");
-        cl::u8* hnd_data = encode((const uint8_t*)sil::get_data(img), img->width, img->height, s, &hnd_data_size);
+        cl::u8* hnd_data = encode((const uint8_t*)sil::get_data(img), img->width, img->height, s, (uintptr_t*)&hnd_data_size);
 
         p->data_len = hnd_data_size;
         p->data = hnd_data;

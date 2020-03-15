@@ -14,12 +14,12 @@ namespace ui {
     struct image_view {
         sil::image_t<T>* image;
         GLuint texture;
-        size_t width;
-        size_t height;
+        cl::i32 width;
+        cl::i32 height;
     };
 
     template <class T>
-    bool init(image_view<T>* widget, size_t width, size_t height, sil::image_t<T>* image);
+    bool init(image_view<T>* widget, cl::i32 width, cl::i32 height, sil::image_t<T>* image);
 
     template <class T>
     void drop(image_view<T>* widget);
@@ -34,8 +34,35 @@ namespace ui {
 
 // Implementation
 namespace ui {
+
     template <class T>
-    bool init(image_view<T>* widget, size_t width, size_t height, sil::image_t<T>* image)
+    constexpr auto gl_type() 
+    {
+        if (std::is_signed<T>::value) {
+            switch (sizeof(T)) {
+            case 1:
+                return GL_BYTE;
+            case 2:
+                return GL_SHORT;
+            case 4:
+                return GL_INT;
+            }
+        }
+        else {
+            switch (sizeof(T)) {
+            case 1:
+                return GL_UNSIGNED_BYTE;
+            case 2:
+                return GL_UNSIGNED_SHORT;
+            case 4:
+                return GL_UNSIGNED_INT;
+            }
+        }
+        return GL_NONE;
+    }
+
+    template <class T>
+    bool init(image_view<T>* widget, cl::i32 width, cl::i32 height, sil::image_t<T>* image)
     {
         if (!widget) {
             return false;
@@ -49,21 +76,24 @@ namespace ui {
         widget->height = height;
         widget->image = image;
 
-        const cl::usize image_width = sil::get_width(image);
-        const cl::usize image_height = sil::get_height(image);
+        const GLsizei image_width = static_cast<GLsizei>(sil::get_width(image));
+        const GLsizei image_height = static_cast<GLsizei>(sil::get_height(image));
         const T* image_data = sil::get_data(image);
-
+        
+        static_assert(gl_type<T>() != GL_NONE, "wrong image type!");
         if (widget->image != NULL) {
             glBindTexture(GL_TEXTURE_2D, widget->texture);
             if (widget->image->channel == 1) {
-                if (strcmp(typeid(T).name(), "unsigned short") == 0) {
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, image_width, image_height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, image_data);
-                }
+                //if (strcmp(typeid(T).name(), "unsigned short") == 0) {
+                    //static_assert(gl_type<T>() == GL_UNSIGNED_SHORT || gl_type<T>() == GL_UNSIGNED_BYTE, "fail");
+                
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, image_width, image_height, 0, GL_DEPTH_COMPONENT, gl_type<T>(), image_data);
+                //} 
             }
             else if (widget->image->channel == 4) {
-                if (strcmp(typeid(T).name(), "unsigned char") == 0) {
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-                }
+                //if (strcmp(typeid(T).name(), "unsigned char") == 0) {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, gl_type<T>(), image_data);
+                //}
             }
             else {
                 // error handling
