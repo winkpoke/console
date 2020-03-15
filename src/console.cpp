@@ -3,7 +3,7 @@
 
 void experiments();
 
-int main(int, char**)
+int main(int argc, char** argv)
 {
     //setlocale(LC_ALL, "chs");
     setlocale(LC_ALL, "zh-CN.UTF8");
@@ -12,7 +12,7 @@ int main(int, char**)
     spdlog::set_level(spdlog::level::trace); // Set global log level to debug
     SPDLOG_INFO("CBCT Console starting ...");
 
-    experiments();
+    //experiments();
 
     //// CBCT init
     control::init();
