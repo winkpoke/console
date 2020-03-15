@@ -34,6 +34,9 @@ void experiments()
 
     const char* raw_file_name = R"(C:\Projects\CBCT\data\headneck_1024x1024\raw\headneck_360_1024.raw.001)";
     FILE* fp = fopen(raw_file_name, "r");
+    if (fp != nullptr) {
+        return;
+    }
 
     constexpr cl::u64 len = 1024 * 1024 * 2;
     char* buf = (char*)malloc(len);
