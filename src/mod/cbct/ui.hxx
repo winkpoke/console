@@ -269,6 +269,47 @@ namespace mod::cbct::ui {
         // Slice distance slider
         draw_slider("##slicedist", &cbct_control->slice_dist, 0.5, 1.0, 5.0, 270, 5, 10, "%.1f", "Slice distance (mm)", "", true);
 
+        if (ImGui::TreeNode("advanced settings:")) {
+            static cl::f32 sid = 849.0;
+            static cl::f32 sdd = 1614.0;
+            ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
+            ImGui::InputFloat("SID", &sid, 0, 0, "%0.2f"); ImGui::SameLine(); HelpMarker("Souce to Isocenter Distance (mm)");
+            ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
+            ImGui::InputFloat("SDD", &sdd, 0, 0, "%0.2f"); ImGui::SameLine(); HelpMarker("Source to Detctor Distance (mm)");
+
+            static cl::f32 proj_offset_x = .0;
+            static cl::f32 proj_offset_y = .0;
+            ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
+            ImGui::InputFloat("Projection offset X", &proj_offset_x, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+            ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
+            ImGui::InputFloat("Projection offset Y", &proj_offset_y, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+
+            static cl::f32 source_offset_x = .0;
+            static cl::f32 source_offset_y = .0;
+            ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
+            ImGui::InputFloat("Source offset X", &source_offset_x, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+            ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
+            ImGui::InputFloat("Source offset Y", &source_offset_y, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+
+            static cl::f32 out_of_plane_angle = .0;
+            static cl::f32 in_plane_angle = .0;
+            ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
+            ImGui::InputFloat("Out of plane angle", &out_of_plane_angle, 0, 0, "%0.4f");
+            ImGui::SameLine();
+            HelpMarker("A rotation of flat panel with rotation axis perpendicular to the gantry rotation axis " 
+                       "and parallel to the flat panel. An increase in the value corresponds to a counter-clockwise "
+                       "rotation of the flat panel as viewed from a positive value along the x axis towards the "
+                       "isocenter. (degree)");
+            ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
+            ImGui::InputFloat("In plane angle", &in_plane_angle, 0, 0, "%0.4f");
+            ImGui::SameLine();
+            HelpMarker("A rotation of flat panel with rotation axis perpendicular to the flat panel. "
+                       "An increase in the value of angle corresponds to a counter-clockwise rotation "
+                       "of the flat panel as viewed from the source. (degree)");
+
+            ImGui::TreePop();
+        }
+
         ImGui::NewLine(); ImGui::NewLine();
         ImGui::Separator();
         ImGui::NewLine(); ImGui::NewLine();
