@@ -9,7 +9,7 @@ namespace modal {
         using pixel_t = cl::u16;
         static const int N_IMAGES = 360;
 
-        cl::usize id;
+        cl::i32 id;
         cl::usize width;
         cl::usize height;
         cl::f64 x_res;          // pixel resolution along X direction

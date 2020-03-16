@@ -31,7 +31,7 @@ namespace ui {
     void run(app_t* app);
 
     void update(app_t* app, control::runtime_data_t* data);
-    void update(control::runtime_data_t* data, app_t* app);
+    //void update(control::runtime_data_t* data, app_t* app);
 } //namespace ui
 
 #endif // CONSOLE_UI_APP_H
