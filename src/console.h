@@ -39,3 +39,6 @@
 
 #define UI_LOG_IMPLEMENTATION
 #include "ui/log.h"
+
+#define CONSOLE_CONFIG_IMPLEMENTATION
+#include "control/config.hxx"

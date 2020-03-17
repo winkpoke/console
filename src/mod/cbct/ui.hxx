@@ -273,35 +273,35 @@ namespace mod::cbct::ui {
             static cl::f32 sid = 849.0;
             static cl::f32 sdd = 1614.0;
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("SID", &sid, 0, 0, "%0.2f"); ImGui::SameLine(); HelpMarker("Souce to Isocenter Distance (mm)");
+            ImGui::InputFloat("SID (mm)", &sid, 0, 0, "%0.2f"); ImGui::SameLine(); HelpMarker("Souce to Isocenter Distance (mm)");
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("SDD", &sdd, 0, 0, "%0.2f"); ImGui::SameLine(); HelpMarker("Source to Detctor Distance (mm)");
+            ImGui::InputFloat("SDD (mm)", &sdd, 0, 0, "%0.2f"); ImGui::SameLine(); HelpMarker("Source to Detctor Distance (mm)");
 
             static cl::f32 proj_offset_x = .0;
             static cl::f32 proj_offset_y = .0;
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("Projection offset X", &proj_offset_x, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+            ImGui::InputFloat("Projection offset X (mm)", &proj_offset_x, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("Projection offset Y", &proj_offset_y, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+            ImGui::InputFloat("Projection offset Y (mm)", &proj_offset_y, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
 
             static cl::f32 source_offset_x = .0;
             static cl::f32 source_offset_y = .0;
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("Source offset X", &source_offset_x, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+            ImGui::InputFloat("Source offset X (mm)", &source_offset_x, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("Source offset Y", &source_offset_y, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+            ImGui::InputFloat("Source offset Y (mm)", &source_offset_y, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
 
             static cl::f32 out_of_plane_angle = .0;
             static cl::f32 in_plane_angle = .0;
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("Out of plane angle", &out_of_plane_angle, 0, 0, "%0.4f");
+            ImGui::InputFloat("Out of plane angle (\xc2\xb0)", &out_of_plane_angle, 0, 0, "%0.4f");
             ImGui::SameLine();
             HelpMarker("A rotation of flat panel with rotation axis perpendicular to the gantry rotation axis " 
                        "and parallel to the flat panel. An increase in the value corresponds to a counter-clockwise "
                        "rotation of the flat panel as viewed from a positive value along the x axis towards the "
                        "isocenter. (degree)");
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("In plane angle", &in_plane_angle, 0, 0, "%0.4f");
+            ImGui::InputFloat("In plane angle (\xc2\xb0)", &in_plane_angle, 0, 0, "%0.4f");
             ImGui::SameLine();
             HelpMarker("A rotation of flat panel with rotation axis perpendicular to the flat panel. "
                        "An increase in the value of angle corresponds to a counter-clockwise rotation "
@@ -324,9 +324,9 @@ namespace mod::cbct::ui {
         if (ImGui::ButtonEx("Exposure", ImVec2(150, 50), exposure_button_flag)) {
             cl::dispatch<void>(control::exposure, cbct_control.get());
         }
-
-        ImGui::NewLine(); ImGui::NewLine(); ImGui::NewLine(); ImGui::NewLine();
-        ImGui::NewLine(); ImGui::NewLine();
+        ImGui::NewLine(); ImGui::SameLine(50);
+        ImGui::Button("Reconstruction", ImVec2(150, 50));
+        ImGui::NewLine(); ImGui::NewLine(); ImGui::NewLine(); 
         ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 
         //ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

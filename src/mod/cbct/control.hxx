@@ -16,14 +16,15 @@ namespace mod::cbct::control {
     };
 
     enum class resolution_t {
-        _128X128,
-        _256X256,
-        _384X384,
+        //_128X128,
+        //_256X256,
+        //_384X384,
         _512X512,
-        _768X768
+        _768X768,
+        _1024x1024
     };
     static const char* cbct_mode_list[] = { "Head", "Lung", "Abdominal", "Custom" };
-    static const char* resolution_list[] = { "128x128", "256x256", "384x384", "512x512", "768x768" };
+    static const char* resolution_list[] = { /*"128x128", "256x256", "384x384", */"512x512", "768x768", "1024x1024" };
 
     template <class F = fpd::control::fpd_t, 
               class H = hvg::control::hvg_t, 

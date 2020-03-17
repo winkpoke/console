@@ -38,8 +38,7 @@ namespace mod::fpd::control {
 //#include <omp.h>
 #include <fstream>
 
-#define TOML_EXCEPTIONS 0
-#include "toml++/toml.h"
+#include "control/config.hxx"
 
 namespace mod::fpd::control {
 
@@ -54,40 +53,19 @@ namespace mod::fpd::control {
         auto t0 = steady_clock::now();
 
         std::string raw_data_path;
-        const char* data_path = "data_path.txt";
-        const char* config_file = "config.toml";
-        toml::parse_result result = toml::parse_file(config_file);
-        if (result) {
-            auto& config = result.get();
-            if (auto path = config["raw_data_folder"].value<std::string_view>()) {
-                if (auto basename = config["raw_data_basename"].value<std::string_view>()) {
-                    raw_data_path.append(*path)
-                                 .append("\\")
-                                 .append(*basename);
-                }
-                else {
-                    SPDLOG_ERROR("key raw_data_basename missing in config.toml file.");
-                }
-            }
-            else {
-                SPDLOG_ERROR("key raw_data_folder missing in config.toml file.");
-            }
-        }
-
-        
-        if (raw_data_path == "") {
+        auto config = ::control::get_config();
+        if (config) {
+            raw_data_path.append(config->raw_data_folder)
+                .append("\\")
+                .append(config->raw_data_basename);
+        } else {
             // not be able to read config.toml
             // use data_path.txt instead
+            const char* data_path = "data_path.txt";
             std::fstream s(data_path, std::fstream::in);
             s >> raw_data_path;
         }
         
-        //const char* data_path = "data_path.txt";
-        //std::fstream s(data_path, std::fstream::in);
-        //std::string raw_data_path;
-        //s >> raw_data_path;
-
-        //const char* raw_data_path = R"(C:\Projects\CBCT\data\headneck_1024x1024\raw\headneck_360_1024.raw)";
         constexpr cl::usize n_images = 360;
         for (int i = 1; i <= n_images; ++i) {
             char file_name[1024];

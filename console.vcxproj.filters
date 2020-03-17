@@ -311,5 +311,8 @@
     <ClInclude Include="src\mod\cbct\ui.hxx">
       <Filter>header</Filter>
     </ClInclude>
+    <ClInclude Include="src\control\config.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
