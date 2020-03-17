@@ -1,0 +1,6 @@
+# This is a example configuration file. The user need to adjust the content 
+# according to his/her environment and then rename it to config.toml to make 
+# it available to the application.
+
+raw_data_folder = 'C:\Projects\CBCT\data\headneck_1024x1024\raw\'
+raw_data_basename = "headneck_360_1024.raw"
