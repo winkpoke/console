@@ -98,6 +98,8 @@ namespace mod::hnd::control {
             // write error
             return 0;
         }
+        fflush(fpw);
+        fclose(fpw);
 
         hnd_header_raw_drop((uint8_t*)header_buf);
         return hnd_t::HEADER_LEN + p->data_len;

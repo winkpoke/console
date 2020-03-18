@@ -4,3 +4,4 @@
 
 raw_data_folder = 'C:\Projects\CBCT\data\headneck_1024x1024\raw\'
 raw_data_basename = "headneck_360_1024.raw"
+output_folder = 'C:\Projects\CBCT\data\db\CBCT'

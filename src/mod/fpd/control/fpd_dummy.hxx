@@ -2,7 +2,9 @@
 #define _FPD_DUMMY_CONTROL_INCLUDE_H_
 
 #include <chrono>
+#include <filesystem>
 
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_sinks.h"
 
@@ -38,6 +40,7 @@ namespace mod::fpd::control {
 //#include <omp.h>
 #include <fstream>
 
+#include "mod/hnd/hnd.hxx"
 #include "control/config.hxx"
 
 namespace mod::fpd::control {
@@ -52,12 +55,10 @@ namespace mod::fpd::control {
         using namespace std::chrono;
         auto t0 = steady_clock::now();
 
-        std::string raw_data_path;
+        std::filesystem::path raw_data_path;
         auto config = ::control::get_config();
         if (config) {
-            raw_data_path.append(config->raw_data_folder)
-                .append("\\")
-                .append(config->raw_data_basename);
+            raw_data_path = std::filesystem::path(config->raw_data_folder) / config->raw_data_basename;
         } else {
             // not be able to read config.toml
             // use data_path.txt instead
@@ -69,7 +70,7 @@ namespace mod::fpd::control {
         constexpr cl::usize n_images = 360;
         for (int i = 1; i <= n_images; ++i) {
             char file_name[1024];
-            sprintf(file_name, "%s.%03d", raw_data_path.c_str(), i);
+            sprintf(file_name, "%s.%03d", raw_data_path.string().c_str(), i);
             FILE* fp = fopen(file_name, "rb");
             cl::usize n_read = fread(get_data_at(dummy->fpd->scan, i - 1), sizeof(modal::scan_t::pixel_t), width * height, fp);
             if (n_read != width * height)
@@ -101,9 +102,30 @@ namespace mod::fpd::control {
         // initialize the callback function
         new(&dummy->callback)std::function<void(void)>;
         dummy->callback = [=]() {
-            modal::scan_t& scan = *dummy->fpd->scan;
-            if (scan.index < 359) {
-                scan.index++;
+            //modal::scan_t& scan = *dummy->fpd->scan;
+            auto scan = mod::fpd::control::get_scan(dummy);
+            if (scan->index < 359) {
+                scan->index++;
+                using namespace std::chrono;
+                namespace fs = std::filesystem;
+                auto t0 = steady_clock::now();
+
+                const auto w = scan->width;
+                const auto h = scan->height;
+                auto image = cl::build_raw<sil::image_t<cl::u16>>(w, h, 1, modal::get_data_at(scan, scan->index));
+
+                auto config = ::control::get_config();
+                fs::path output_path(config->output_folder);
+                char tmp[1024];
+                sprintf(tmp, "%03d.hnd", static_cast<cl::i32>(scan->index));
+                auto hnd_file_name = output_path / tmp;
+                auto hnd = cl::build_raw<mod::hnd::modal::hnd_t>(image, 0.417, 0.417, 1.0);
+                int n = hnd::control::write_to_file(hnd, hnd_file_name.string().c_str());
+
+                cl::dealloc(image);  // dealloc image without releasing the internal data
+
+                auto t1 = steady_clock::now();
+                //SPDLOG_INFO("Dummy FPD: process image in {:d} ms", duration_cast<milliseconds>(t1 - t0).count());
             }
         };
 

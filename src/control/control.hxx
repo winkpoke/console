@@ -22,6 +22,7 @@ namespace control {
 #include "mod/fpd/fpd.h"
 #include "mod/cbct/cbct.h"
 #include "runtime_data.hxx"
+#include "config.hxx"
 
 namespace control {
     // FPD
@@ -104,6 +105,11 @@ namespace control {
         if (p) {
             cl::unmount_all(p->objects);
             cl::recycle(p);
+        }
+        auto config = get_config();
+        if (config) {
+            drop(config);
+            cl::recycle(config);
         }
     }
 }

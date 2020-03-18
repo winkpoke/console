@@ -21,6 +21,15 @@ namespace mod::cbct::ui {
         // Reconstruction 
         control::resolution_t resolution;
         float slice_dist;
+
+        cl::f32 sid;
+        cl::f32 sdd;
+        cl::f32 proj_offset_x;
+        cl::f32 proj_offset_y;
+        cl::f32 source_offset_x;
+        cl::f32 source_offset_y;
+        cl::f32 out_of_plane_angle;
+        cl::f32 in_plane_angle;
     };
 
     bool init(cbct_t* cbct, control::cbct_dummy_t* cbct_control);
@@ -114,6 +123,16 @@ namespace mod::cbct::ui {
             }
             dst->index = index;
         }
+
+        dst->sid = static_cast<cl::f32>(src->geo.sid);
+        dst->sdd = static_cast<cl::f32>(src->geo.sdd);
+
+        dst->proj_offset_x = static_cast<cl::f32>(src->geo.proj_offset_x);
+        dst->proj_offset_y = static_cast<cl::f32>(src->geo.proj_offset_y);
+        dst->source_offset_x = static_cast<cl::f32>(src->geo.source_offset_x);
+        dst->source_offset_y = static_cast<cl::f32>(src->geo.source_offset_y);
+        dst->out_of_plane_angle = static_cast<cl::f32>(src->geo.out_of_plane_angle);
+        dst->in_plane_angle = static_cast<cl::f32>(src->geo.in_plane_angle);
     }
 
     void update(cl::runtime_object_t* dst, cl::runtime_object_t* src)
@@ -239,12 +258,12 @@ namespace mod::cbct::ui {
         }
         // kV slider
         //ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-        draw_slider("##kV", &cbct->kv, 0.1, 50.0, 100.0, 270, 5, 10, "%.1f", "kV", "50.0 ~ 100.0 kV", show);
+        draw_slider("##kV", &cbct->kv, 0.1f, 50.0f, 100.0f, 270.f, 5.f, 10.f, "%.1f", "kV", "50.0 ~ 100.0 kV", show);
         cl::dispatch(hvg::control::set_kv, hvg.get(), cbct->kv);
         //ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
         
         // mAs slicer
-        draw_slider("##mAs", &cbct->mAs, 0.1, 50.0, 100.0, 270, 5, 10, "%.1f", "mAs", "0 ~ 10.0 mAs", show);
+        draw_slider("##mAs", &cbct->mAs, 0.1f, 50.0f, 100.0f, 270.f, 5.f, 10.f, "%.1f", "mAs", "0 ~ 10.0 mAs", show);
         cl::dispatch(hvg::control::set_mAs, hvg.get(), cbct->mAs);
 
         ImGui::SetNextItemWidth(338);
@@ -270,42 +289,44 @@ namespace mod::cbct::ui {
         draw_slider("##slicedist", &cbct_control->slice_dist, 0.5, 1.0, 5.0, 270, 5, 10, "%.1f", "Slice distance (mm)", "", true);
 
         if (ImGui::TreeNode("advanced settings:")) {
-            static cl::f32 sid = 849.0;
-            static cl::f32 sdd = 1614.0;
+            auto p = cbct;
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("SID (mm)", &sid, 0, 0, "%0.2f"); ImGui::SameLine(); HelpMarker("Souce to Isocenter Distance (mm)");
+            ImGui::InputFloat("SID (mm)", &p->sid, 0, 0, "%0.2f"); ImGui::SameLine(); HelpMarker("Souce to Isocenter Distance (mm)");
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("SDD (mm)", &sdd, 0, 0, "%0.2f"); ImGui::SameLine(); HelpMarker("Source to Detctor Distance (mm)");
+            ImGui::InputFloat("SDD (mm)", &p->sdd, 0, 0, "%0.2f"); ImGui::SameLine(); HelpMarker("Source to Detctor Distance (mm)");
 
-            static cl::f32 proj_offset_x = .0;
-            static cl::f32 proj_offset_y = .0;
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("Projection offset X (mm)", &proj_offset_x, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+            ImGui::InputFloat("Projection offset X (mm)", &p->proj_offset_x, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("Projection offset Y (mm)", &proj_offset_y, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+            ImGui::InputFloat("Projection offset Y (mm)", &p->proj_offset_y, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
 
-            static cl::f32 source_offset_x = .0;
-            static cl::f32 source_offset_y = .0;
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("Source offset X (mm)", &source_offset_x, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+            ImGui::InputFloat("Source offset X (mm)", &p->source_offset_x, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("Source offset Y (mm)", &source_offset_y, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
+            ImGui::InputFloat("Source offset Y (mm)", &p->source_offset_y, 0, 0, "%0.4f"); ImGui::SameLine(); HelpMarker("(mm)");
 
-            static cl::f32 out_of_plane_angle = .0;
-            static cl::f32 in_plane_angle = .0;
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("Out of plane angle (\xc2\xb0)", &out_of_plane_angle, 0, 0, "%0.4f");
+            ImGui::InputFloat("Out of plane angle (\xc2\xb0)", &p->out_of_plane_angle, 0, 0, "%0.4f");
             ImGui::SameLine();
             HelpMarker("A rotation of flat panel with rotation axis perpendicular to the gantry rotation axis " 
                        "and parallel to the flat panel. An increase in the value corresponds to a counter-clockwise "
                        "rotation of the flat panel as viewed from a positive value along the x axis towards the "
                        "isocenter. (degree)");
             ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.3f);
-            ImGui::InputFloat("In plane angle (\xc2\xb0)", &in_plane_angle, 0, 0, "%0.4f");
+            ImGui::InputFloat("In plane angle (\xc2\xb0)", &p->in_plane_angle, 0, 0, "%0.4f");
             ImGui::SameLine();
             HelpMarker("A rotation of flat panel with rotation axis perpendicular to the flat panel. "
                        "An increase in the value of angle corresponds to a counter-clockwise rotation "
                        "of the flat panel as viewed from the source. (degree)");
+            
+            cbct_control->geo.sid = p->sid;
+            cbct_control->geo.sdd = p->sdd;
+            cbct_control->geo.proj_offset_x = p->proj_offset_x;
+            cbct_control->geo.proj_offset_y = p->proj_offset_y;
+            cbct_control->geo.source_offset_x = p->source_offset_x;
+            cbct_control->geo.source_offset_y = p->source_offset_y;
+            cbct_control->geo.out_of_plane_angle = p->out_of_plane_angle;
+            cbct_control->geo.in_plane_angle = p->in_plane_angle;
 
             ImGui::TreePop();
         }
@@ -325,7 +346,9 @@ namespace mod::cbct::ui {
             cl::dispatch<void>(control::exposure, cbct_control.get());
         }
         ImGui::NewLine(); ImGui::SameLine(50);
-        ImGui::Button("Reconstruction", ImVec2(150, 50));
+        if (ImGui::Button("Reconstruction", ImVec2(150, 50))) {
+            cl::dispatch<void>(control::reconstruct, cbct_control.get());
+        }
         ImGui::NewLine(); ImGui::NewLine(); ImGui::NewLine(); 
         ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 

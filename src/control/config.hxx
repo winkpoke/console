@@ -37,6 +37,10 @@ namespace control {
     {
         assert(p);
 
+        new (&p->raw_data_folder)string;
+        new (&p->raw_data_basename)string;
+        new (&p->output_folder)string;
+
         auto result = toml::parse_file(config_t::CONFIG_PATH);
 
         if (!result) {
