@@ -4,4 +4,19 @@
 
 raw_data_folder = 'C:\Projects\CBCT\data\headneck_1024x1024\raw\'
 raw_data_basename = "headneck_360_1024.raw"
-output_folder = 'C:\Projects\CBCT\data\db\CBCT'
+output_folder = 'C:\tmp\'
+
+[geometry]
+sid = 849.0
+sdd = 1614.0
+n_projections = 360
+first_angel = 0.0
+arc = 360.0
+
+[fpd]
+resolution_x = 0.417
+resolution_y = 0.417
+
+[hvg]
+port = 2
+baund = 19200

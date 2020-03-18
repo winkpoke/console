@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <string>
+#include <chrono>
 
 #define NOMINMAX
 #include <windows.h>
@@ -56,11 +57,11 @@ namespace mod::cbct::control {
         //_256X256,
         //_384X384,
         _512X512,
-        _768X768,
+        //_768X768,
         _1024x1024
     };
     static const char* cbct_mode_list[] = { "Head", "Lung", "Abdominal", "Custom" };
-    static const char* resolution_list[] = { /*"128x128", "256x256", "384x384", */"512x512", "768x768", "1024x1024" };
+    static const char* resolution_list[] = { /*"128x128", "256x256", "384x384", */"512x512", /*"768x768",*/ "1024x1024" };
 
     template <class F = fpd::control::fpd_t, 
               class H = hvg::control::hvg_t, 
@@ -234,7 +235,31 @@ namespace mod::cbct::control {
 
 
         const char* dll_cuda_path = R"(libs\x64\rtkfdk_cuda.dll)";
-        HINSTANCE h = ::LoadLibrary(dll_cuda_path);
+        const char* dll_path = R"(libs\x64\rtkfdk.dll)";
+        HINSTANCE h;
+
+        bool use_cuda = true;
+        do
+        {
+            if (use_cuda) {
+                if (h = ::LoadLibrary(dll_cuda_path)) {
+                    SPDLOG_INFO("reconstruct with cuda.");
+                    break;
+                }
+            }
+
+            if (h = ::LoadLibrary(dll_path))
+            {
+                SPDLOG_INFO("reconstruct without cuda.");
+                use_cuda = false;
+                break;
+            }
+            else {
+                SPDLOG_ERROR("load dll error.");
+                return;
+            }
+
+        } while (false);
 
         
 
@@ -245,27 +270,27 @@ namespace mod::cbct::control {
             spacing = 0.5;
             dim = 512;
             break;
-        case resolution_t::_768X768:
-            spacing = 0.3333;
-            dim = 768;
-            break;
+        //case resolution_t::_768X768:
+        //    spacing = 0.3333;
+        //    dim = 768;
+        //    break;
         case resolution_t::_1024x1024:
             spacing = 0.25;
             dim = 1024;
             break;
         default:
-            abort();
+            return;
         }
 
         const cl::f64 spacing_y = p->slice_dist;
         const cl::i32 dim_y = static_cast<cl::i32>(300.0 / p->slice_dist);
-        reconstruction_parameter_t para {
+        reconstruction_parameter_t para{
             "",           //char hnd_path[STR_LEN];
             "",           //char output_path[STR_LEN];
             R"(ct.mha)",                         //char output_file[STR_LEN];
             {spacing, spacing_y, spacing},       //cl::f64 spacing[3];
             {dim, dim_y, dim},                   //int dimension[3];
-            true                                 //bool use_gpu;
+            use_cuda                                 //bool use_gpu;
         };
 
         auto out = hnd_path.string();
@@ -283,12 +308,18 @@ namespace mod::cbct::control {
         char* argv[256];
         int n = stov(args_cbct_cuda.c_str(), argv);
 
+        auto t0 = std::chrono::steady_clock::now();
         int result = rtkfdk(n, argv, p->geo);
+
         if (result != EXIT_SUCCESS) {
             SPDLOG_DEBUG("Reconstruction failed.");
             ::FreeLibrary(h);
             return;
         }
+
+        auto t1 = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+        SPDLOG_INFO("Elapsed time: {:d} ms", duration);
         ::FreeLibrary(h);
 
         SPDLOG_INFO("Reconstruction accomplished ...");
