@@ -76,8 +76,11 @@ namespace mod::cbct::control {
         geometry_t              geo;
     };
 
+    //using cbct_t = cbct_impl_t<>;
+    //using cbct_t = cbct_impl_t<fpd::control::fpd_dummy_t>;
+
     using cbct_t = cbct_impl_t<>;
-    using cbct_dummy_t = cbct_impl_t<fpd::control::fpd_dummy_t>;
+    // using cbct_t = cbct_impl_t<fpd::control::fpd_dummy_t>;
 
     template<class F, class H, class W>
     bool init(cbct_impl_t<F, H, W>* p, cl::shared_ptr<F> fpd, cl::shared_ptr<H> hvg)
@@ -133,7 +136,7 @@ namespace mod::cbct::control {
         assert(p);
         assert(p->fpd);
 
-        const int port = 3;
+        const int port = 2;
         const int baud = 19200;
         const char* mode = "8N2";
 
@@ -180,6 +183,16 @@ namespace mod::cbct::control {
 
         std::thread t(stopper, &p->fpd->timer, p->fpd);
         t.detach();
+    }
+
+    template <class F, class H, class W>
+    void exposure(cbct_impl_t<F, H, W>* p)
+    {
+        assert(p);
+        assert(p->hvg);
+        hand_shake(p->hvg.get());
+        mod::fpd::control::set_status(p->fpd.get(), mod::fpd::control::status_e::FPD_ACQUIRE);
+        exposure(p->hvg.get());
     }
 
     template <class F, class H, class W>
@@ -287,7 +300,7 @@ namespace mod::cbct::control {
         reconstruction_parameter_t para{
             "",           //char hnd_path[STR_LEN];
             "",           //char output_path[STR_LEN];
-            R"(ct.mha)",                         //char output_file[STR_LEN];
+            R"(ct.mhd)",                         //char output_file[STR_LEN];
             {spacing, spacing_y, spacing},       //cl::f64 spacing[3];
             {dim, dim_y, dim},                   //int dimension[3];
             use_cuda                                 //bool use_gpu;
