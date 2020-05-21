@@ -1,0 +1,24 @@
+Full Class0:	1
+Full Class1:	0
+Full Class2:	0
+Full Class3:	0
+Full Class4:	0
+Full Class5:	0
+Full Class6:	0
+Full Class7:	0
+Full Class8:	0
+Meta7+8 Class1:	0
+Meta7+8 Class2:	0
+Meta7+8 Class3:	0
+Meta7+8 Class4:	0
+Meta7+8 Class5:	0
+Meta7+8 Class6:	0
+Meta7+8 Class7:	0
+Meta7+8 Class8:	0
+Single Horizontal Defect Lines:	0
+Single Vertical Defect Lines:	0
+Double Horizontal Defect Lines:	0
+Double Vertical Defect Lines:	0
+Triple Horizontal or Vertical Defect Lines:	0
+Min Gap Between Horizontal Defect Lines/Line Pairs:	1024
+Min Gap Between Vertical Defect Lines/Line Pairs:	1024

@@ -188,7 +188,7 @@ namespace mod::fpd::control {
         else
             SPDLOG_INFO("Connect device.. succeeded");
 
-        ret = gs_pDetInstance->SyncInvoke(Cmd_SetCaliSubset, "Mode1", 5000);
+        ret = gs_pDetInstance->SyncInvoke(Cmd_SetCaliSubset, "Mode6", 5000);
         if (Err_OK == ret)
         {
             SPDLOG_INFO("Set calibration subset.. succeeded");
