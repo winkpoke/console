@@ -1,9 +1,6 @@
 #ifndef _CONTROL_HVG_H_
 #define _CONTROL_HVG_H_
 
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_sinks.h"
-
 #include "siemens.hxx"
 
 namespace mod::hvg::control {
@@ -89,7 +86,6 @@ namespace mod::hvg::control {
             if (close(hvg->context) == FAILURE) {
                 SPDLOG_ERROR("{}", last_error_str<error_t>());
             }
-            close(hvg->context);
         }
     }
 
@@ -147,7 +143,7 @@ namespace mod::hvg::control {
                 SPDLOG_DEBUG("condition changed: {:.8X}", condition);
             }
             if (n <= 0 || strncmp(msg, ">IFV 1", n) != 0) {
-                SPDLOG_TRACE("err: {:d} - {}: {}", n, msg, last_error_str<hvg::error_t>());
+                SPDLOG_TRACE("err: {:d} - {}: {}", n, msg, last_error_str<hvg::control::error_t>());
                 SPDLOG_TRACE("len = {:d}; pos = {:d}, buf = {}", hvg->context->len, hvg->context->pos, hvg->context->buf);
                 continue;
             }
@@ -261,7 +257,8 @@ namespace mod::hvg::control {
         int condition = 0;
         int n = mod::hvg::control::send(hvg->context, "<SXP 0 0 0", NULL, &condition, 5000);
         hvg->status = status_e::HVG_EXPOSURE;
-        n = mod::hvg::control::send(hvg->context, "<SXP 1 0 1", exposure_callback);
+        // n = mod::hvg::control::send(hvg->context, "<SXP 1 0 1", exposure_callback);
+        n = mod::hvg::control::send(hvg->context, "<SXP 1 0 1", NULL, &condition, 5000);
     }
 }
 

@@ -4,6 +4,9 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_sinks.h"
 
+#include "toml++/toml.h"
+
+#include "cl.h"
 #include "mod/hnd/hnd.hxx"
 
 
@@ -22,6 +25,8 @@ extern "C" {
     }
 }
 
+void confile_file(std::string_view doc);
+
 void experiments() 
 {
     //wchar_t hello[256] = L"ฮารว";
@@ -34,7 +39,7 @@ void experiments()
 
     const char* raw_file_name = R"(C:\Projects\CBCT\data\headneck_1024x1024\raw\headneck_360_1024.raw.001)";
     FILE* fp = fopen(raw_file_name, "r");
-    if (fp != nullptr) {
+    if (fp == nullptr) {
         return;
     }
 
@@ -66,4 +71,33 @@ void experiments()
         SPDLOG_INFO("hnd file write error.");
     }
 
+    SPDLOG_INFO("Config file ...");
+    fp = fopen(R"(config.toml)", "r");
+    if (fp == nullptr) {
+        SPDLOG_WARN("cannot open config.toml file");
+    } 
+    
+    //n = fread(buf, sizeof(char), 1024 * 1024 * 2, fp);
+    //assert(n < 1024 * 1024 * 2);
+    //buf[n] = '\0';
+    //confile_file(buf);
+}
+
+#define TOML_EXCEPTIONS 0
+#include "toml++/toml.h"
+
+void confile_file(std::string_view doc)
+{
+    auto config = toml::parse(doc);
+    //auto node = config["raw_data_folder"];
+    //auto v = node.value<std::string_view>();
+    //SPDLOG_INFO("config: raw_data_folder = {:s}", config["raw_data_folder"].value_or("error"));
+    //SPDLOG_INFO("config: raw_data_basename = {:s}", config["raw_data_basename"].value_or("error"));
+
+    //std::chrono::time_point;
+    //struct Data {
+    //    int a;
+    //    double b;
+    //} data = {10, 100.0};
+    //std::hash<Data>(data);
 }

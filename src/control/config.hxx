@@ -6,6 +6,14 @@ namespace control {
         std::string raw_data_folder;
         std::string raw_data_basename;
         std::string output_folder;
+
+        struct {
+            cl::i32 dim_x;
+            cl::i32 dim_y;
+            cl::f32 resolution_x;
+            cl::f32 resolution_y;
+        } fpd;
+         
         static const char* CONFIG_PATH;
         static config_t* _this;
     };
@@ -65,6 +73,11 @@ namespace control {
             SPDLOG_ERROR("key output_folder is missing in config.toml file.");
             return false;
         }
+
+        p->fpd.dim_x = config["fpd"]["dim_x"].value_or(1024);
+        p->fpd.dim_y = config["fpd"]["dim_x"].value_or(1024);
+        p->fpd.resolution_x = config["fpd"]["resolution_x"].value_or(0.417);
+        p->fpd.resolution_y = config["fpd"]["resolution_y"].value_or(0.417);
 
         p->raw_data_folder = *path;
         p->raw_data_basename = *basename;

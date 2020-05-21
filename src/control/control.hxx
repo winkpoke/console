@@ -48,23 +48,28 @@ namespace control {
         runtime_data_t* d = get_runtime_data();
         assert(d);
 
-        constexpr cl::usize FPD_WIDTH = 1024;
-        constexpr cl::usize FPD_HEIGHT = 1024;
-        constexpr cl::f64 FPD_X_RESOLUTION = 0.417;
-        constexpr cl::f64 FPD_Y_RESOLUTION = 0.417;
+        auto config = ::control::get_config();
+        assert(config);
+
+        const cl::usize FPD_WIDTH = config->fpd.dim_x;
+        const cl::usize FPD_HEIGHT = config->fpd.dim_y;
+        const cl::f64 FPD_X_RESOLUTION = config->fpd.resolution_x;
+        const cl::f64 FPD_Y_RESOLUTION = config->fpd.resolution_y;
 
         auto hvg = cl::build_shared<mod::hvg::control::hvg_t>(70.f, 5.f, nullptr);
         cl::mount(d->objects, hvg, "hvg", "0.0.1");
 
-        //auto fpd = cl::build_shared<mod::fpd::control::fpd_t>(FPD_WIDTH, FPD_HEIGHT, FPD_X_RESOLUTION, FPD_Y_RESOLUTION);
-        //cl::mount(d->objects, fpd, "fpd", "0.0.1");
+        auto fpd = cl::build_shared<mod::fpd::control::fpd_t>(FPD_WIDTH, FPD_HEIGHT, FPD_X_RESOLUTION, FPD_Y_RESOLUTION);
+        cl::mount(d->objects, fpd, "fpd", "0.0.1");
 
         auto dummy_fpd = cl::build_shared<mod::fpd::control::fpd_dummy_t>(FPD_WIDTH, FPD_HEIGHT, FPD_X_RESOLUTION, FPD_Y_RESOLUTION);
         cl::mount(d->objects, dummy_fpd, "fpd_dummy", "0.0.1");
 
         // CBCT 
-        auto cbct = cl::build_shared<mod::cbct::control::cbct_dummy_t>(dummy_fpd, hvg);
+        auto cbct = cl::build_shared<mod::cbct::control::cbct_t>(fpd, hvg);
         cl::mount(d->objects, cbct, "cbct", "0.0.1");
+
+        //auto cbct
 
         // patient
         int w1, h1;
@@ -86,10 +91,10 @@ namespace control {
         });
         connect_to_fpd.detach();
 
-        // std::thread connect_to_hvg([=](){
-        //     mod::cbct::control::connect_to_hvg(cbct.get());
-        // });
-        // connect_to_hvg.detach();
+         std::thread connect_to_hvg([=](){
+             mod::cbct::control::connect_to_hvg(cbct.get());
+         });
+         connect_to_hvg.detach();
         
         std::thread connect_to_upstream_server([=](){
             mod::cbct::control::connect_to_upstream_server(cbct.get());

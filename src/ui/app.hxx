@@ -118,7 +118,7 @@ namespace ui
         auto patient = cl::build_shared<mod::patient::ui::patient_t>(obj.get());
         cl::mount(app->objects, patient, "patient", "0.0.1");
 
-        auto cbct_control = cl::get<mod::cbct::control::cbct_dummy_t>(control_runtime->objects, "cbct");
+        auto cbct_control = cl::get<mod::cbct::control::cbct_t>(control_runtime->objects, "cbct");
         using cbct_ui_t = mod::cbct::ui::cbct_t;
         using cbct_control_t = mod::cbct::control::cbct_t;
 

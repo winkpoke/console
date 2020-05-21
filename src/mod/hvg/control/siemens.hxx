@@ -141,6 +141,9 @@ namespace mod::hvg::control {
 
 #include "cl.h"
 
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_sinks.h"
+
 namespace mod::hvg::control {
 
     error_t::id_t error_t::last_error = error_t::ERR_NONE;

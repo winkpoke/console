@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     spdlog::set_level(spdlog::level::trace); // Set global log level to debug
     SPDLOG_INFO("CBCT Console starting ...");
 
-    //experiments();
+    experiments();
 
     //// CBCT init
     control::init();

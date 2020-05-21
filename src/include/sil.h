@@ -4,6 +4,9 @@
 // Simple Image Library
 
 #include <memory>
+#include <limits>
+#include <algorithm>
+#include <cmath>
 
 #include "cl.h"
 
@@ -97,7 +100,29 @@ namespace sil {
         assert(p);
         return p->data;
     }
+
+    template <class T>
+    void winlev(image_t<T>* p, cl::i64 win, cl::i64 lev, image_t<cl::u8>** output)
+    {
+        assert(p);
+        assert(p->channel == 1);  // only support 1 channel image
+
+        const T lower = std::max(lev - win, std::numeric_limits<T>::min);
+        const T upper = std::min(lev + win, std::numeric_limits<T>::max);
+
+        assert(lower >= std::numeric_limits<T>::min);
+        assert(upper <= std::numeric_limits<T>::max);
+
+        output = cl::build_raw<image_t<cl::u8>>(p->width, p->height, 1);
+
+        T* src = p->data;
+        cl::u8* dst = output->date;
+        const i32 k = 255.0 * (upper - lower);
+        const cl::usize size = p->width * p->height;
+        for (int i = 0; i < size; ++i) {
+            dst[i] = std::round(k * src[i]);
+        }
+    }
 }
 
 #endif //!_SIL_LIB_INCLUDE_H_
-

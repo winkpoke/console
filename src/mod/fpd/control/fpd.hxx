@@ -37,6 +37,8 @@ namespace mod::fpd::control {
     void set_status(fpd_t* fpd, status_e status);
     std::string to_string(fpd_t::status_e status);
 
+    modal::scan_t* get_scan(fpd_t* fpd);
+
     bool connect(fpd_t* fpd);
 
     bool disconnect(fpd_t* fpd);
@@ -130,11 +132,12 @@ namespace mod::fpd::control {
 
             SPDLOG_TRACE("Image recieved: Width - {:d} Height - {:d} BPP - {:d}\n", width, height, byte_per_pixel);
             SPDLOG_TRACE("Start copying image {:d} ...", index + 1);
-            memcpy(scan.images + shift, data, size);
+            // memcpy(scan.images + shift, data, size);
+            push_data(&scan, static_cast<modal::scan_t::pixel_t*>(data), index);
             SPDLOG_TRACE("Complete copying image {:d} ...", index + 1);
 
             index++;
-            scan.angles[index] = index;
+            //scan.angles[index] = index;
         });
         mod::fpd::control::fp_start_acquire();
         fpd->status = status_e::FPD_READY;
@@ -149,6 +152,12 @@ namespace mod::fpd::control {
             return true;
         }
         return false;
+    }
+
+    modal::scan_t* get_scan(fpd_t* fpd)
+    {
+        assert(fpd);
+        return fpd->scan;
     }
 }
 
