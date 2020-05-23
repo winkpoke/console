@@ -80,7 +80,9 @@ namespace mod::cbct::ui {
     void update(ui::cbct_t* dst, control::cbct_t* src)
     {
         assert(dst && src);
-        dst->fpd_status = fpd::control::get_status(src->fpd.get());
+        if (dst != nullptr && src != nullptr) {
+            dst->fpd_status = fpd::control::get_status(src->fpd.get());
+        }
         dst->hvg_status = hvg::control::get_status(src->hvg.get());
         dst->kv = hvg::control::get_kv(src->hvg.get());
         dst->mAs = hvg::control::get_mAs(src->hvg.get());

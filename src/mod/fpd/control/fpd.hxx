@@ -50,6 +50,11 @@ namespace mod::fpd::control {
 #ifndef CONTROL_FPD_IMPLEMENTED
 #define CONTROL_FPD_IMPLEMENTED
 
+#include <filesystem>
+
+#include "control/config.hxx"
+#include "mod/hnd/hnd.hxx"
+
 namespace mod::fpd::control {
     // Implementations
     using status_e = fpd_t::status_e;
@@ -127,16 +132,43 @@ namespace mod::fpd::control {
                 return;
             }
 
-            const size_t size = sizeof(modal::scan_t::pixel_t) * width * height;
-            const ptrdiff_t shift = size * ((size_t)index + 1);
+            //const size_t size = sizeof(modal::scan_t::pixel_t) * width * height;
+            //const ptrdiff_t shift = size * ((size_t)index + 1);
 
+            using namespace std::chrono;
+            auto t0 = steady_clock::now();
             SPDLOG_TRACE("Image recieved: Width - {:d} Height - {:d} BPP - {:d}\n", width, height, byte_per_pixel);
-            SPDLOG_TRACE("Start copying image {:d} ...", index + 1);
+            const auto idx = index + 1;
+            SPDLOG_TRACE("Start copying image {:d} ...", idx);
             // memcpy(scan.images + shift, data, size);
-            push_data(&scan, static_cast<modal::scan_t::pixel_t*>(data), index);
-            SPDLOG_TRACE("Complete copying image {:d} ...", index + 1);
+            push_data(&scan, static_cast<modal::scan_t::pixel_t*>(data), idx);
+            auto t1 = steady_clock::now();
+            SPDLOG_TRACE("Complete copying image {:d} in {:d} ms...", idx, duration_cast<milliseconds>(t1 - t0).count());
 
-            index++;
+            using namespace std::chrono;
+            namespace fs = std::filesystem;
+            auto t2 = steady_clock::now();
+
+            auto image = cl::build_raw<sil::image_t<cl::u16>>(w, h, 1, modal::get_data_at(&scan, scan.index));
+
+            auto config = ::control::get_config();
+            fs::path output_path(config->output_folder);
+            char tmp[1024];
+            sprintf(tmp, "%03d.hnd", static_cast<cl::i32>(scan.index));
+            auto hnd_file_name = output_path / tmp;
+            auto hnd = cl::build_raw<mod::hnd::modal::hnd_t>(image, 0.417, 0.417, 1.0);
+            int n = hnd::control::write_to_file(hnd, hnd_file_name.string().c_str());
+
+            cl::dealloc(image);  // dealloc image without releasing the internal data
+
+            auto t3 = steady_clock::now();
+            SPDLOG_INFO("FPD: process image in {:d} ms", duration_cast<milliseconds>(t3 - t2).count());
+
+            //index++;
+            if (idx >= 359) {
+                // TODO acquiring completed
+                fpd->status = status_e::FPD_READY;
+            }
             //scan.angles[index] = index;
         });
         mod::fpd::control::fp_start_acquire();
