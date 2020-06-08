@@ -13,6 +13,14 @@ namespace control {
             cl::f32 resolution_x;
             cl::f32 resolution_y;
         } fpd;
+
+        struct {
+            cl::f32 sid;
+            cl::f32 sdd;
+            cl::i32 n_projections;
+            cl::f32 first_angle;
+            cl::f32 arc;
+        } geometry;
          
         static const char* CONFIG_PATH;
         static config_t* _this;
@@ -78,6 +86,13 @@ namespace control {
         p->fpd.dim_y = config["fpd"]["dim_x"].value_or(1024);
         p->fpd.resolution_x = config["fpd"]["resolution_x"].value_or(0.417);
         p->fpd.resolution_y = config["fpd"]["resolution_y"].value_or(0.417);
+
+        p->geometry.sid = config["geometry"]["sid"].value_or(1000.0);
+        p->geometry.sdd = config["geometry"]["sdd"].value_or(1500.0);
+        p->geometry.n_projections = config["geometry"]["n_projections"].value_or(360);
+        p->geometry.first_angle = config["geometry"]["first_angel"].value_or(0.0);
+        p->geometry.arc = config["geometry"]["arc"].value_or(360.0);
+
 
         p->raw_data_folder = *path;
         p->raw_data_basename = *basename;

@@ -139,10 +139,12 @@ namespace modal {
             return -1;
         }
 
-        scan->index++;
         memcpy((void*)ptr, (void*)data, scan->width * scan->height * sizeof(scan_t::pixel_t));
 
         scan->angles[scan->index] = angle;
+        
+        // increase the index after the memcpy
+        scan->index++;
 
         return scan->index;
     }

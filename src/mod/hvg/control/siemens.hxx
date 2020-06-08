@@ -53,6 +53,7 @@ namespace mod::hvg::control {
             ERR_COM_CLOSE,
             ERR_COM_STATUS,
             ERR_COM_CONTEXT_NULL,
+            ERR_COM_MSG_NULL,
             ERR_CMD_STATUS_PARSE,
             ERR_CMD_TIMEOUT,
         } id;
@@ -91,7 +92,7 @@ namespace mod::hvg::control {
     }
 
     static const char* COMMMAND_STOPS = "\r\n";
-    constexpr size_t BUF_SIZE = 4096;
+    constexpr size_t BUF_SIZE = 1024 * 4;
 
     struct context_t {
         enum status_t {
@@ -125,7 +126,9 @@ namespace mod::hvg::control {
 
     int send(context_t* context, const char* command);
 
-    int recv(context_t* context, char* msg, int timeout = 200 /* ms */);
+    int recv(context_t* context, char* msg);
+
+    int recv(context_t* context, char* msg, int timeout /* 200 ms */);
 
     int send(context_t* context, const char* command, char* msg, int* condition, int timeout = 100 /* ms */);
 
@@ -154,6 +157,7 @@ namespace mod::hvg::control {
     "cannot close COM port",          // ERR_COM_CLOSE
     "illegal COM status",             // ERR_COM_STATUS
     "COM context cannot be NULL",     // ERR_COM_CONTEXT_NULL
+    "return buffer cannot be NULL",   // ERR_COM_MSG_NULL
     "cannot parse status code",       // ERR_CMD_STATUS_PARSE
     "command execution timeout",      // ERR_CMD_TIMEOUT
     };
@@ -162,7 +166,7 @@ namespace mod::hvg::control {
 
     context_t* open(int port, int baud, const char* mode)
     {
-        if (RS232_OpenComport(port, baud, mode, 0))
+        if (RS232_OpenComport(port, baud, mode, 0) != 0)
         {
             // hvg::g_error = ERR_COM_OPEN;
             set_error<error_t>(error_t::ERR_COM_OPEN);
@@ -225,6 +229,66 @@ namespace mod::hvg::control {
         status = context_t::PENDING;
 
         return SUCCESS;
+    }
+
+    //static int get_line(char* buf, char* output, int buf_len)
+    //{
+    //    int n = buf_len;
+    //    while (n-- > 0) {
+    //    
+    //    }
+    //}
+
+    int recv(context_t* context, char* msg)
+    {
+        if (context == NULL) {
+            set_error<error_t>(error_t::ERR_COM_CONTEXT_NULL);
+            return FAILURE;
+        }
+
+        const int port = context->port;
+        context_t::status_t& status = context->status;
+        
+        if (status != context_t::PENDING) {
+            set_error<error_t>(error_t::ERR_COM_STATUS);
+            return FAILURE;
+        }
+
+        if (msg == NULL) {
+            set_error<error_t>(error_t::ERR_COM_MSG_NULL);
+            return FAILURE;
+        }
+
+        unsigned char* buf = (unsigned char*)context->buf;
+        int len = context->len;
+        int& pos = context->pos;
+        char* d = msg;
+        // pos = 0;
+
+        // status = context_t::RECIEVING;
+        int n = RS232_PollComport(port, buf + len, BUF_SIZE - len);
+
+        len += n;
+        context->len += n;
+        buf[len] = 0;
+        
+        if (n > 0) {
+            SPDLOG_DEBUG(buf);
+        }
+
+        char* s = (char*)buf;
+        while (len-- > 0) {   
+            // SPDLOG_DEBUG("pos = {:d}, len = {:d}, s = {}", pos, n, *s);
+            *d++ = *s++;
+            if (*s == '\n' && *(d - 1) == '\r') {
+                *(d - 1) = 0;
+                context->len = len - 1;
+                memmove(buf, s + 1, context->len);
+                return d - msg - 1;
+            }
+        }
+        *d = 0;
+        return 0;
     }
 
     int recv(context_t* context, char* msg, int timeout)

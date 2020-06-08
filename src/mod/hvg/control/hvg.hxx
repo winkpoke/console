@@ -45,6 +45,8 @@ namespace mod::hvg::control {
     int exposure_callback(const char* msg, int len);
 
     void exposure(hvg_t* hvg);
+
+    int recv(hvg_t* hvg, char* msg, int timeout = 200 /* ms */);
 }
 
 #endif // !_CONTROL_HVG_H_
@@ -259,6 +261,12 @@ namespace mod::hvg::control {
         hvg->status = status_e::HVG_EXPOSURE;
         // n = mod::hvg::control::send(hvg->context, "<SXP 1 0 1", exposure_callback);
         n = mod::hvg::control::send(hvg->context, "<SXP 1 0 1", NULL, &condition, 5000);
+    }
+
+    int recv(hvg_t* hvg, char* msg, int timeout)
+    {
+        assert(hvg && hvg->context);
+        return recv(hvg->context, msg); // , timeout);
     }
 }
 

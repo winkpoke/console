@@ -10,6 +10,7 @@
 
 #include "mod/fpd/fpd.h"
 #include "mod/hvg/hvg.h"
+#include "mod/hnd/hnd.hxx"
 #include "control/config.hxx"
 
 #include "control/websocket.hxx"
@@ -74,6 +75,7 @@ namespace mod::cbct::control {
         resolution_t            resolution;
         cl::f32                 slice_dist;
         geometry_t              geo;
+        ::control::config_t*    config;
     };
 
     //using cbct_t = cbct_impl_t<>;
@@ -88,7 +90,9 @@ namespace mod::cbct::control {
         assert(p);
         new(&p->fpd)shared_ptr<F>(fpd);
         new(&p->hvg)shared_ptr<H>(hvg);
-        new(&p->socket)shared_ptr<W>(cl::build_shared<W>("ws://172.17.214.17:3000/ws"));
+        new(&p->socket)shared_ptr<W>(cl::build_shared<W>("ws://curie.astystore.com"));
+
+        p->config = ::control::get_config();
 
         p->mode = cbct_mode_t::CUSTOM;
         p->resolution = resolution_t::_512X512;
@@ -121,13 +125,136 @@ namespace mod::cbct::control {
         p->resolution = resolution;
     }
 
-    template <class F, class H, class W>
-    void connect_to_fpd(cbct_impl_t<F, H, W>* p)
+    template <class H, class W>
+    void connect_to_fpd(cbct_impl_t<mod::fpd::control::fpd_dummy_t, H, W>* p)
     {
         assert(p);
         assert(p->fpd);
 
         mod::fpd::control::connect(p->fpd.get());
+    }
+
+    template <class F, class H, class W>
+    void connect_to_fpd(cbct_impl_t<F, H, W>* p)
+    {
+        assert(p);
+        assert(p->fpd);
+        assert(p->hvg);
+
+        auto fpd = p->fpd;
+        auto hvg = p->hvg;
+
+        auto output_folder = p->config->output_folder;
+        auto fpd_resolution_x = p->config->fpd.resolution_x;
+        auto fpd_resolution_y = p->config->fpd.resolution_y;
+
+        auto fpd_callback = [=](int width, int height, int byte_per_pixel, void* data)
+        {
+            using namespace mod::fpd::control;
+            assert(fpd);
+            if (fpd->status != status_e::FPD_ACQUIRE) {
+                // do nothing if HVG is not in exposure state
+                return;
+            }
+
+            if (fpd->scan == NULL) {
+                SPDLOG_ERROR("CBCT scan is not created during exposure.");
+                return;
+            }
+
+            modal::scan_t& scan = *fpd->scan;
+            auto& index = scan.index;
+            const auto w = scan.width;
+            const auto h = scan.height;
+
+            if (w != width || h != height) {
+                SPDLOG_ERROR("Binning must be {} x {}. Other binnings are not supported.", w, h);
+                return;
+            }
+
+            static bool is_exposure = false;
+
+            char msg[1024];
+            memset(msg, 0, 1024);
+            mod::hvg::control::recv(hvg.get(), msg);
+            SPDLOG_TRACE("recv: {:s}", msg);
+            char cmd[16];
+            unsigned int end, pulse;
+            float u, i, mAs, ms, dap;
+            sscanf(msg, "%s %f %f %f %f %u %f %u", cmd, &u, &i, &mAs, &ms, &end, &dap, &pulse);
+            
+            if (strstr(cmd, ">EXP") != NULL) {
+                is_exposure = true;
+                hvg->status = mod::hvg::control::status_e::HVG_EXPOSURE;
+            }
+
+            while (is_exposure && strcmp(cmd, ">EPA") != 0) {
+                mod::hvg::control::recv(hvg.get(), msg);
+                SPDLOG_TRACE("recv: {:s}", msg);
+                sscanf(msg, "%s %f %f %f %f %u %f %u", cmd, &u, &i, &mAs, &ms, &end, &dap, &pulse);
+            }
+            
+            // SPDLOG_TRACE("recv: {:s}", msg);
+            //SPDLOG_TRACE("U: {:1f} I: {:2f}", u, i);
+            SPDLOG_TRACE("image index: {:d} - exposure index: {:d}", index + 1, pulse - 1);
+            assert(index + 1 == pulse - 1);
+
+
+            //const size_t size = sizeof(modal::scan_t::pixel_t) * width * height;
+            //const ptrdiff_t shift = size * ((size_t)index + 1);
+
+            using namespace std::chrono;
+            auto t0 = steady_clock::now();
+            SPDLOG_TRACE("Image recieved: Width - {:d} Height - {:d} BPP - {:d}\n", width, height, byte_per_pixel);
+            const auto idx = index + 1;
+            SPDLOG_TRACE("Start copying image {:d} ...", idx);
+            // memcpy(scan.images + shift, data, size);
+            push_data(&scan, static_cast<modal::scan_t::pixel_t*>(data), idx);
+            auto t1 = steady_clock::now();
+            SPDLOG_TRACE("Complete copying image {:d} in {:d} ms...", idx, duration_cast<milliseconds>(t1 - t0).count());
+
+            using namespace std::chrono;
+            namespace fs = std::filesystem;
+            auto t2 = steady_clock::now();
+
+            auto image = cl::build_raw<sil::image_t<cl::u16>>(w, h, 1, modal::get_data_at(&scan, scan.index));
+
+            fs::path output_path(output_folder);
+            char tmp[1024];
+            sprintf(tmp, "%03d.hnd", static_cast<cl::i32>(scan.index));
+            auto hnd_file_name = output_path / tmp;
+            auto hnd = cl::build_raw<mod::hnd::modal::hnd_t>(image, fpd_resolution_x, fpd_resolution_y, 1.0);
+            int n = hnd::control::write_to_file(hnd, hnd_file_name.string().c_str());
+            
+            // dealloc image without releasing the internal data since the ownership of the image data is the scan
+            hnd_header_drop(hnd->header);
+            cl::dealloc(hnd);
+            cl::dealloc(image);
+
+            auto t3 = steady_clock::now();
+            SPDLOG_INFO("FPD: process image in {:d} ms", duration_cast<milliseconds>(t3 - t2).count());
+
+            //index++;
+            if (idx >= 359) {
+                // TODO acquiring completed
+                fpd->status = status_e::FPD_READY;
+                // hvg->status = mod::hvg::control::status_e::HVG_READY;
+                mod::hvg::control::recv(hvg.get(), msg);
+                while (is_exposure && strstr(cmd, ">SBY") == NULL) {
+                    mod::hvg::control::recv(hvg.get(), msg);
+                    SPDLOG_TRACE("recv: {:s}", msg);
+                    sscanf(msg, "%s", cmd);
+                }
+                if (strstr(cmd, ">SBY") != NULL) {
+                    is_exposure = false;
+                    hvg->status = mod::hvg::control::status_e::HVG_READY;
+                }
+
+                rewind(fpd->scan);
+            }
+            //scan.angles[index] = index;
+        };
+        mod::fpd::control::connect(p->fpd.get(), fpd_callback);
     }
 
     template <class F, class H, class W>
@@ -159,7 +286,7 @@ namespace mod::cbct::control {
             SPDLOG_INFO("Message recieved: {}", msg);
             }
         );
-        websocket::send(p->socket.get(), "<HELLO");
+        websocket::send(p->socket.get(), "{\"type\":\"aquire\"}");
     }
 
     template <class H, class W>
@@ -192,7 +319,17 @@ namespace mod::cbct::control {
         assert(p->hvg);
         hand_shake(p->hvg.get());
         mod::fpd::control::set_status(p->fpd.get(), mod::fpd::control::status_e::FPD_ACQUIRE);
+        //set_exposure_parm(p->hvg.get(), p->hvg->kV, p->hvg->mAs, );
         exposure(p->hvg.get());
+    }
+
+    template <class H, class W>
+    bool is_exposure_ready(cbct_impl_t<mod::fpd::control::fpd_dummy_t, H, W>* p)
+    {
+        assert(p);
+        assert(p->fpd && p->hvg);
+
+        return fpd::control::get_status(p->fpd.get()) == fpd::control::status_e::FPD_READY;
     }
 
     template <class F, class H, class W>
@@ -201,9 +338,9 @@ namespace mod::cbct::control {
         assert(p);
         assert(p->fpd && p->hvg);
 
-        return fpd::control::get_status(p->fpd.get()) == fpd::control::status_e::FPD_READY;
+        return fpd::control::get_status(p->fpd.get()) == fpd::control::status_e::FPD_READY &&
+               hvg::control::get_status(p->hvg.get()) == hvg::control::status_e::HVG_READY;
     }
-
 
     static auto stov(const char* src, char* out[])
     {
@@ -350,11 +487,13 @@ namespace mod::cbct::control {
     bool init(geometry_t* p) {
         assert(p);
 
-        p->sid = 849.0;
-        p->sdd = 1614.0;
-        p->n_projections = 360;
-        p->first_angle = 55.0;
-        p->arc = 360.0;
+        auto config = ::control::get_config();
+        
+        p->sid = config->geometry.sid;
+        p->sdd = config->geometry.sdd;
+        p->n_projections = config->geometry.n_projections;
+        p->first_angle = config->geometry.first_angle;
+        p->arc = config->geometry.arc;
         p->proj_offset_x = .0;
         p->proj_offset_y = .0;
         p->out_of_plane_angle = .0;

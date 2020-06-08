@@ -84,7 +84,6 @@ namespace control {
 
         //auto ops = cl::get<mod::ops::control::ops_t>(d->objects, mod::ops::mod_name);
         //mod::ops::control::start(ops.get());
-
         
         std::thread connect_to_fpd([=]() {
             mod::cbct::control::connect_to_fpd(cbct.get());

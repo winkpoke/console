@@ -74,7 +74,7 @@ namespace websocket {
 
     bool connect(websocket_t* s, cl::u64 timeout)
     {
-        const cl::u64 sleep_ms = 200;
+        const cl::u64 sleep_ms = 2000;
         const cl::u64 n_loop = timeout / sleep_ms;
 
         s->socket->start();

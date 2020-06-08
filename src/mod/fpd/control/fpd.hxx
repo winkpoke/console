@@ -40,6 +40,7 @@ namespace mod::fpd::control {
     modal::scan_t* get_scan(fpd_t* fpd);
 
     bool connect(fpd_t* fpd);
+    bool connect(fpd_t* fpd, FP_CALLBACK_IMAGE_RECIEVED callback);
 
     bool disconnect(fpd_t* fpd);
 }
@@ -96,6 +97,24 @@ namespace mod::fpd::control {
     std::string to_string(fpd_t::status_e status)
     {
         return fpd_t::status_strs[static_cast<int>(status)];
+    }
+
+    bool connect(fpd_t* fpd, FP_CALLBACK_IMAGE_RECIEVED callback)
+    {
+        using status_e = fpd_t::status_e;
+        assert(fpd);
+
+        fpd->status = status_e::FPD_CONNECTING;
+        if (!mod::fpd::control::fp_init()) {
+            SPDLOG_ERROR("Failed to initialize FPD!");
+            fpd->status = status_e::FPD_ERROR;
+            return false;
+        }
+        mod::fpd::control::fp_set_callback_image_recieved(callback);
+
+        mod::fpd::control::fp_start_acquire();
+        fpd->status = status_e::FPD_READY;
+        return true;
     }
 
     bool connect(fpd_t* fpd)
@@ -158,8 +177,10 @@ namespace mod::fpd::control {
             auto hnd_file_name = output_path / tmp;
             auto hnd = cl::build_raw<mod::hnd::modal::hnd_t>(image, 0.417, 0.417, 1.0);
             int n = hnd::control::write_to_file(hnd, hnd_file_name.string().c_str());
+            cl::recycle(hnd);
 
-            cl::dealloc(image);  // dealloc image without releasing the internal data
+            // dealloc image without releasing the internal data since the ownership of the image data is the scan
+            cl::dealloc(image);  
 
             auto t3 = steady_clock::now();
             SPDLOG_INFO("FPD: process image in {:d} ms", duration_cast<milliseconds>(t3 - t2).count());

@@ -3,10 +3,27 @@
 #include "imgui.h"
 #include "rs232.h"
 
+#include "mod/hvg/control/siemens.hxx"
+
 #include "ui/log.h"
 
 namespace ui {
     struct app_t;
+    static mod::hvg::control::context_t* make_context()
+    {
+        using namespace mod::hvg::control;
+        static context_t* context = (context_t*)malloc(sizeof(context_t));
+        if (context)
+            context->port = 2;
+        context->baud = 19200;
+        context->pos = 0;
+        context->len = 0;
+        memset(context->buf, 0, BUF_SIZE);
+        context->status = context_t::PENDING;
+        strncpy(context->mode, "8N2", 4);
+
+        return context;
+    }
     namespace renders {
         bool render_maintenance_window(app_t* app)
         {
@@ -15,26 +32,42 @@ namespace ui {
 
             static auto log = cl::build_unique<log_t>(drop);
 
-            static int port = 2;
-            static unsigned char sbuf[4096];
-            int n = RS232_PollComport(port, sbuf, 4095);
-            static char str[4096];
-            if (n > 0) {
-                sbuf[n] = 0;   /* always put a "null" at the end of a string! */
-                char* s = (char*)sbuf;
-                static char* d = str;
-                while (n-- > 0) {
-                    if (*s == '\n' && *(d - 1) == '\r') {
-                        *(d - 1) = 0;
-                        ui::add_log(log.get(), "received %i bytes: %s\n", d - str - 1, str);
-                        d = str;
-                        s++;
-                    }
-                    else {
-                        *d++ = *s++;
-                    }
-                }
-            }
+            // static auto context = mod::hvg::control::open(2, 19200, "8N2");
+            //int port = 2;
+            //static auto context = make_context();
+
+            //char msg[256];
+            //memset(msg, 0, 256);
+            //assert(context);
+            //int n = mod::hvg::control::recv(context, msg);
+            //if (n > 0) {
+            //    ui::add_log(log.get(), "received %i bytes: %s\n", n, msg);
+            //}
+
+            //static int port = 2;
+            //static unsigned char sbuf[4096];
+            //int n = 0;
+            ////if (!RS232_OpenComport(port, 19200, "8N2", 0)) {
+            //    n = RS232_PollComport(port, sbuf, 4095);
+            ////}
+            //
+            //static char str[4096];
+            //if (n > 0) {
+            //    sbuf[n] = 0;   /* always put a "null" at the end of a string! */
+            //    char* s = (char*)sbuf;
+            //    static char* d = str;
+            //    while (n-- > 0) {
+            //        if (*s == '\n' && *(d - 1) == '\r') {
+            //            *(d - 1) = 0;
+            //            ui::add_log(log.get(), "received %i bytes: %s\n", d - str - 1, str);
+            //            d = str;
+            //            s++;
+            //        }
+            //        else {
+            //            *d++ = *s++;
+            //        }
+            //    }
+            //}
 
             // For the demo: add a debug button _BEFORE_ the normal log window contents
             // We take advantage of a rarely used feature: multiple calls to Begin()/End() are appending to the _same_ window.
@@ -54,7 +87,7 @@ namespace ui {
                 ui::add_log(log.get(), "HVG Command: %s\n", buf);
                 static char send_buf[4096];
                 sprintf(send_buf, "%s\r\n", buf);
-                RS232_cputs(port, send_buf);
+                //RS232_cputs(port, send_buf);
             }
 
             ImGui::End();
