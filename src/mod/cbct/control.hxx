@@ -78,11 +78,8 @@ namespace mod::cbct::control {
         ::control::config_t*    config;
     };
 
-    //using cbct_t = cbct_impl_t<>;
-    //using cbct_t = cbct_impl_t<fpd::control::fpd_dummy_t>;
-
-    using cbct_t = cbct_impl_t<>;
-    // using cbct_t = cbct_impl_t<fpd::control::fpd_dummy_t>;
+    // using cbct_t = cbct_impl_t<>;
+    using cbct_t = cbct_impl_t<fpd::control::fpd_dummy_t>;
 
     template<class F, class H, class W>
     bool init(cbct_impl_t<F, H, W>* p, cl::shared_ptr<F> fpd, cl::shared_ptr<H> hvg)
@@ -315,6 +312,9 @@ namespace mod::cbct::control {
     template <class F, class H, class W>
     void exposure(cbct_impl_t<F, H, W>* p)
     {
+        const cl::f32 FATE = 600.0;
+        const cl::f32 FPS = 6.0;
+        const char FOCUS = 'L';
         assert(p);
         assert(p->hvg);
         hand_shake(p->hvg.get());
@@ -525,6 +525,7 @@ namespace mod::cbct::control {
             .append(spacing.str())
             .append(" --dimension ")
             .append(dim.str());
+            //.append(" --direction 1.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0");
 
         if (p->use_gpu) {
             s.append(" --hardware cuda ");

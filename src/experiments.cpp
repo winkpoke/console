@@ -27,6 +27,11 @@ extern "C" {
 
 void confile_file(std::string_view doc);
 
+int32_t add(int32_t a, int32_t b)
+{
+    return a + b;
+}
+
 void experiments() 
 {
     //wchar_t hello[256] = L"ฮารว";
@@ -76,6 +81,8 @@ void experiments()
     if (fp == nullptr) {
         SPDLOG_WARN("cannot open config.toml file");
     } 
+
+    printf("-------------------> %d", set_callback(add));
     
     //n = fread(buf, sizeof(char), 1024 * 1024 * 2, fp);
     //assert(n < 1024 * 1024 * 2);

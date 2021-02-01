@@ -14,6 +14,8 @@ extern "C" {
 
     uint32_t addition(uint32_t a, uint32_t b);
 
+    int32_t set_callback(int32_t (*callback)(int32_t a, int32_t b));
+
     uint8_t* encode(const uint8_t* img,
         uintptr_t width,
         uintptr_t height,
