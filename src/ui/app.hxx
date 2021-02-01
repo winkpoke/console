@@ -8,7 +8,7 @@
 
 //#include "def.h"
 #include "modal/modal.h"
-#include "control/runtime_data.hxx"
+#include "runtime_data.hxx"
 #include "ui/image.h"
 #include "mod/fpd/control/fpd.hxx"
 #include "mod/hvg/control/hvg.hxx"
@@ -43,7 +43,7 @@ namespace ui {
 #include <filesystem>
 
 #include "cl.h"
-#include "ui/window.h"
+#include "window.h"
 #include "ui/log.h"
 #include "modal/modal.h"
 #include "control/control.hxx"

@@ -23,13 +23,13 @@
 #include "control/websocket.hxx"
 
 #define MODAL_RUNTIME_DATA_IMPLEMENTATION
-#include "control/runtime_data.hxx"
+#include "runtime_data.hxx"
 
 #define CONSOLE_CONTROL_IMPLEMENTATION
 #include "control/control.hxx"
 
 #define WINDOW_IMPLEMENTATION
-#include "ui/window.h"
+#include "window.h"
 
 #define CONSOLE_UI_APP_IMPLEMENTATION
 #include "ui/app.hxx"

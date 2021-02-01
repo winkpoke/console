@@ -56,7 +56,7 @@ namespace mod::cbct::ui {
 #include "cl.h"
 
 #include "def.h"
-#include "control/runtime_data.hxx"
+#include "runtime_data.hxx"
 
 namespace mod::cbct::ui {
     bool init(cbct_t* cbct, control::cbct_t* cbct_control)

@@ -7,14 +7,6 @@
 #include <shared_mutex>
 
 #include "cl.h"
-#include "modal/scan.hxx"
-
-#include "control/websocket.hxx"
-#include "mod/fpd/control/fpd.hxx"
-#include "mod/hvg/control/hvg.hxx"
-
-
-namespace hvg { struct context_t; }
 
 namespace control {
     struct runtime_data_t {

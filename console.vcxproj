@@ -228,7 +228,7 @@
     <ClInclude Include="src\mod\fpd\control\iray.hxx" />
     <ClInclude Include="src\mod\fpd\fpd.h" />
     <ClInclude Include="src\mod\hvg\control\hvg.hxx" />
-    <ClInclude Include="src\control\runtime_data.hxx" />
+    <ClInclude Include="src\include\runtime_data.hxx" />
     <ClInclude Include="src\include\base64.hxx" />
     <ClInclude Include="src\include\cl.h" />
     <ClInclude Include="src\console.h" />
@@ -292,7 +292,7 @@
     <ClInclude Include="src\ui\renders\render_maintenance.hxx" />
     <ClInclude Include="src\ui\ui.h" />
     <ClInclude Include="src\ui\image.h" />
-    <ClInclude Include="src\ui\window.h" />
+    <ClInclude Include="src\include\window.h" />
     <ClInclude Include="src\control\websocket.hxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

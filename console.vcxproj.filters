@@ -212,9 +212,6 @@
     <ClInclude Include="src\include\cl.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\window.h">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="src\include\stb_image.h">
       <Filter>header</Filter>
     </ClInclude>
@@ -252,9 +249,6 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="src\control\websocket.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="src\control\runtime_data.hxx">
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="src\control\control.hxx">
@@ -312,6 +306,12 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="src\control\config.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\runtime_data.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\window.h">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

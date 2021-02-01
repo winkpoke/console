@@ -57,6 +57,7 @@ namespace ui {
     void draw(window_t* win);
     void render(window_t* win);
     bool is_close(window_t* win);
+
 }
 
 #endif // _INCLUDE_WINDOW_H
@@ -255,6 +256,7 @@ namespace ui {
         glfwSwapBuffers(win->wnd);
         glfwPollEvents();
     }
+
 
     //void 
 }
