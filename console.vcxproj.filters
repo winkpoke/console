@@ -314,5 +314,11 @@
     <ClInclude Include="src\include\window.h">
       <Filter>header</Filter>
     </ClInclude>
+    <ClInclude Include="src\mod\hvg\control\hvg_serial.hxx">
+      <Filter>header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="doc\def.snippet" />
   </ItemGroup>
 </Project>

@@ -10,6 +10,11 @@
 #include "mod/hnd/hnd.hxx"
 
 
+#include <future>
+#include <chrono>
+#include <iostream>
+
+
 extern "C" {
 
     uint32_t addition(uint32_t a, uint32_t b);
@@ -30,6 +35,28 @@ void confile_file(std::string_view doc);
 int32_t add(int32_t a, int32_t b)
 {
     return a + b;
+}
+
+// a non-optimized way of checking for prime numbers:
+bool is_prime(int x) {
+    for (int i = 2; i < x; ++i) if (x % i == 0) return false;
+    return true;
+}
+
+void test_futre()
+{
+    // call function asynchronously:
+    std::future<bool> fut = std::async(is_prime, 700020007);
+
+    // do something while waiting for function to set future:
+    std::cout << "checking, please wait";
+    std::chrono::milliseconds span(100);
+    while (fut.wait_for(span) == std::future_status::timeout)
+        std::cout << '.';
+
+    bool x = fut.get();
+
+    std::cout << "\n700020007 " << (x ? "is" : "is not") << " prime.\n";
 }
 
 void experiments() 
@@ -88,6 +115,8 @@ void experiments()
     //assert(n < 1024 * 1024 * 2);
     //buf[n] = '\0';
     //confile_file(buf);
+
+    test_futre();
 }
 
 #define TOML_EXCEPTIONS 0

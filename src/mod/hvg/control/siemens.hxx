@@ -172,7 +172,7 @@ namespace mod::hvg::control {
             set_error<error_t>(error_t::ERR_COM_OPEN);
             return NULL;
         }
-        context_t* context = (context_t*)malloc(sizeof(context_t));
+        context_t* context = cl::alloc<context_t>();
         context->port = port;
         context->baud = baud;
         context->pos = 0;

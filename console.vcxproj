@@ -237,6 +237,7 @@
     <ClInclude Include="src\include\hnd.h" />
     <ClInclude Include="src\include\nlohmann\json.hpp" />
     <ClInclude Include="src\modal\modal.h" />
+    <ClInclude Include="src\mod\hvg\control\hvg_serial.hxx" />
     <ClInclude Include="src\mod\hvg\control\siemens.hxx" />
     <ClInclude Include="src\include\spdlog\async.h" />
     <ClInclude Include="src\include\spdlog\async_logger-inl.h" />
@@ -294,6 +295,9 @@
     <ClInclude Include="src\ui\image.h" />
     <ClInclude Include="src\include\window.h" />
     <ClInclude Include="src\control\websocket.hxx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="doc\def.snippet" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
