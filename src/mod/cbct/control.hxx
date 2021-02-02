@@ -438,8 +438,10 @@ namespace mod::cbct::control {
             "",           //char hnd_path[STR_LEN];
             "",           //char output_path[STR_LEN];
             R"(ct.mhd)",                         //char output_file[STR_LEN];
-            {spacing, spacing_y, spacing},       //cl::f64 spacing[3];
-            {dim, dim_y, dim},                   //int dimension[3];
+            //{spacing, spacing_y, spacing},       //cl::f64 spacing[3];
+            {spacing, spacing, spacing_y},       //cl::f64 spacing[3];
+            //{dim, dim_y, dim},                   //int dimension[3];
+            {dim, dim, dim_y},                   //int dimension[3];
             use_cuda                                 //bool use_gpu;
         };
 
@@ -524,8 +526,8 @@ namespace mod::cbct::control {
             .append(" --spacing ")
             .append(spacing.str())
             .append(" --dimension ")
-            .append(dim.str());
-            //.append(" --direction 1.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0");
+            .append(dim.str())
+            .append(" --direction 1.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0");
 
         if (p->use_gpu) {
             s.append(" --hardware cuda ");
