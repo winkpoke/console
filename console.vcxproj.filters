@@ -48,19 +48,10 @@
     <ClCompile Include="src\ThirdParty\imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ThirdParty\imgui\imgui_demo.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
     <ClCompile Include="src\ThirdParty\imgui\imgui_draw.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\ThirdParty\imgui\imgui_widgets.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\gl3w.c">
@@ -90,6 +81,18 @@
     <ClCompile Include="src\mod\cbct\cbct.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="src\ThirdParty\imgui\backends\imgui_impl_glfw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ThirdParty\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ThirdParty\imgui\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ThirdParty\imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ThirdParty\imgui\imconfig.h">
@@ -108,12 +111,6 @@
       <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="src\ThirdParty\imgui\imstb_truetype.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.h">
       <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\gl3w.h">
@@ -316,6 +313,12 @@
     </ClInclude>
     <ClInclude Include="src\mod\hvg\control\hvg_serial.hxx">
       <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\imgui\backends\imgui_impl_glfw.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThirdParty\imgui\backends\imgui_impl_opengl3.h">
+      <Filter>imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

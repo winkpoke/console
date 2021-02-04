@@ -107,7 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE;_CRT_SECURE_NO_WARNINGS;_MBCS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\RS-232;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\ThirdParty\imgui\backends;src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\RS-232;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OpenMPSupport>false</OpenMPSupport>
@@ -131,7 +131,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\ThirdParty\imgui\backends;src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OpenMPSupport>false</OpenMPSupport>
@@ -156,7 +156,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE;_CRT_SECURE_NO_WARNINGS;_MBCS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\RS-232;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\ThirdParty\imgui\backends;src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\RS-232;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OpenMPSupport>false</OpenMPSupport>
@@ -185,7 +185,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\ThirdParty\imgui\backends;src;src\include;src\ThirdParty\iRay;src\ThirdParty\iRay\include;src\ThirdParty\imgui\examples\libs\glfw\include;src\ThirdParty\imgui\examples\libs;src\ThirdParty\imgui\examples\libs\gl3w;src\ThirdParty\imgui\examples;src\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <OpenMPSupport>false</OpenMPSupport>
@@ -209,12 +209,13 @@
     <ClCompile Include="src\mod\hnd\hnd.cpp" />
     <ClCompile Include="src\mod\hvg\hvg.cpp" />
     <ClCompile Include="src\mod\patient\patient.cpp" />
-    <ClCompile Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.cpp" />
-    <ClCompile Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\ThirdParty\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\ThirdParty\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\gl3w.c" />
     <ClCompile Include="src\ThirdParty\imgui\imgui.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\imgui_demo.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\ThirdParty\imgui\imgui_tables.cpp" />
     <ClCompile Include="src\ThirdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\ThirdParty\iRay\Detector.cpp" />
     <ClCompile Include="src\ThirdParty\RS-232\rs232.c" />
@@ -264,8 +265,8 @@
     <ClInclude Include="src\modal\scan.hxx" />
     <ClInclude Include="src\mod\patient\patient.h" />
     <ClInclude Include="src\mod\patient\ui.hxx" />
-    <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_glfw.h" />
-    <ClInclude Include="src\ThirdParty\imgui\examples\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\ThirdParty\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="src\ThirdParty\imgui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\gl3w.h" />
     <ClInclude Include="src\ThirdParty\imgui\examples\libs\gl3w\GL\glcorearb.h" />
     <ClInclude Include="src\ThirdParty\imgui\imconfig.h" />
