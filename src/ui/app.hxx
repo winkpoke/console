@@ -30,7 +30,8 @@ namespace ui {
 
     void run(app_t* app);
 
-    void update(app_t* app, control::runtime_data_t* data);
+    void update(app_t* app);
+    // void update(app_t* app, control::runtime_data_t* data);
     //void update(control::runtime_data_t* data, app_t* app);
 } //namespace ui
 
@@ -182,8 +183,9 @@ namespace ui
         }
     }
 
-    void update(app_t* app, control::runtime_data_t* data)
+    void update(app_t* app)
     {
+        control::runtime_data_t* data = control::get_runtime_data();
         std::shared_lock lk(data->mutex);
         mod::patient::ui::update(app->objects, data->objects);
         mod::cbct::ui::update(app->objects, data->objects);
@@ -194,7 +196,7 @@ namespace ui
         // Main loop
         while (!is_close(app->win)) {
             new_frame(app->win);
-            update(app, control::get_runtime_data());
+            update(app);
             render(app->win);
             process_event(app->win);
             draw(app->win);
