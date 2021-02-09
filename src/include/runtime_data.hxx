@@ -31,7 +31,7 @@ namespace control {
 namespace control {
     bool init(runtime_data_t* d) {
         new(&d->mutex)std::shared_mutex();
-        std::unique_lock(d->mutex);
+        std::unique_lock lk(d->mutex);
         d->objects = cl::build_raw<cl::runtime_object_t>();
         return true;
     }

@@ -123,7 +123,9 @@ namespace ui {
     void render(image_view<T>* widget)
     {
         assert(widget);
-        ImGui::Image((void*)(intptr_t)widget->texture, ImVec2(widget->width, widget->height)/*, ImVec2(0, 0), ImVec2(0.5, 0.5)*/);
+        ImVec2 size(static_cast<float>(widget->width),
+                    static_cast<float>(widget->height));
+        ImGui::Image((void*)(intptr_t)widget->texture, size/*, ImVec2(0, 0), ImVec2(0.5, 0.5)*/);
     }
 
     template <class T>
